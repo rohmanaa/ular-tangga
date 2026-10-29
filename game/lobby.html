@@ -192,20 +192,31 @@ button:disabled{cursor:not-allowed}
 .ld{animation:load 1.3s linear infinite}
 .pn{background:linear-gradient(180deg,#16264a,#101d38);border:1px solid #22385f;border-radius:20px;padding:16px;box-sizing:border-box}
 .lb{font-size:12px;font-weight:700;letter-spacing:.14em;color:#8497b3}
-.qa{transition:transform .15s,border-color .15s}.qa:hover{transform:translateY(-3px);border-color:#7dff2e}
-.lg{display:grid;grid-template-columns:300px minmax(0,1fr) 300px;gap:20px;align-items:stretch}
+.lg{display:grid;grid-template-columns:300px minmax(0,1fr) 300px;gap:20px;align-items:stretch;flex:1}
 .col{display:flex;flex-direction:column;gap:16px;justify-content:space-between;min-width:0}
 .tbar{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center}
 .sc{scrollbar-width:thin;scrollbar-color:#2f3f7a #101d38}
 .bn{display:flex}
 @media(max-width:1000px){.lg{grid-template-columns:1fr 1fr}.cm{grid-column:1/-1;order:-1}.tbar{grid-template-columns:1fr}.ttl{order:-1}}
-@media(max-width:700px){.lg{grid-template-columns:1fr}.pad{padding-bottom:100px!important}}
-.pad{padding-bottom:100px!important}
+@media(max-width:700px){.lg{grid-template-columns:1fr}.pad{padding-bottom:96px!important}}
+.pad{padding-bottom:96px!important}
+.stg{touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none}
+.stg.dg{cursor:grabbing}
+.persp{position:absolute;inset:0;perspective:900px}
+.rot{position:absolute;inset:0;transform-style:preserve-3d;transform-origin:120px 170px;transform:rotateX(-5deg) rotateY(-28deg);--px:conic-gradient(transparent 25%,rgba(0,0,0,.10) 0 50%,transparent 0 75%,rgba(255,255,255,.10) 0)}
+.cb{position:absolute;transform-style:preserve-3d}
+.fc{position:absolute}
+.ov{position:absolute;display:block}
+.fr{background-image:var(--px);background-size:8px 8px}
+.bk{background-image:linear-gradient(rgba(0,0,0,.38),rgba(0,0,0,.38)),var(--px);background-size:100% 100%,8px 8px}
+.rt{background-image:linear-gradient(rgba(0,0,0,.26),rgba(0,0,0,.26)),var(--px);background-size:100% 100%,8px 8px}
+.lf{background-image:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)),var(--px);background-size:100% 100%,8px 8px}
+.tp{background-image:linear-gradient(rgba(255,255,255,.16),rgba(255,255,255,.16)),var(--px);background-size:100% 100%,8px 8px}
 @media(prefers-reduced-motion:reduce){.fig,.cl,.play,.mod,.ld{animation:none}}
 </style>
 </helmet>
-<div class="pad" style="min-height:1000px;box-sizing:border-box;padding:18px 16px 40px;background:radial-gradient(ellipse at 50% -10%,rgba(125,255,46,.08),rgba(125,255,46,0) 55%),#0a1428;color:#eaf2ff;font-family:'Plus Jakarta Sans',sans-serif">
-<div style="max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:18px">
+<div class="pad" style="min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;box-sizing:border-box;padding:18px 16px 40px;background:radial-gradient(ellipse at 50% -10%,rgba(125,255,46,.08),rgba(125,255,46,0) 55%),#0a1428;color:#eaf2ff;font-family:'Plus Jakarta Sans',sans-serif">
+<div style="width:100%;max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:18px;flex:1">
 
 <header class="tbar">
 <div class="pn" style="display:flex;align-items:center;gap:12px;padding:8px 16px 8px 10px;justify-self:start;max-width:100%">
@@ -217,21 +228,24 @@ button:disabled{cursor:not-allowed}
 <div style="display:flex;align-items:center;gap:10px;justify-self:end;flex-wrap:wrap">
 <div class="pn" style="display:flex;align-items:center;gap:8px;padding:8px 14px 8px 10px;border-radius:14px"><svg width="24" height="24" sc-camel-view-box="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#f2b705" stroke="#c48f00" stroke-width="2"></circle><rect x="8" y="8" width="8" height="8" fill="#ffe27a"></rect></svg><span style="font-family:'Lilita One',sans-serif;font-size:21px;color:#ffe27a;line-height:1"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Koin </span>42.850</span></div>
 <div class="pn" style="display:flex;align-items:center;gap:8px;padding:8px 14px 8px 10px;border-radius:14px"><svg width="24" height="24" sc-camel-view-box="0 0 24 24" aria-hidden="true"><polygon points="12,2 22,12 12,22 2,12" fill="#2fe0b5" stroke="#1b8672" stroke-width="2"></polygon><polygon points="12,6 18,12 12,18 6,12" fill="#9ff2e0"></polygon></svg><span style="font-family:'Lilita One',sans-serif;font-size:21px;color:#9ff2e0;line-height:1"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Permata </span>1.240</span></div>
+<button type="button" aria-label="Cara bermain" class="pn" sc-camel-on-click="{{openHow}}" style="height:48px;padding:0 16px 0 12px;border-radius:14px;color:#eaf2ff;display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.5 9.5a2.5 2.5 0 015 0c0 1.7-2.5 2-2.5 4M12 17.5v.01"></path></svg>Cara Bermain</button>
 <button type="button" aria-label="Suara" class="pn" style="width:48px;height:48px;padding:0;border-radius:14px;color:#eaf2ff;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 010 8"></path></svg></button>
 </div>
 </header>
 
 <div class="lg">
 <div class="col">
-<nav aria-label="Menu utama" style="display:flex;flex-direction:column;gap:10px">
-<div class="lb" style="padding:0 4px">MENU UTAMA</div>
-<sc-for list="{{menu}}" as="c" hint-placeholder-count="4">
-<a class="qa pn" href="{{c.href}}" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:18px">
-<span style="flex:none;width:46px;height:46px;border-radius:12px;background:#101d38;border:1px solid {{c.tone}};display:flex;align-items:center;justify-content:center;color:{{c.tone}}"><svg width="24" height="24" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.d}}"></path></svg></span>
-<span style="min-width:0"><span style="display:block;font-family:'Lilita One',sans-serif;font-size:20px;line-height:1.1">{{c.name}}</span><span style="display:block;font-size:13px;color:#aebdd3;margin-top:2px">{{c.note}}</span></span>
-</a>
-</sc-for>
-</nav>
+<div style="display:flex;flex-direction:column;gap:16px">
+<section aria-label="Tema papan" class="pn">
+<div class="lb" style="margin-bottom:10px">TEMA PAPAN</div>
+<div role="group" aria-label="Tema papan" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px"><sc-for list="{{themes}}" as="t" hint-placeholder-count="6"><button type="button" disabled="{{t.locked}}" aria-pressed="{{t.on}}" sc-camel-on-click="{{t.pick}}" style="min-height:46px;display:flex;align-items:center;gap:8px;border-radius:12px;padding:0 8px;font-weight:700;font-size:13px;text-align:left;color:#eaf2ff;{{t.style}}"><span style="flex:none;width:22px;height:22px;border-radius:6px;border:2px solid #101d38;background:{{t.sw}};opacity:{{t.op}}"></span><span style="flex:1;min-width:0">{{t.name}}</span><sc-if value="{{t.locked}}" hint-placeholder-val="{{false}}"><svg width="12" height="12" sc-camel-view-box="0 0 24 24" fill="none" stroke="#ffb3b3" stroke-width="3" stroke-linecap="round" role="img" aria-label="Terkunci"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg></sc-if></button></sc-for></div>
+</section>
+<section aria-label="Skin dadu" class="pn">
+<div class="lb" style="margin-bottom:10px">SKIN DADU</div>
+<div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;background:#101d38;border:1px solid #22385f;border-radius:14px;padding:8px 14px 8px 8px"><button type="button" id="diceBtn" aria-label="Kocok dadu pratinjau" style="flex:none;position:relative;width:76px;height:76px;padding:0;border:0;background:transparent;perspective:420px"><span style="position:absolute;left:12px;top:12px;width:52px;height:52px;transform-style:preserve-3d;transform:rotateX(-24deg) rotateY(-30deg)"><span id="dicePrev" style="position:absolute;inset:0;transform-style:preserve-3d"><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{pv.edge}};background:{{pv.f1}};transform:translateZ(26px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{pv.edge}};background:{{pv.f6}};transform:rotateY(180deg) translateZ(26px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{pv.edge}};background:{{pv.f2}};transform:rotateY(90deg) translateZ(26px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{pv.edge}};background:{{pv.f5}};transform:rotateY(-90deg) translateZ(26px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{pv.edge}};background:{{pv.f3}};transform:rotateX(90deg) translateZ(26px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{pv.edge}};background:{{pv.f4}};transform:rotateX(-90deg) translateZ(26px)"></span></span></span></button><div style="min-width:0;flex:1"><div style="font-family:'Lilita One',sans-serif;font-size:19px;line-height:1.1">{{pv.name}}</div><div id="diceMsg" aria-live="polite" style="font-size:12px;color:#aebdd3;margin-top:3px"></div></div><b id="diceNum" style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:30px;color:#ffe27a;min-width:24px;text-align:right"></b></div>
+<div role="group" aria-label="Skin dadu" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px"><sc-for list="{{dices}}" as="d" hint-placeholder-count="6"><button type="button" class="dskin" disabled="{{d.locked}}" aria-pressed="{{d.on}}" sc-camel-on-click="{{d.pick}}" style="min-height:46px;display:flex;align-items:center;gap:8px;border-radius:12px;padding:0 8px;font-weight:700;font-size:13px;text-align:left;color:#eaf2ff;{{d.style}}"><span aria-hidden="true" style="flex:none;position:relative;width:34px;height:34px;perspective:260px;opacity:{{d.op}}"><span style="position:absolute;left:5px;top:5px;width:24px;height:24px;transform-style:preserve-3d;transform:rotateX(-28deg) rotateY(-38deg)"><span style="position:absolute;inset:0;box-sizing:border-box;border:1.5px solid {{d.edge}};background:{{d.f1}};transform:translateZ(12px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:1.5px solid {{d.edge}};background:{{d.f2}};transform:rotateY(90deg) translateZ(12px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:1.5px solid {{d.edge}};background:{{d.f3}};transform:rotateX(90deg) translateZ(12px)"></span></span></span><span style="flex:1;min-width:0">{{d.name}}</span><sc-if value="{{d.locked}}" hint-placeholder-val="{{false}}"><svg width="12" height="12" sc-camel-view-box="0 0 24 24" fill="none" stroke="#ffb3b3" stroke-width="3" stroke-linecap="round" role="img" aria-label="Terkunci"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg></sc-if></button></sc-for></div>
+</section>
+</div>
 <section aria-label="Penawaran hari ini" class="pn" style="border-color:rgba(255,226,122,.55);background:linear-gradient(180deg,#1b2f52,#0b1a2e);box-shadow:0 14px 36px rgba(242,183,5,.14)">
 <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font-family:'Lilita One',sans-serif;font-size:12px;letter-spacing:.06em;padding:4px 9px;border-radius:7px;background:#ffe27a;color:#3a2a00">PENAWARAN HARI INI</span><span style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:#ffe27a"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>14:22:05</span></div>
 <div style="display:flex;align-items:center;gap:12px;margin:12px 0">
@@ -245,7 +259,7 @@ button:disabled{cursor:not-allowed}
 <div class="cm" style="display:flex;flex-direction:column;gap:14px;min-width:0">
 <a href="skins.html" style="align-self:center;display:inline-flex;align-items:center;gap:10px;max-width:100%;box-sizing:border-box;padding:8px 18px;border-radius:999px;background:rgba(10,20,40,.9);border:1.5px solid rgba(255,226,122,.7);box-shadow:0 0 28px rgba(242,183,5,.2)"><span class="lb" style="color:#b9c9e4">SKIN AKTIF</span><b style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:19px">Ksatria Emas</b><span style="font-family:'Lilita One',sans-serif;font-size:11px;letter-spacing:.06em;padding:4px 8px;border-radius:7px;background:#ffe27a;color:#3a2a00">LEGENDARY</span></a>
 
-<section aria-label="Pratinjau karakter" style="position:relative;overflow:hidden;flex:1;min-height:440px;border-radius:26px;border:1px solid #22385f;background:linear-gradient(180deg,#1a6fd6 0%,#6cb8f2 55%,#bfe6ff 100%);box-shadow:0 24px 60px rgba(0,0,0,.5)">
+<section aria-label="Pratinjau karakter" class="stg" sc-camel-tab-index="0" style="position:relative;overflow:hidden;flex:1;min-height:440px;border-radius:26px;border:1px solid #22385f;background:linear-gradient(180deg,#1a6fd6 0%,#6cb8f2 55%,#bfe6ff 100%);box-shadow:0 24px 60px rgba(0,0,0,.5)">
 <svg sc-camel-view-box="0 0 800 520" sc-camel-preserve-aspect-ratio="xMidYMax slice" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%">
 <rect x="610" y="70" width="60" height="60" fill="#fff3a8"></rect>
 <g class="cl" fill="#fff" opacity=".85"><rect x="90" y="90" width="90" height="22"></rect><rect x="116" y="68" width="48" height="22"></rect><rect x="460" y="150" width="110" height="22"></rect></g>
@@ -261,30 +275,10 @@ button:disabled{cursor:not-allowed}
 <div style="height:46px;background:#6b4a2b;position:relative"><div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.08) 50%,transparent 50%),linear-gradient(90deg,rgba(0,0,0,.10) 50%,transparent 50%);background-size:16px 16px"></div></div>
 <div style="height:24px;margin:0 30px;background:#5f3f25"></div>
 </div>
-<svg sc-camel-view-box="0 0 240 320" role="img" aria-label="Karakter Ksatria Emas berdiri di platform rumput" style="position:absolute;left:50%;bottom:112px;transform:translateX(-50%);height:min(66%,330px);width:auto;overflow:visible">
-<defs><pattern id="px" width="8" height="8" sc-camel-pattern-units="userSpaceOnUse"><rect width="4" height="4" fill="#fff" opacity=".10"></rect><rect x="4" y="4" width="4" height="4" fill="#000" opacity=".10"></rect></pattern></defs>
-<ellipse cx="120" cy="304" rx="76" ry="10" fill="#000" opacity=".3"></ellipse>
-<g class="fig">
-<rect x="82" y="120" width="76" height="150" fill="#3b92ee"></rect>
-<rect x="92" y="208" width="27" height="88" fill="#8a6a1a"></rect><rect x="121" y="208" width="27" height="88" fill="#8a6a1a"></rect>
-<rect x="92" y="278" width="27" height="18" fill="#5f3f25"></rect><rect x="121" y="278" width="27" height="18" fill="#5f3f25"></rect>
-<rect x="88" y="120" width="64" height="96" fill="#f2b705"></rect><rect x="88" y="196" width="64" height="9" fill="#3a2a1a"></rect><rect x="113" y="195" width="14" height="11" fill="#fff3b0"></rect>
-<rect x="56" y="116" width="32" height="20" fill="#ffe27a"></rect><rect x="152" y="116" width="32" height="20" fill="#ffe27a"></rect>
-<rect x="60" y="136" width="26" height="42" fill="#f2b705"></rect><rect x="154" y="136" width="26" height="42" fill="#f2b705"></rect>
-<rect x="60" y="178" width="26" height="34" fill="#ffe27a"></rect><rect x="154" y="178" width="26" height="34" fill="#ffe27a"></rect>
-<rect x="92" y="52" width="56" height="62" fill="#f2c9a0"></rect>
-<rect x="88" y="40" width="64" height="28" fill="#ffe27a"></rect><rect x="88" y="40" width="10" height="56" fill="#ffe27a"></rect><rect x="142" y="40" width="10" height="56" fill="#ffe27a"></rect><rect x="88" y="62" width="64" height="6" fill="#c48f00"></rect>
-<rect x="103" y="82" width="11" height="9" fill="#fff"></rect><rect x="107" y="83" width="6" height="8" fill="#1b2236"></rect><rect x="126" y="82" width="11" height="9" fill="#fff"></rect><rect x="130" y="83" width="6" height="8" fill="#1b2236"></rect><rect x="111" y="99" width="18" height="4" fill="#8a4b3c"></rect>
-<rect x="114" y="20" width="12" height="22" fill="#e24b4b"></rect>
-<g fill="url(#px)"><rect x="92" y="52" width="56" height="62"></rect><rect x="88" y="120" width="64" height="96"></rect><rect x="60" y="116" width="26" height="96"></rect><rect x="154" y="116" width="26" height="96"></rect><rect x="92" y="208" width="27" height="88"></rect><rect x="121" y="208" width="27" height="88"></rect></g>
-<g fill="#000" opacity=".16"><rect x="144" y="52" width="8" height="44"></rect><rect x="144" y="120" width="8" height="96"></rect><rect x="172" y="136" width="8" height="76"></rect><rect x="140" y="208" width="8" height="88"></rect><rect x="111" y="208" width="8" height="88"></rect></g>
-</g></svg>
-<span style="position:absolute;left:50%;bottom:14px;transform:translateX(-50%);white-space:nowrap;background:rgba(10,20,40,.85);border:1px solid #2f3f7a;border-radius:999px;padding:6px 14px;font-size:12px;color:#b9c9e4">Putar karakter: klik dan geser</span>
+<div role="img" aria-label="Karakter Ksatria Emas berdiri di platform rumput, bisa diputar dengan klik dan geser" style="position:absolute;left:50%;bottom:118px;width:240px;height:320px;margin-left:-120px;transform:scale(1.03);transform-origin:50% 100%;pointer-events:none"><div style="position:absolute;left:44px;top:294px;width:152px;height:20px;border-radius:50%;background:rgba(0,0,0,.3)"></div><div class="fig" style="position:absolute;inset:0"><div class="persp"><div class="rot" id="rot3d"><div class="cb" style="left:82px;top:120px;width:76px;height:150px;transform:translateZ(-21px)"><div class="fc fr" style="left:0;top:0;width:76px;height:150px;transform:translateZ(3px);background-color:#3b92ee"></div><div class="fc bk" style="left:0;top:0;width:76px;height:150px;transform:rotateY(180deg) translateZ(3px);background-color:#3b92ee"></div><div class="fc rt" style="left:35px;top:0;width:6px;height:150px;transform:rotateY(90deg) translateZ(38px);background-color:#3b92ee"></div><div class="fc lf" style="left:35px;top:0;width:6px;height:150px;transform:rotateY(-90deg) translateZ(38px);background-color:#3b92ee"></div><div class="fc tp" style="left:0;top:72px;width:76px;height:6px;transform:rotateX(90deg) translateZ(75px);background-color:#3b92ee"></div></div><div class="cb" style="left:92px;top:216px;width:27px;height:62px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:27px;height:62px;transform:translateZ(14px);background-color:#8a6a1a"></div><div class="fc bk" style="left:0;top:0;width:27px;height:62px;transform:rotateY(180deg) translateZ(14px);background-color:#8a6a1a"></div><div class="fc rt" style="left:-0.5px;top:0;width:28px;height:62px;transform:rotateY(90deg) translateZ(13.5px);background-color:#8a6a1a"></div><div class="fc lf" style="left:-0.5px;top:0;width:28px;height:62px;transform:rotateY(-90deg) translateZ(13.5px);background-color:#8a6a1a"></div><div class="fc tp" style="left:0;top:17px;width:27px;height:28px;transform:rotateX(90deg) translateZ(31px);background-color:#8a6a1a"></div></div><div class="cb" style="left:92px;top:278px;width:27px;height:18px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:27px;height:18px;transform:translateZ(14px);background-color:#5f3f25"></div><div class="fc bk" style="left:0;top:0;width:27px;height:18px;transform:rotateY(180deg) translateZ(14px);background-color:#5f3f25"></div><div class="fc rt" style="left:-0.5px;top:0;width:28px;height:18px;transform:rotateY(90deg) translateZ(13.5px);background-color:#5f3f25"></div><div class="fc lf" style="left:-0.5px;top:0;width:28px;height:18px;transform:rotateY(-90deg) translateZ(13.5px);background-color:#5f3f25"></div><div class="fc tp" style="left:0;top:-5px;width:27px;height:28px;transform:rotateX(90deg) translateZ(9px);background-color:#5f3f25"></div></div><div class="cb" style="left:121px;top:216px;width:27px;height:62px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:27px;height:62px;transform:translateZ(14px);background-color:#8a6a1a"></div><div class="fc bk" style="left:0;top:0;width:27px;height:62px;transform:rotateY(180deg) translateZ(14px);background-color:#8a6a1a"></div><div class="fc rt" style="left:-0.5px;top:0;width:28px;height:62px;transform:rotateY(90deg) translateZ(13.5px);background-color:#8a6a1a"></div><div class="fc lf" style="left:-0.5px;top:0;width:28px;height:62px;transform:rotateY(-90deg) translateZ(13.5px);background-color:#8a6a1a"></div><div class="fc tp" style="left:0;top:17px;width:27px;height:28px;transform:rotateX(90deg) translateZ(31px);background-color:#8a6a1a"></div></div><div class="cb" style="left:121px;top:278px;width:27px;height:18px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:27px;height:18px;transform:translateZ(14px);background-color:#5f3f25"></div><div class="fc bk" style="left:0;top:0;width:27px;height:18px;transform:rotateY(180deg) translateZ(14px);background-color:#5f3f25"></div><div class="fc rt" style="left:-0.5px;top:0;width:28px;height:18px;transform:rotateY(90deg) translateZ(13.5px);background-color:#5f3f25"></div><div class="fc lf" style="left:-0.5px;top:0;width:28px;height:18px;transform:rotateY(-90deg) translateZ(13.5px);background-color:#5f3f25"></div><div class="fc tp" style="left:0;top:-5px;width:27px;height:28px;transform:rotateX(90deg) translateZ(9px);background-color:#5f3f25"></div></div><div class="cb" style="left:88px;top:120px;width:64px;height:96px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:64px;height:96px;transform:translateZ(17px);background-color:#f2b705"><span class="ov" style="left:0px;top:76px;width:64px;height:9px;background:#3a2a1a"></span><span class="ov" style="left:25px;top:75px;width:14px;height:11px;background:#fff3b0"></span></div><div class="fc bk" style="left:0;top:0;width:64px;height:96px;transform:rotateY(180deg) translateZ(17px);background-color:#f2b705"><span class="ov" style="left:0px;top:76px;width:64px;height:9px;background:#3a2a1a"></span></div><div class="fc rt" style="left:15px;top:0;width:34px;height:96px;transform:rotateY(90deg) translateZ(32px);background-color:#f2b705"></div><div class="fc lf" style="left:15px;top:0;width:34px;height:96px;transform:rotateY(-90deg) translateZ(32px);background-color:#f2b705"></div><div class="fc tp" style="left:0;top:31px;width:64px;height:34px;transform:rotateX(90deg) translateZ(48px);background-color:#f2b705"></div></div><div class="cb" style="left:56px;top:116px;width:32px;height:20px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:32px;height:20px;transform:translateZ(17px);background-color:#ffe27a"></div><div class="fc bk" style="left:0;top:0;width:32px;height:20px;transform:rotateY(180deg) translateZ(17px);background-color:#ffe27a"></div><div class="fc rt" style="left:-1px;top:0;width:34px;height:20px;transform:rotateY(90deg) translateZ(16px);background-color:#ffe27a"></div><div class="fc lf" style="left:-1px;top:0;width:34px;height:20px;transform:rotateY(-90deg) translateZ(16px);background-color:#ffe27a"></div><div class="fc tp" style="left:0;top:-7px;width:32px;height:34px;transform:rotateX(90deg) translateZ(10px);background-color:#ffe27a"></div></div><div class="cb" style="left:152px;top:116px;width:32px;height:20px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:32px;height:20px;transform:translateZ(17px);background-color:#ffe27a"></div><div class="fc bk" style="left:0;top:0;width:32px;height:20px;transform:rotateY(180deg) translateZ(17px);background-color:#ffe27a"></div><div class="fc rt" style="left:-1px;top:0;width:34px;height:20px;transform:rotateY(90deg) translateZ(16px);background-color:#ffe27a"></div><div class="fc lf" style="left:-1px;top:0;width:34px;height:20px;transform:rotateY(-90deg) translateZ(16px);background-color:#ffe27a"></div><div class="fc tp" style="left:0;top:-7px;width:32px;height:34px;transform:rotateX(90deg) translateZ(10px);background-color:#ffe27a"></div></div><div class="cb" style="left:60px;top:136px;width:26px;height:42px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:26px;height:42px;transform:translateZ(13px);background-color:#f2b705"></div><div class="fc bk" style="left:0;top:0;width:26px;height:42px;transform:rotateY(180deg) translateZ(13px);background-color:#f2b705"></div><div class="fc rt" style="left:0px;top:0;width:26px;height:42px;transform:rotateY(90deg) translateZ(13px);background-color:#f2b705"></div><div class="fc lf" style="left:0px;top:0;width:26px;height:42px;transform:rotateY(-90deg) translateZ(13px);background-color:#f2b705"></div><div class="fc tp" style="left:0;top:8px;width:26px;height:26px;transform:rotateX(90deg) translateZ(21px);background-color:#f2b705"></div></div><div class="cb" style="left:60px;top:178px;width:26px;height:34px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:26px;height:34px;transform:translateZ(13px);background-color:#ffe27a"></div><div class="fc bk" style="left:0;top:0;width:26px;height:34px;transform:rotateY(180deg) translateZ(13px);background-color:#ffe27a"></div><div class="fc rt" style="left:0px;top:0;width:26px;height:34px;transform:rotateY(90deg) translateZ(13px);background-color:#ffe27a"></div><div class="fc lf" style="left:0px;top:0;width:26px;height:34px;transform:rotateY(-90deg) translateZ(13px);background-color:#ffe27a"></div><div class="fc tp" style="left:0;top:4px;width:26px;height:26px;transform:rotateX(90deg) translateZ(17px);background-color:#ffe27a"></div></div><div class="cb" style="left:154px;top:136px;width:26px;height:42px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:26px;height:42px;transform:translateZ(13px);background-color:#f2b705"></div><div class="fc bk" style="left:0;top:0;width:26px;height:42px;transform:rotateY(180deg) translateZ(13px);background-color:#f2b705"></div><div class="fc rt" style="left:0px;top:0;width:26px;height:42px;transform:rotateY(90deg) translateZ(13px);background-color:#f2b705"></div><div class="fc lf" style="left:0px;top:0;width:26px;height:42px;transform:rotateY(-90deg) translateZ(13px);background-color:#f2b705"></div><div class="fc tp" style="left:0;top:8px;width:26px;height:26px;transform:rotateX(90deg) translateZ(21px);background-color:#f2b705"></div></div><div class="cb" style="left:154px;top:178px;width:26px;height:34px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:26px;height:34px;transform:translateZ(13px);background-color:#ffe27a"></div><div class="fc bk" style="left:0;top:0;width:26px;height:34px;transform:rotateY(180deg) translateZ(13px);background-color:#ffe27a"></div><div class="fc rt" style="left:0px;top:0;width:26px;height:34px;transform:rotateY(90deg) translateZ(13px);background-color:#ffe27a"></div><div class="fc lf" style="left:0px;top:0;width:26px;height:34px;transform:rotateY(-90deg) translateZ(13px);background-color:#ffe27a"></div><div class="fc tp" style="left:0;top:4px;width:26px;height:26px;transform:rotateX(90deg) translateZ(17px);background-color:#ffe27a"></div></div><div class="cb" style="left:92px;top:52px;width:56px;height:62px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:56px;height:62px;transform:translateZ(28px);background-color:#f2c9a0"><span class="ov" style="left:11px;top:30px;width:11px;height:9px;background:#fff"></span><span class="ov" style="left:15px;top:31px;width:6px;height:8px;background:#1b2236"></span><span class="ov" style="left:34px;top:30px;width:11px;height:9px;background:#fff"></span><span class="ov" style="left:38px;top:31px;width:6px;height:8px;background:#1b2236"></span><span class="ov" style="left:19px;top:47px;width:18px;height:4px;background:#8a4b3c"></span></div><div class="fc bk" style="left:0;top:0;width:56px;height:62px;transform:rotateY(180deg) translateZ(28px);background-color:#f2c9a0"><span class="ov" style="left:0px;top:16px;width:56px;height:26px;background:#4a2e1a"></span></div><div class="fc rt" style="left:0px;top:0;width:56px;height:62px;transform:rotateY(90deg) translateZ(28px);background-color:#f2c9a0"></div><div class="fc lf" style="left:0px;top:0;width:56px;height:62px;transform:rotateY(-90deg) translateZ(28px);background-color:#f2c9a0"></div><div class="fc tp" style="left:0;top:3px;width:56px;height:56px;transform:rotateX(90deg) translateZ(31px);background-color:#f2c9a0"></div></div><div class="cb" style="left:88px;top:40px;width:64px;height:22px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:64px;height:22px;transform:translateZ(32px);background-color:#ffe27a"></div><div class="fc bk" style="left:0;top:0;width:64px;height:22px;transform:rotateY(180deg) translateZ(32px);background-color:#ffe27a"></div><div class="fc rt" style="left:0px;top:0;width:64px;height:22px;transform:rotateY(90deg) translateZ(32px);background-color:#ffe27a"></div><div class="fc lf" style="left:0px;top:0;width:64px;height:22px;transform:rotateY(-90deg) translateZ(32px);background-color:#ffe27a"></div><div class="fc tp" style="left:0;top:-21px;width:64px;height:64px;transform:rotateX(90deg) translateZ(11px);background-color:#ffe27a"></div></div><div class="cb" style="left:88px;top:62px;width:64px;height:6px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:64px;height:6px;transform:translateZ(32px);background-color:#c48f00"></div><div class="fc bk" style="left:0;top:0;width:64px;height:6px;transform:rotateY(180deg) translateZ(32px);background-color:#c48f00"></div><div class="fc rt" style="left:0px;top:0;width:64px;height:6px;transform:rotateY(90deg) translateZ(32px);background-color:#c48f00"></div><div class="fc lf" style="left:0px;top:0;width:64px;height:6px;transform:rotateY(-90deg) translateZ(32px);background-color:#c48f00"></div><div class="fc tp" style="left:0;top:-29px;width:64px;height:64px;transform:rotateX(90deg) translateZ(3px);background-color:#c48f00"></div></div><div class="cb" style="left:88px;top:68px;width:10px;height:28px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:10px;height:28px;transform:translateZ(32px);background-color:#ffe27a"></div><div class="fc bk" style="left:0;top:0;width:10px;height:28px;transform:rotateY(180deg) translateZ(32px);background-color:#ffe27a"></div><div class="fc rt" style="left:-27px;top:0;width:64px;height:28px;transform:rotateY(90deg) translateZ(5px);background-color:#ffe27a"></div><div class="fc lf" style="left:-27px;top:0;width:64px;height:28px;transform:rotateY(-90deg) translateZ(5px);background-color:#ffe27a"></div><div class="fc tp" style="left:0;top:-18px;width:10px;height:64px;transform:rotateX(90deg) translateZ(14px);background-color:#ffe27a"></div></div><div class="cb" style="left:142px;top:68px;width:10px;height:28px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:10px;height:28px;transform:translateZ(32px);background-color:#ffe27a"></div><div class="fc bk" style="left:0;top:0;width:10px;height:28px;transform:rotateY(180deg) translateZ(32px);background-color:#ffe27a"></div><div class="fc rt" style="left:-27px;top:0;width:64px;height:28px;transform:rotateY(90deg) translateZ(5px);background-color:#ffe27a"></div><div class="fc lf" style="left:-27px;top:0;width:64px;height:28px;transform:rotateY(-90deg) translateZ(5px);background-color:#ffe27a"></div><div class="fc tp" style="left:0;top:-18px;width:10px;height:64px;transform:rotateX(90deg) translateZ(14px);background-color:#ffe27a"></div></div><div class="cb" style="left:114px;top:20px;width:12px;height:20px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:12px;height:20px;transform:translateZ(18px);background-color:#e24b4b"></div><div class="fc bk" style="left:0;top:0;width:12px;height:20px;transform:rotateY(180deg) translateZ(18px);background-color:#e24b4b"></div><div class="fc rt" style="left:-12px;top:0;width:36px;height:20px;transform:rotateY(90deg) translateZ(6px);background-color:#e24b4b"></div><div class="fc lf" style="left:-12px;top:0;width:36px;height:20px;transform:rotateY(-90deg) translateZ(6px);background-color:#e24b4b"></div><div class="fc tp" style="left:0;top:-8px;width:12px;height:36px;transform:rotateX(90deg) translateZ(10px);background-color:#e24b4b"></div></div></div></div></div></div>
+<span style="position:absolute;left:50%;bottom:14px;transform:translateX(-50%);pointer-events:none;white-space:nowrap;background:rgba(10,20,40,.85);border:1px solid #2f3f7a;border-radius:999px;padding:6px 14px;font-size:12px;color:#b9c9e4">Putar karakter: klik dan geser</span>
 </section>
 
-<div role="tablist" aria-label="Mode cepat" style="display:flex;gap:6px;background:#101d38;border:1px solid #22385f;border-radius:16px;padding:5px">
-<sc-for list="{{quick}}" as="q" hint-placeholder-count="3"><button role="tab" type="button" aria-selected="{{q.on}}" sc-camel-on-click="{{q.pick}}" style="flex:1;min-height:46px;border:0;border-radius:12px;font-weight:700;font-size:13px;letter-spacing:.04em;padding:0 6px;{{q.style}}">{{q.name}}</button></sc-for>
-</div>
 <button class="play" type="button" sc-camel-on-click="{{openPlay}}" style="display:flex;align-items:center;justify-content:center;gap:12px;min-height:68px;border:0;border-radius:18px;background:#7dff2e;color:#08140a;font-family:'Lilita One',sans-serif;font-size:32px;letter-spacing:.5px">Mulai Bermain<svg width="26" height="26" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
 </div>
 
@@ -313,23 +307,31 @@ button:disabled{cursor:not-allowed}
 </div>
 </div>
 
-<nav class="bn" aria-label="Navigasi utama" style="position:fixed;left:10px;right:10px;bottom:10px;z-index:40;justify-content:space-around;gap:2px;background:rgba(10,20,40,.94);backdrop-filter:blur(10px);border:1px solid #2f3f7a;border-radius:22px;padding:6px;box-shadow:0 14px 40px rgba(0,0,0,.6)">
+<nav class="bn" aria-label="Navigasi utama" style="position:fixed;left:50%;transform:translateX(-50%);width:min(640px,calc(100% - 20px));box-sizing:border-box;bottom:10px;z-index:40;justify-content:space-around;gap:2px;background:rgba(10,20,40,.94);backdrop-filter:blur(10px);border:1px solid #2f3f7a;border-radius:22px;padding:6px;box-shadow:0 14px 40px rgba(0,0,0,.6)">
 <sc-for list="{{nav}}" as="n" hint-placeholder-count="5"><a href="{{n.href}}" aria-current="{{n.cur}}" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;{{n.style}}"><svg width="24" height="24" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.d}}"></path></svg>{{n.name}}</a></sc-for>
 </nav>
 
 <sc-if value="{{open}}" hint-placeholder-val="{{false}}">
 <div sc-camel-on-click="{{closeModal}}" style="position:fixed;inset:0;z-index:60;background:rgba(3,8,18,.82);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px">
-<div class="mod" role="dialog" aria-modal="true" aria-labelledby="mt" sc-camel-on-click="{{stop}}" style="width:min(940px,100%);max-height:calc(100% - 8px);box-sizing:border-box;display:flex;flex-direction:column;background:linear-gradient(180deg,#1b2f52,#0b1a2e);border:1px solid #2f3f7a;border-radius:26px;box-shadow:0 30px 90px rgba(0,0,0,.65);overflow:hidden">
+<div class="mod" role="dialog" aria-modal="true" aria-labelledby="mt" sc-camel-on-click="{{stop}}" style="width:min(680px,100%);max-height:calc(100% - 8px);box-sizing:border-box;display:flex;flex-direction:column;background:linear-gradient(180deg,#1b2f52,#0b1a2e);border:1px solid #2f3f7a;border-radius:26px;box-shadow:0 30px 90px rgba(0,0,0,.65);overflow:hidden">
 <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;border-bottom:1px solid #22385f">
 <div><div class="lb" style="color:#7dff2e">SIAP BERTANDING</div><h2 id="mt" style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:clamp(24px,4vw,32px);line-height:1;margin:4px 0 0">Atur Pertandingan</h2></div>
 <button type="button" sc-camel-on-click="{{closeModal}}" aria-label="Tutup" style="flex:none;width:44px;height:44px;border-radius:12px;border:1px solid #2f3f7a;background:#101d38;color:#eaf2ff;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
 </div>
 
 <sc-if value="{{setup}}" hint-placeholder-val="{{true}}">
-<div class="sc" style="overflow:auto;padding:20px 22px;display:flex;flex-wrap:wrap;gap:24px">
-<div style="flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:18px">
+<div class="sc" style="overflow:auto;padding:20px 22px;display:flex;flex-direction:column;gap:18px">
+<div style="min-width:0;display:flex;flex-direction:column;gap:18px">
 <div><div class="lb" style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><i style="font-style:normal;background:#ffe27a;color:#30220a;border-radius:5px;padding:1px 7px;font-family:'Lilita One',sans-serif">1</i>MODE PERMAINAN</div>
 <div role="group" aria-label="Mode permainan" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px"><sc-for list="{{modes}}" as="m" hint-placeholder-count="4"><button type="button" aria-pressed="{{m.on}}" sc-camel-on-click="{{m.pick}}" style="min-height:48px;border-radius:12px;font-weight:700;font-size:14px;{{m.style}}">{{m.name}}</button></sc-for></div></div>
+<sc-if value="{{isRoom}}" hint-placeholder-val="{{false}}">
+<div style="background:#101d38;border:1px solid #22385f;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.5;color:#b9c9e4"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#ffe27a" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" style="flex:none"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg>Kamar private: hanya teman yang punya kode yang bisa bergabung.</div>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px"><span class="lb">KODE KAMAR</span><b style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:30px;letter-spacing:.22em;color:#ffe27a;line-height:1">{{room}}</b>
+<button type="button" sc-camel-on-click="{{copyRoom}}" style="min-height:40px;border:1px solid #2f3f7a;border-radius:10px;background:#0b1a2e;color:#7dff2e;font-weight:700;font-size:13px;padding:0 14px">{{copyLabel}}</button></div>
+<div><div class="lb" style="margin-bottom:6px">JUMLAH PEMAIN</div>
+<div role="group" aria-label="Jumlah pemain" style="display:flex;gap:6px;background:#0b1a2e;border:1px solid #22385f;border-radius:14px;padding:5px"><sc-for list="{{kps}}" as="c2" hint-placeholder-count="3"><button type="button" aria-pressed="{{c2.on}}" sc-camel-on-click="{{c2.pick}}" style="flex:1;min-height:44px;border:0;border-radius:10px;font-weight:700;font-size:14px;{{c2.style}}">{{c2.name}}</button></sc-for></div></div>
+</div></sc-if>
 <sc-if value="{{hasMode}}" hint-placeholder-val="{{true}}">
 <div><div class="lb" style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><i style="font-style:normal;background:#ffe27a;color:#30220a;border-radius:5px;padding:1px 7px;font-family:'Lilita One',sans-serif">2</i>PILIH SKIN</div>
 <div style="display:flex;flex-direction:column;gap:12px">
@@ -344,22 +346,6 @@ button:disabled{cursor:not-allowed}
 </div></sc-if>
 </div>
 
-<div style="flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:18px">
-<div><div class="lb" style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><i style="font-style:normal;background:#ffe27a;color:#30220a;border-radius:5px;padding:1px 7px;font-family:'Lilita One',sans-serif">3</i>TEMA PAPAN</div>
-<div role="group" aria-label="Tema papan" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px"><sc-for list="{{themes}}" as="t" hint-placeholder-count="6"><button type="button" disabled="{{t.locked}}" aria-pressed="{{t.on}}" sc-camel-on-click="{{t.pick}}" style="min-height:48px;display:flex;align-items:center;gap:8px;border-radius:12px;padding:0 10px;font-weight:700;font-size:13px;text-align:left;color:#eaf2ff;{{t.style}}"><span style="flex:none;width:22px;height:22px;border-radius:6px;border:2px solid #101d38;background:{{t.sw}};opacity:{{t.op}}"></span><span style="flex:1;min-width:0">{{t.name}}</span><sc-if value="{{t.locked}}" hint-placeholder-val="{{false}}"><svg width="12" height="12" sc-camel-view-box="0 0 24 24" fill="none" stroke="#ffb3b3" stroke-width="3" stroke-linecap="round" role="img" aria-label="Terkunci"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg></sc-if></button></sc-for></div></div>
-<div><div class="lb" style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><i style="font-style:normal;background:#ffe27a;color:#30220a;border-radius:5px;padding:1px 7px;font-family:'Lilita One',sans-serif">4</i>SKIN DADU</div>
-<div role="group" aria-label="Skin dadu" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px"><sc-for list="{{dices}}" as="d" hint-placeholder-count="6"><button type="button" disabled="{{d.locked}}" aria-pressed="{{d.on}}" sc-camel-on-click="{{d.pick}}" style="min-height:48px;display:flex;align-items:center;gap:8px;border-radius:12px;padding:0 10px;font-weight:700;font-size:13px;text-align:left;color:#eaf2ff;{{d.style}}"><span style="flex:none;width:24px;height:24px;border-radius:6px;border:2px solid {{d.edge}};background:{{d.bg}};opacity:{{d.op}}"></span><span style="flex:1;min-width:0">{{d.name}}</span><sc-if value="{{d.locked}}" hint-placeholder-val="{{false}}"><svg width="12" height="12" sc-camel-view-box="0 0 24 24" fill="none" stroke="#ffb3b3" stroke-width="3" stroke-linecap="round" role="img" aria-label="Terkunci"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg></sc-if></button></sc-for></div></div>
-<div><div class="lb" style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><i style="font-style:normal;background:#ffe27a;color:#30220a;border-radius:5px;padding:1px 7px;font-family:'Lilita One',sans-serif">5</i>WAKTU</div>
-<div role="group" aria-label="Waktu" style="display:flex;gap:6px;background:#101d38;border:1px solid #22385f;border-radius:14px;padding:5px"><sc-for list="{{times}}" as="w" hint-placeholder-count="2"><button type="button" aria-pressed="{{w.on}}" sc-camel-on-click="{{w.pick}}" style="flex:1;min-height:44px;border:0;border-radius:10px;font-weight:700;font-size:14px;{{w.style}}">{{w.name}}</button></sc-for></div></div>
-<details style="background:#101d38;border:1px solid #22385f;border-radius:14px;padding:4px 14px"><summary class="lb" style="min-height:44px;display:flex;align-items:center;cursor:pointer">CARA BERMAIN</summary>
-<ul style="margin:0 0 12px;padding-left:18px;font-size:13px;line-height:1.55;color:#b9c9e4;display:flex;flex-direction:column;gap:6px">
-<li>Petak kuning adalah dasar tangga, berhenti di sini dan pionmu naik.</li>
-<li>Petak merah muda adalah kepala ular, berhenti di sini dan pionmu ditelan lalu keluar di ekornya.</li>
-<li>Peti memberi power-up acak: Pedang, Bulu, TNT, Apel Emas, Ramuan, dan Blok Rumput.</li>
-<li>Angka 6 memberi lemparan tambahan. Tiga kali 6 berturut-turut membuat giliranmu hangus.</li>
-<li>Petak 100 harus dicapai dengan angka pas, kelebihan angka membuat pionmu memantul mundur.</li>
-<li>Mob di papan memengaruhi posisimu, dan di petak 100 kamu melawan Ender Dragon.</li></ul></details>
-</div>
 </div>
 <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:16px 22px;border-top:1px solid #22385f;background:rgba(7,20,12,.6)">
 <a href="shop.html" style="display:inline-flex;align-items:center;min-height:48px;padding:0 20px;border:2px solid #2f3f7a;border-radius:14px;color:#b9c9e4;font-weight:700;font-size:14px">Buka item di Toko</a>
@@ -373,15 +359,36 @@ button:disabled{cursor:not-allowed}
 <div style="width:min(420px,100%);height:10px;border-radius:99px;background:#101d38;border:1px solid #2f3f7a;overflow:hidden"><div class="ld" style="width:40%;height:100%;border-radius:99px;background:linear-gradient(90deg,#58b02d,#7dff2e)"></div></div>
 <dl style="margin:0;width:min(520px,100%);box-sizing:border-box;background:#101d38;border:1px solid #22385f;border-radius:16px;padding:6px 16px;font-size:14px;text-align:left">
 <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #1b2f52"><dt style="color:#aebdd3">Mode</dt><dd style="margin:0;font-weight:700">{{sumMode}}</dd></div>
+<sc-if value="{{isRoom}}" hint-placeholder-val="{{false}}"><div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #1b2f52"><dt style="color:#aebdd3">Kode kamar</dt><dd style="margin:0;font-weight:700">{{room}}</dd></div></sc-if>
 <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #1b2f52"><dt style="color:#aebdd3">Skin</dt><dd style="margin:0;font-weight:700;text-align:right">{{sumSkins}}</dd></div>
 <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #1b2f52"><dt style="color:#aebdd3">Tema papan</dt><dd style="margin:0;font-weight:700">{{sumTheme}}</dd></div>
-<div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #1b2f52"><dt style="color:#aebdd3">Skin dadu</dt><dd style="margin:0;font-weight:700">{{sumDice}}</dd></div>
-<div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0"><dt style="color:#aebdd3">Waktu</dt><dd style="margin:0;font-weight:700">{{sumTime}}</dd></div></dl>
+<div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0"><dt style="color:#aebdd3">Skin dadu</dt><dd style="margin:0;font-weight:700">{{sumDice}}</dd></div></dl>
 <a href="{{sumHref}}" style="display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 44px;border-radius:14px;background:#7dff2e;color:#08140a;font-family:'Lilita One',sans-serif;font-size:20px;text-decoration:none;box-shadow:0 6px 0 #3fa312,0 14px 34px rgba(125,255,46,.3)">Mulai Main</a>
 <p style="margin:0;font-size:12px;color:#8497b3;word-break:break-all;max-width:520px">{{sumHref}}</p>
 <button type="button" sc-camel-on-click="{{closeModal}}" style="min-height:48px;border:2px solid #2f3f7a;border-radius:14px;background:transparent;color:#eaf2ff;font-weight:700;font-size:15px;padding:0 24px">Kembali ke lobi</button>
 </div>
 </sc-if>
+</div></div>
+</sc-if>
+<sc-if value="{{howOpen}}" hint-placeholder-val="{{false}}">
+<div sc-camel-on-click="{{closeHow}}" style="position:fixed;inset:0;z-index:60;background:rgba(3,8,18,.82);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px">
+<div class="mod" role="dialog" aria-modal="true" aria-labelledby="ht" sc-camel-on-click="{{stop}}" style="width:min(560px,100%);max-height:calc(100% - 8px);box-sizing:border-box;display:flex;flex-direction:column;background:linear-gradient(180deg,#1b2f52,#0b1a2e);border:1px solid #2f3f7a;border-radius:26px;box-shadow:0 30px 90px rgba(0,0,0,.65);overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;border-bottom:1px solid #22385f">
+<div><div class="lb" style="color:#7dff2e">PANDUAN</div><h2 id="ht" style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:clamp(24px,4vw,32px);line-height:1;margin:4px 0 0">Cara Bermain</h2></div>
+<button type="button" sc-camel-on-click="{{closeHow}}" aria-label="Tutup" style="flex:none;width:44px;height:44px;border-radius:12px;border:1px solid #2f3f7a;background:#101d38;color:#eaf2ff;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div class="sc" style="overflow:auto;padding:20px 22px">
+<ul style="margin:0;padding-left:20px;font-size:14px;line-height:1.6;color:#c9d8f0;display:flex;flex-direction:column;gap:10px">
+<li>Petak kuning adalah dasar tangga, berhenti di sini dan pionmu naik.</li>
+<li>Petak merah muda adalah kepala ular, berhenti di sini dan pionmu ditelan lalu keluar di ekornya.</li>
+<li>Peti memberi power-up acak: Pedang, Bulu, TNT, Apel Emas, Ramuan, dan Blok Rumput.</li>
+<li>Angka 6 memberi lemparan tambahan. Tiga kali 6 berturut-turut membuat giliranmu hangus.</li>
+<li>Petak 100 harus dicapai dengan angka pas, kelebihan angka membuat pionmu memantul mundur.</li>
+<li>Mob di papan memengaruhi posisimu, dan di petak 100 kamu melawan Ender Dragon.</li></ul>
+</div>
+<div style="display:flex;justify-content:flex-end;padding:16px 22px;border-top:1px solid #22385f;background:rgba(7,20,12,.6)">
+<button type="button" sc-camel-on-click="{{closeHow}}" style="min-height:48px;border:0;border-radius:14px;padding:0 32px;background:#7dff2e;color:#08140a;font-family:'Lilita One',sans-serif;font-size:20px;box-shadow:0 4px 0 #3fa312">Mengerti</button>
+</div>
 </div></div>
 </sc-if>
 </div>
@@ -390,13 +397,9 @@ button:disabled{cursor:not-allowed}
 class Component extends DCLogic {
 renderVals() {
 const st = this.state || {};
-const open = !!st.open, started = !!st.started, mode = st.mode ?? null, picks = st.picks ?? [], theme = st.theme ?? 'minecraft', dice = st.dice ?? 'klasik', night = !!st.night, quick = st.quick ?? 'duel';
+const open = !!st.open, started = !!st.started, howOpen = !!st.howOpen, copied = !!st.copied;
+const mode = st.mode ?? null, picks = st.picks ?? [], theme = st.theme ?? 'minecraft', dice = st.dice ?? 'klasik', kp = st.kp ?? 2, room = st.room ?? '';
 const I = { lobi:'M3 11l9-7 9 7v9H3zM9 20v-6h6v6', inv:'M4 8l8-4 8 4v8l-8 4-8-4zM4 8l8 4 8-4M12 12v8', skin:'M12 3a4 4 0 100 8 4 4 0 000-8zM4 21c0-4 4-6 8-6s8 2 8 6', shop:'M5 8h14l-1 12H6zM9 8V6a3 3 0 016 0v2', rank:'M8 4h8v6a4 4 0 01-8 0zM8 6H4v2a3 3 0 003 3M16 6h4v2a3 3 0 01-3 3M12 14v4M8 20h8' };
-const menu = [
- { name:'Inventaris', note:'48/60 Koleksi', href:'inventory.html', d:I.inv, tone:'#ffb020' },
- { name:'Kustomisasi', note:'Skin Legendary', href:'skins.html', d:I.skin, tone:'#7dff2e' },
- { name:'Toko Blok', note:'Diskon Musim', href:'shop.html', d:I.shop, tone:'#b07af0' },
- { name:'Peringkat', note:'Peringkat #14', href:'leaderboard.html', d:I.rank, tone:'#3b92ee' }];
 const nav = [['Lobi','',I.lobi,1],['Inventaris','inventory.html',I.inv],['Skin','skins.html',I.skin],['Toko','shop.html',I.shop],['Peringkat','leaderboard.html',I.rank]]
  .map(n => ({ name:n[0], href:n[1] || '#', d:n[2], cur:n[3] ? 'page' : 'false', style: n[3] ? 'background:#7dff2e;color:#08140a' : 'color:#b9c9e4' }));
 const friends = [
@@ -415,35 +418,182 @@ const DEFS = [
  { key:'skeleton', name:'Skeleton', own:false, base:'#e8e8e8', top:'#c4c4c4', e:'#222222', p:'#222222', m:'#8a8a8a' }];
 const THEMES = [['minecraft','Minecraft','#5FAE3E','#8A5B33',1],['rumput','Rumput','#78D957','#9A6A3B',1],['gurun','Gurun','#FFD98C','#D9763C',1],['salju','Salju','#F4FCFF','#54AEDB',0],['hutan','Hutan','#46C46E','#1F5F4D',0],['nether','Nether','#8A2B2B','#3A0D0D',0]];
 const DICE = [['klasik','Klasik','#ffffff','#1b2a3b','#1b2a3b',1],['tnt','TNT','#d63a2a','#ffffff','#4a0d07',1],['rumput','Rumput','#5fae3e','#1f4a12','#2c5a1c',1],['diamond','Diamond','#4aedd9','#0b4f4a','#0b4f4a',0],['emas','Emas','#ffd23f','#6b4a00','#6b4a00',1],['obsidian','Obsidian','#2a1747','#d3b4ff','#0d0618',0]];
-const MN = { cpu:'VS Komputer', '2':'2 Pemain', '3':'3 Pemain', '4':'4 Pemain' };
-const pips = (pip, bg) => { const c = (x,y) => 'radial-gradient(circle at '+x+'% '+y+'%,'+pip+' 0 11%,transparent 12%)'; return [c(25,25),c(75,25),c(50,50),c(25,75),c(75,75)].join(',')+','+bg; };
-const modeState = (m) => { const np = m==='cpu' ? [null] : Array(+m).fill(null); np[0] = 'steve'; return { mode:m, picks:np }; };
-const QM = [['duel','1 vs 1 Match','2'],['empat','4 Player Battle','4'],['kamar','Kamar Teman',null]];
+const MN = { cpu:'VS Komputer', '2':'2 Pemain', '3':'3 Pemain', '4':'4 Pemain', kamar:'Kamar Teman' };
+const PP = { 1:[[50,50]], 2:[[25,25],[75,75]], 3:[[25,25],[50,50],[75,75]], 4:[[25,25],[75,25],[25,75],[75,75]], 5:[[25,25],[75,25],[50,50],[25,75],[75,75]], 6:[[25,25],[75,25],[25,50],[75,50],[25,75],[75,75]] };
+const SH = { 1:'', 2:'rgba(0,0,0,.22)', 3:'rgba(255,255,255,.16)', 4:'rgba(0,0,0,.45)', 5:'rgba(0,0,0,.14)', 6:'rgba(0,0,0,.34)' };
+const faceBg = (r, n, rad) => (SH[n] ? 'linear-gradient('+SH[n]+','+SH[n]+'),' : '') + PP[n].map(c => 'radial-gradient(circle at '+c[0]+'% '+c[1]+'%,'+r[3]+' 0 '+rad+'px,transparent '+(rad+.8)+'px)').join(',') + ',' + r[2];
+const count = (m, n) => m==='cpu' ? 1 : m==='kamar' ? n : +m;
+const modeState = (m, n) => { const np = Array(count(m, n)).fill(null); np[0] = 'steve'; return { mode:m, picks:np }; };
+const genRoom = () => { const a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s = ''; for (let i = 0; i < 5; i++) s += a[Math.floor(Math.random()*a.length)]; return s; };
+const dr = DICE.find(r => r[0]===dice) || DICE[0];
+const pv = { name:dr[1], edge:dr[4] }; [1,2,3,4,5,6].forEach(n => { pv['f'+n] = faceBg(dr, n, 7); });
 const cant = !mode || picks.length===0 || picks.some(x => !x);
 const keys = st.keys ?? [];
 const nameOf = (k) => (DEFS.find(d => d.key===k) || {}).name || k;
-const q = new URLSearchParams({ mode:mode ?? '', skins:keys.join(','), theme:theme, dice:dice, night:night?'1':'0' });
-return { menu, nav, friends, open, started, setup:!started, hasMode:!!mode, isCpu:mode==='cpu',
- quick: QM.map(r => ({ name:r[1], on:r[0]===quick, style: r[0]===quick ? ON : OFFB, pick:() => this.setState({ quick:r[0] }) })),
- openPlay: () => { const pre = (QM.find(r => r[0]===quick) || [])[2]; this.setState({ open:true, started:false, ...(!mode && pre ? modeState(pre) : {}) }); },
+const q = new URLSearchParams({ mode: mode==='kamar' ? String(kp) : (mode ?? ''), skins:keys.join(','), theme:theme, dice:dice });
+if (mode==='kamar') { q.set('private','1'); q.set('room',room); }
+return { pv, nav, friends, open, started, setup:!started, hasMode:!!mode, isCpu:mode==='cpu', isRoom:mode==='kamar', room, howOpen,
+ copyLabel: copied ? 'Tersalin' : 'Salin kode',
+ openPlay: () => this.setState({ open:true, started:false }),
  closeModal: () => this.setState({ open:false, started:false }),
+ openHow: () => this.setState({ howOpen:true }),
+ closeHow: () => this.setState({ howOpen:false }),
  stop: (e) => e.stopPropagation(),
- modes: ['cpu','2','3','4'].map(m => ({ name:MN[m], on:m===mode, style: m===mode ? ON : OFF, pick:() => this.setState(modeState(m)) })),
+ copyRoom: () => { try { if (navigator.clipboard) navigator.clipboard.writeText(room); } catch (e) {} this.setState({ copied:true }); setTimeout(() => this.setState({ copied:false }), 1600); },
+ modes: ['cpu','2','3','4','kamar'].map(m => ({ name:MN[m], on:m===mode, style: m===mode ? ON : OFF, pick:() => this.setState({ ...modeState(m, kp), ...(m==='kamar' && !room ? { room:genRoom() } : {}) }) })),
+ kps: [2,3,4].map(n => ({ name:n+' Pemain', on:n===kp, style: n===kp ? ON : OFFB, pick:() => { const np = picks.slice(0, n); while (np.length < n) np.push(null); this.setState({ kp:n, picks:np }); } })),
  slots: picks.map((sel,i) => ({ label: mode==='cpu' ? 'Skin kamu' : 'Pemain '+(i+1)+(sel ? ': '+nameOf(sel) : ''),
   skins: DEFS.map(d => { const dis = !d.own || picks.some((x,j) => j!==i && x===d.key); const on = sel===d.key;
    return { ...d, locked:!d.own, disabled:dis, on, op: d.own ? 1 : .45, style: on ? 'background:rgba(125,255,46,.14);border:2px solid #7dff2e;box-shadow:0 3px 0 #3fa312' : 'background:#101d38;border:1px solid #22385f;'+(dis ? 'opacity:.6' : ''),
    pick:() => { const np = picks.slice(); np[i] = np[i]===d.key ? null : d.key; this.setState({ picks:np }); } }; }) })),
  themes: THEMES.map(r => ({ name:r[1], sw:'linear-gradient(90deg,'+r[2]+' 50%,'+r[3]+' 50%)', locked:!r[4], op:r[4]?1:.45, on:r[0]===theme, style: r[0]===theme ? 'background:rgba(125,255,46,.14);border:2px solid #7dff2e' : 'background:#101d38;border:1px solid #22385f;'+(r[4] ? '' : 'opacity:.7'), pick:() => this.setState({ theme:r[0] }) })),
- dices: DICE.map(r => ({ name:r[1], bg:pips(r[3], r[2]), edge:r[4], locked:!r[5], op:r[5]?1:.45, on:r[0]===dice, style: r[0]===dice ? 'background:rgba(125,255,46,.14);border:2px solid #7dff2e' : 'background:#101d38;border:1px solid #22385f;'+(r[5] ? '' : 'opacity:.7'), pick:() => this.setState({ dice:r[0] }) })),
- times: [['Siang',false],['Malam',true]].map(r => ({ name:r[0], on:night===r[1], style: night===r[1] ? ON : OFFB, pick:() => this.setState({ night:r[1] }) })),
+ dices: DICE.map(r => ({ name:r[1], f1:faceBg(r,1,2.6), f2:faceBg(r,2,2.6), f3:faceBg(r,3,2.6), edge:r[4], locked:!r[5], op:r[5]?1:.45, on:r[0]===dice, style: r[0]===dice ? 'background:rgba(125,255,46,.14);border:2px solid #7dff2e' : 'background:#101d38;border:1px solid #22385f;'+(r[5] ? '' : 'opacity:.7'), pick:() => this.setState({ dice:r[0] }) })),
  cantStart: cant,
  startStyle: cant ? 'background:#1b2f52;color:#6b7a99' : 'background:#7dff2e;color:#08140a;box-shadow:0 6px 0 #3fa312,0 14px 34px rgba(125,255,46,.3)',
  start: () => { if (cant) return; const ks = picks.slice(); if (mode==='cpu') { const rest = DEFS.filter(d => d.own && d.key!==ks[0]); ks.push(rest[Math.floor(Math.random()*rest.length)].key); } this.setState({ started:true, keys:ks }); },
- sumMode: MN[mode] || '-', sumSkins: keys.map(nameOf).join(', '), sumTheme: (THEMES.find(r => r[0]===theme) || [])[1], sumDice: (DICE.find(r => r[0]===dice) || [])[1], sumTime: night ? 'Malam' : 'Siang',
+ sumMode: MN[mode] || '-', sumSkins: keys.map(nameOf).join(', '), sumTheme: (THEMES.find(r => r[0]===theme) || [])[1], sumDice: (DICE.find(r => r[0]===dice) || [])[1],
  sumHref: 'gameplay.html?'+q.toString() };
 }
 }
 </script>
 
+<script>
+(function(){
+  var ang=-28,tilt=-5,vel=0,lx=0,lt=0,drag=false,raf=0;
+  function el(){return document.getElementById('rot3d')}
+  function apply(){var e=el();if(e)e.style.transform='rotateX('+tilt+'deg) rotateY('+ang+'deg)'}
+  function stg(){return document.querySelector('.stg')}
+  document.addEventListener('pointerdown',function(ev){
+    var s=ev.target.closest&&ev.target.closest('.stg');
+    if(!s||ev.button>0)return;
+    drag=true;lx=ev.clientX;vel=0;cancelAnimationFrame(raf);s.classList.add('dg');
+    try{s.setPointerCapture(ev.pointerId)}catch(e){}
+  });
+  document.addEventListener('pointermove',function(ev){
+    if(!drag)return;
+    var dx=ev.clientX-lx;lx=ev.clientX;lt=ev.timeStamp;
+    ang+=dx*.6;vel=dx*.6;apply();
+  });
+  function end(ev){
+    if(!drag)return;drag=false;
+    var s=stg();if(s)s.classList.remove('dg');
+    if(ev&&ev.timeStamp-lt>80)vel=0;
+    if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    (function spin(){if(Math.abs(vel)<.1)return;ang+=vel;vel*=.94;apply();raf=requestAnimationFrame(spin)})();
+  }
+  document.addEventListener('pointerup',end);
+  document.addEventListener('pointercancel',end);
+  document.addEventListener('keydown',function(ev){
+    var t=ev.target;
+    if(t&&t.classList&&t.classList.contains('stg')){
+      if(ev.key==='ArrowLeft'){ang-=15;apply();ev.preventDefault()}
+      else if(ev.key==='ArrowRight'){ang+=15;apply();ev.preventDefault()}
+    }
+    if(ev.key==='Escape'){
+      var c=document.querySelector('[aria-modal="true"] button[aria-label="Tutup"]');
+      if(c)c.click();
+    }
+  });
+  new MutationObserver(function(){var e=el();if(e&&!e.style.transform)apply()}).observe(document.body,{childList:true,subtree:true});
+  apply();
+})();
+</script>
+<script>
+(function(){
+  var face={1:[0,0],6:[0,180],2:[0,-90],5:[0,90],3:[-90,0],4:[90,0]};
+  var words={1:'Pelan tapi pasti, 1 petak.',2:'Maju 2 petak.',3:'Maju 3 petak.',4:'Lumayan, 4 petak!',5:'Mantap, 5 petak!',6:'Dadu 6! Giliran bonus!'};
+  var HINT='Klik dadu untuk mengocok';
+  var cx=0,cy=0,rolling=false,ctx=null;
+  function next(cur,t){return Math.ceil(cur/360)*360+720+((t%360)+360)%360}
+  function $(id){return document.getElementById(id)}
+  function sfx(){
+    try{
+      ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();
+      if(ctx.state==='suspended')ctx.resume();
+      for(var i=0;i<5;i++)(function(i){setTimeout(function(){
+        var o=ctx.createOscillator(),g=ctx.createGain();
+        o.type='triangle';o.frequency.value=150+Math.random()*200;
+        g.gain.setValueAtTime(.06,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.06);
+        o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+.06);
+      },i*90)})(i);
+    }catch(e){}
+  }
+  function roll(){
+    var d=$('dicePrev'),num=$('diceNum'),msg=$('diceMsg');
+    if(!d||rolling)return;
+    rolling=true;
+    var rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var n=1+Math.floor(Math.random()*6),t=face[n];
+    cx=next(cx,t[0]);cy=next(cy,t[1]);
+    if(!rm)sfx();
+    d.style.transition=rm?'none':'transform 1.4s cubic-bezier(.2,.8,.2,1)';
+    d.style.transform='rotateX('+cx+'deg) rotateY('+cy+'deg)';
+    if(num)num.textContent='…';
+    if(msg)msg.textContent='Dadu menggelinding…';
+    setTimeout(function(){
+      var num2=$('diceNum'),msg2=$('diceMsg');
+      if(num2)num2.textContent=n;
+      if(msg2)msg2.textContent=words[n];
+      rolling=false;
+    },rm?0:1450);
+  }
+  document.addEventListener('click',function(ev){
+    var t=ev.target;if(!t||!t.closest)return;
+    if(t.closest('#diceBtn')){roll();return}
+    var b=t.closest('.dskin');
+    if(b&&!b.disabled)setTimeout(roll,30);
+  });
+  new MutationObserver(function(){
+    var m=$('diceMsg');if(m&&!m.textContent&&!rolling)m.textContent=HINT;
+  }).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
 
+<audio id="bgMusic" src="assets/music/zen.mp3" loop preload="auto"></audio>
+<style>
+#volPanel{position:fixed;right:16px;bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:41;
+  display:flex;align-items:center;gap:6px;background:rgba(10,20,40,.92);backdrop-filter:blur(10px);
+  border:1px solid #2f3f7a;border-radius:999px;padding:6px 8px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+#volBtn{width:34px;height:34px;border-radius:50%;border:1px solid #2f3f7a;background:#101d38;color:#eaf2ff;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+#volBtn svg{width:18px;height:18px}
+#volSlider{-webkit-appearance:none;appearance:none;width:96px;height:4px;border-radius:999px;
+  background:linear-gradient(90deg,#7dff2e var(--p,50%),#22385f var(--p,50%));outline:none;cursor:pointer}
+#volSlider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+  background:#7dff2e;border:2px solid #08140a;cursor:pointer}
+#volSlider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#7dff2e;border:2px solid #08140a;cursor:pointer}
+#volLabel{font-family:'Lilita One',sans-serif;font-size:11px;color:#b9c9e4;min-width:30px;text-align:center}
+</style>
+<script>
+(function(){
+  'use strict';
+  var STEPS=[6,5,15,30,50,75,100];
+  function load(){ try{ return JSON.parse(localStorage.getItem('ut-music')); }catch(e){ return null; } }
+  function save(v){ try{ localStorage.setItem('ut-music',JSON.stringify(v)); }catch(e){} }
+  function snap(v){ var best=STEPS[0],d=Math.abs(v-STEPS[0]); for(var i=1;i<STEPS.length;i++){ var dd=Math.abs(v-STEPS[i]); if(dd<d){d=dd;best=STEPS[i]} } return best; }
+  var s=load()||{on:true,v:50}; s.v=snap(s.v);
+  var audio=document.getElementById('bgMusic');
+  if(audio){ audio.volume=s.v/100; audio.muted=!s.on; if(s.on){ audio.play().catch(function(){}); } }
+  function apply(){
+    if(!audio) return;
+    audio.volume=s.v/100; audio.muted=!s.on;
+    var sl=document.getElementById('volSlider'); if(sl){ sl.value=s.v; sl.style.setProperty('--p',s.v+'%'); }
+    var lb=document.getElementById('volLabel'); if(lb){ lb.textContent=s.on?(s.v+'%'):'OFF'; }
+    var b=document.getElementById('volBtn'); if(b){ b.setAttribute('aria-pressed',String(s.on)); }
+  }
+  function build(){
+    var d=document.createElement('div'); d.id='volPanel';
+    var b=document.createElement('button'); b.id='volBtn'; b.type='button'; b.setAttribute('aria-label','Volume');
+    b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M19 5a9 9 0 010 14"/></svg>';
+    b.addEventListener('click',function(){ s.on=!s.on; save(s); apply(); });
+    var sl=document.createElement('input'); sl.type='range'; sl.id='volSlider'; sl.min=0; sl.max=100; sl.step=1; sl.value=s.v;
+    sl.addEventListener('input',function(){ s.v=snap(parseInt(sl.value,10)||0); save(s); apply(); });
+    var lb=document.createElement('span'); lb.id='volLabel';
+    d.appendChild(b); d.appendChild(sl); d.appendChild(lb);
+    document.body.appendChild(d); apply();
+  }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',build); }
+  else { build(); }
+})();
+</script>
 </body></html>

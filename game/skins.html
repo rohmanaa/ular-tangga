@@ -183,6 +183,9 @@ button{font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer}
 .shd{animation:shd 3.2s ease-in-out infinite;transform-origin:120px 304px}
 .car{scrollbar-width:thin;scrollbar-color:#2f3f7a #101d38}
 .sk{transition:transform .15s}.sk:hover{transform:translateY(-3px)}
+.dt{--rx:-24deg;--ry:-30deg;--s:1;transform:rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--s));transition:transform .22s ease-out}
+.dtA{--rx:-28deg;--ry:-38deg}
+@media(prefers-reduced-motion:reduce){.dt{transition:none}}
 @media(prefers-reduced-motion:reduce){.fig,.shd{animation:none}}
 </style>
 </helmet>
@@ -212,7 +215,7 @@ button{font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer}
 <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 62%,rgba(255,250,200,.30),rgba(255,250,200,0) 55%),radial-gradient(ellipse at 50% 50%,rgba(0,0,0,0) 55%,rgba(3,12,6,.45) 100%)"></div>
 <span style="position:absolute;top:16px;left:16px;font-family:'Lilita One',sans-serif;font-size:14px;letter-spacing:.06em;padding:6px 12px;border-radius:9px;background:{{s.rc}};color:#08140a">{{s.rarU}}</span>
 
-<svg sc-camel-view-box="0 0 240 320" role="img" aria-label="Pratinjau karakter {{s.name}}" style="position:absolute;left:50%;bottom:5%;height:84%;width:auto;transform:translateX(-50%);overflow:visible">
+<sc-if value="{{s.notDice}}" hint-placeholder-val="{{true}}"><svg sc-camel-view-box="0 0 240 320" role="img" aria-label="Pratinjau karakter {{s.name}}" style="position:absolute;left:50%;bottom:5%;height:84%;width:auto;transform:translateX(-50%);overflow:visible">
 <defs><pattern id="px" width="8" height="8" sc-camel-pattern-units="userSpaceOnUse"><rect width="4" height="4" fill="#fff" opacity=".10"></rect><rect x="4" y="4" width="4" height="4" fill="#000" opacity=".10"></rect></pattern></defs>
 <ellipse class="shd" cx="120" cy="304" rx="78" ry="11" fill="#000"></ellipse>
 <g class="fig">
@@ -234,7 +237,8 @@ button{font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer}
 <g fill="#000" opacity=".16"><rect x="140" y="52" width="8" height="62"></rect><rect x="144" y="120" width="8" height="96"></rect><rect x="172" y="120" width="8" height="92"></rect><rect x="140" y="208" width="8" height="88"></rect><rect x="111" y="208" width="8" height="88"></rect></g>
 <g fill="#fff" opacity=".10"><rect x="92" y="52" width="56" height="5"></rect><rect x="88" y="120" width="64" height="5"></rect><rect x="60" y="120" width="26" height="5"></rect><rect x="154" y="120" width="26" height="5"></rect></g>
 </g>
-</svg>
+</svg></sc-if>
+<sc-if value="{{s.isDice}}" hint-placeholder-val="{{false}}"><div class="dtw" role="img" aria-label="Pratinjau dadu {{s.name}}" style="position:absolute;left:50%;bottom:14%;width:220px;height:230px;margin-left:-110px"><div style="position:absolute;left:30px;top:204px;width:160px;height:22px;border-radius:50%;background:rgba(0,0,0,.35)"></div><div style="position:absolute;left:0;top:0;width:220px;height:210px;perspective:700px"><div class="dt" style="position:absolute;left:55px;top:50px;width:110px;height:110px;transform-style:preserve-3d"><span style="position:absolute;inset:0;box-sizing:border-box;border:4px solid {{s.edge}};background:{{s.f1}};transform:translateZ(55px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:4px solid {{s.edge}};background:{{s.f6}};transform:rotateY(180deg) translateZ(55px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:4px solid {{s.edge}};background:{{s.f2}};transform:rotateY(90deg) translateZ(55px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:4px solid {{s.edge}};background:{{s.f5}};transform:rotateY(-90deg) translateZ(55px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:4px solid {{s.edge}};background:{{s.f3}};transform:rotateX(90deg) translateZ(55px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:4px solid {{s.edge}};background:{{s.f4}};transform:rotateX(-90deg) translateZ(55px)"></span></div></div></div></sc-if>
 </div>
 
 <aside aria-label="Detail skin" style="flex:1 1 320px;max-width:100%;box-sizing:border-box;background:linear-gradient(180deg,#1b2f52,#101d38);border:1px solid #22385f;border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:12px">
@@ -258,13 +262,13 @@ button{font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer}
 
 <div style="background:#101d38;border:1px solid #22385f;border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:14px">
 <div role="tablist" aria-label="Filter skin" class="car" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px">
-<sc-for list="{{filters}}" as="f" hint-placeholder-count="7"><button role="tab" type="button" aria-selected="{{f.on}}" sc-camel-on-click="{{f.pick}}" style="flex:none;min-height:44px;border-radius:12px;padding:0 18px;font-weight:700;font-size:14px;{{f.style}}">{{f.name}}</button></sc-for>
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="9"><button role="tab" type="button" aria-selected="{{f.on}}" sc-camel-on-click="{{f.pick}}" style="flex:none;min-height:44px;border-radius:12px;padding:0 18px;font-weight:700;font-size:14px;{{f.style}}">{{f.name}}</button></sc-for>
 </div>
 <div class="car" style="display:flex;gap:12px;overflow-x:auto;padding:6px 4px 12px">
 <sc-for list="{{list}}" as="k" hint-placeholder-count="6">
-<button class="sk" type="button" sc-camel-on-click="{{k.pick}}" aria-label="{{k.name}}, {{k.rar}}" style="flex:none;width:112px;position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px 10px;border-radius:16px;background:#101d38;color:#eaf2ff;border:2px solid {{k.bc}};box-shadow:{{k.sh}}">
+<button class="sk dtw" type="button" sc-camel-on-click="{{k.pick}}" aria-label="{{k.name}}, {{k.rar}}" style="flex:none;width:112px;position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px 10px;border-radius:16px;background:#101d38;color:#eaf2ff;border:2px solid {{k.bc}};box-shadow:{{k.sh}}">
 <span style="position:absolute;top:8px;left:8px;width:10px;height:10px;border-radius:3px;background:{{k.rc}}"></span>
-<svg width="52" height="82" sc-camel-view-box="0 0 40 64" aria-hidden="true" style="opacity:{{k.op}}"><rect x="4" y="21" width="6" height="16" style="fill:{{k.shirt}}"></rect><rect x="30" y="21" width="6" height="16" style="fill:{{k.shirt}}"></rect><rect x="11" y="41" width="9" height="18" style="fill:{{k.pants}}"></rect><rect x="20" y="41" width="9" height="18" style="fill:{{k.pants}}"></rect><rect x="11" y="55" width="9" height="4" style="fill:{{k.boots}}"></rect><rect x="20" y="55" width="9" height="4" style="fill:{{k.boots}}"></rect><rect x="10" y="21" width="20" height="20" style="fill:{{k.shirt}}"></rect><rect x="12" y="3" width="16" height="17" style="fill:{{k.skin}}"></rect><rect x="12" y="3" width="16" height="5" style="fill:{{k.hair}}"></rect><rect x="15" y="12" width="3" height="3" fill="#1b2236"></rect><rect x="22" y="12" width="3" height="3" fill="#1b2236"></rect></svg>
+<sc-if value="{{k.notDice}}" hint-placeholder-val="{{true}}"><svg width="52" height="82" sc-camel-view-box="0 0 40 64" aria-hidden="true" style="opacity:{{k.op}}"><rect x="4" y="21" width="6" height="16" style="fill:{{k.shirt}}"></rect><rect x="30" y="21" width="6" height="16" style="fill:{{k.shirt}}"></rect><rect x="11" y="41" width="9" height="18" style="fill:{{k.pants}}"></rect><rect x="20" y="41" width="9" height="18" style="fill:{{k.pants}}"></rect><rect x="11" y="55" width="9" height="4" style="fill:{{k.boots}}"></rect><rect x="20" y="55" width="9" height="4" style="fill:{{k.boots}}"></rect><rect x="10" y="21" width="20" height="20" style="fill:{{k.shirt}}"></rect><rect x="12" y="3" width="16" height="17" style="fill:{{k.skin}}"></rect><rect x="12" y="3" width="16" height="5" style="fill:{{k.hair}}"></rect><rect x="15" y="12" width="3" height="3" fill="#1b2236"></rect><rect x="22" y="12" width="3" height="3" fill="#1b2236"></rect></svg></sc-if><sc-if value="{{k.isDice}}" hint-placeholder-val="{{false}}"><span aria-hidden="true" style="position:relative;display:block;width:52px;height:82px;perspective:300px;opacity:{{k.op}}"><span class="dt dtA" style="position:absolute;left:8px;top:23px;width:36px;height:36px;transform-style:preserve-3d"><span style="position:absolute;inset:0;box-sizing:border-box;border:2px solid {{k.edge}};background:{{k.t1}};transform:translateZ(18px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:2px solid {{k.edge}};background:{{k.t2}};transform:rotateY(90deg) translateZ(18px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:2px solid {{k.edge}};background:{{k.t3}};transform:rotateX(90deg) translateZ(18px)"></span></span></span></sc-if>
 <span style="font-family:'Lilita One',sans-serif;font-size:14px;line-height:1.1;text-align:center">{{k.name}}</span>
 <sc-if value="{{k.locked}}" hint-placeholder-val="{{false}}"><span style="position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:7px;background:#0a1428;border:1px solid #2f3f7a;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" sc-camel-view-box="0 0 24 24" fill="none" stroke="#b9c9e4" stroke-width="3" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg></span></sc-if>
 </button>
@@ -279,7 +283,12 @@ button{font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer}
 class Component extends DCLogic {
 renderVals() {
 const st = this.state || {};
-const flt = st.flt ?? 'Semua', sel = st.sel ?? 1, eq = st.eq ?? 1;
+const flt = st.flt ?? 'Semua', sel = st.sel ?? 1, eq = st.eq ?? 1, eqd = st.eqd ?? 101;
+const PP = { 1:[[50,50]], 2:[[25,25],[75,75]], 3:[[25,25],[50,50],[75,75]], 4:[[25,25],[75,25],[25,75],[75,75]], 5:[[25,25],[75,25],[50,50],[25,75],[75,75]], 6:[[25,25],[75,25],[25,50],[75,50],[25,75],[75,75]] };
+const SH = { 1:'', 2:'rgba(0,0,0,.22)', 3:'rgba(255,255,255,.16)', 4:'rgba(0,0,0,.45)', 5:'rgba(0,0,0,.14)', 6:'rgba(0,0,0,.34)' };
+const faceBg = (bg, pip, n, rad) => (SH[n] ? 'linear-gradient('+SH[n]+','+SH[n]+'),' : '') + PP[n].map(c => 'radial-gradient(circle at '+c[0]+'% '+c[1]+'%,'+pip+' 0 '+rad+'px,transparent '+(rad+1)+'px)').join(',') + ',' + bg;
+const faces = (bg, pip, rad, key) => { const o = {}; [1,2,3,4,5,6].forEach(n => { o[key+n] = faceBg(bg, pip, n, rad); }); return o; };
+
 const RC = { Common:'#7e93b6', Rare:'#3b92ee', Epic:'#b07af0', Legendary:'#f2b705' };
 // id,nama,set,rarity,milik,kulit,rambut,baju,celana,sepatu,topi,tipe topi,jubah,sayap,deskripsi
 const D = [
@@ -290,16 +299,35 @@ const D = [
 [5,'Peri Hutan','Fantasy','Epic',1,'#f5d6b8','#9ff2e0','#2fbfa3','#1b8672','#145f50','','','','#9ff2e0','Sayap tembus pandang yang berkilau di bawah cahaya pagi.'],
 [6,'Ksatria Baja','Adventure','Epic',0,'#e8b98a','#3b2a1a','#aebdd3','#5d7090','#3d4a66','#8497b3','cap','#3b92ee','','Zirah baja dan jubah biru. Dibuka lewat Toko.'],
 [7,'Naga Emas','Fantasy','Legendary',0,'#f2c9a0','#7a5230','#f2b705','#a35a22','#5f3f25','','crown','#c48f00','#ffe27a','Mahkota emas, sayap naga, dan jubah kerajaan. Skin paling langka.'],
-[8,'Ninja Bayangan','Adventure','Epic',0,'#e8b98a','#1b2236','#28324a','#1b2236','#0f1626','#1b2236','cap','','','Serba gelap dan senyap. Tersedia di Toko musim ini.']];
-const mk = (r) => { const own = !!r[4]; return { id:r[0], name:r[1], cat:r[2], rar:r[3], rarU:r[3].toUpperCase(), rc:RC[r[3]], owned:own, locked:!own, skin:r[5], hair:r[6], shirt:r[7], pants:r[8], boots:r[9], hat:r[10]||'#000', cap:r[11]==='cap', crown:r[11]==='crown', cape:!!r[12], capeC:r[12]||'#000', wings:!!r[13], wingC:r[13]||'#000', desc:r[14], op:own?1:.5, sw:[r[7],r[8],r[6],r[5]], bc: r[0]===sel?'#7dff2e':'#22385f', sh: r[0]===sel?'0 0 0 2px rgba(125,255,46,.25),0 10px 26px rgba(125,255,46,.18)':'none', pick:() => this.setState({ sel:r[0] }) }; };
-const all = D.map(mk);
+[8,'Ninja Bayangan','Adventure','Epic',0,'#e8b98a','#1b2236','#28324a','#1b2236','#0f1626','#1b2236','cap','','','Serba gelap dan senyap. Tersedia di Toko musim ini.'],
+[9,'Koki Blok','Default','Common',1,'#f2c9a0','#3b2a1a','#f4f4f4','#3d4a66','#3a3a3a','#ffffff','cap','','','Seragam putih bersih dan topi koki. Siap memasak kemenangan.'],
+[10,'Penambang','Adventure','Common',1,'#e8b98a','#4a2e1a','#8a6a3a','#4a3a2a','#2a2a2a','#f2b705','cap','','','Helm kuning dan rompi berdebu, siap menggali sampai petak 100.'],
+[11,'Nelayan Sungai','Adventure','Common',0,'#f2c9a0','#6b4a2b','#2a9d8f','#4a5a3a','#5f3f25','#e8c36a','cap','','','Topi jerami dan jaket tosca untuk berburu ikan di tepi sungai.'],
+[12,'Bajak Laut','Adventure','Rare',0,'#e8b98a','#1b2236','#b8322f','#1b2236','#3a2a1a','#1b2236','cap','#1b2236','','Topi hitam dan jubah malam. Berlayar melewati ular terganas.'],
+[13,'Kesatria Salju','Musim','Rare',0,'#f5d6b8','#eaf2ff','#bfe6ff','#54aedb','#2f3f7a','#eaf2ff','cap','#54aedb','','Zirah es dan jubah biru muda. Dingin, tapi hatinya hangat.'],
+[14,'Penjaga Labu','Musim','Epic',0,'#e8b98a','#3a2a1a','#e07a10','#3a2a1a','#1b1b1b','#2d7a21','cap','','','Jaket labu oranye khas pesta panen. Menakuti ular dari jauh.'],
+[15,'Raja Nether','Fantasy','Legendary',0,'#e8b98a','#1b1b1b','#8a2b2b','#3a0d0d','#1b0707','','crown','#3a0d0d','#e24b4b','Mahkota api, jubah bara, dan sayap merah. Penguasa dunia bawah.'],
+[16,'Pahlawan Redstone','Fantasy','Epic',0,'#f2c9a0','#2a2a2a','#d63a2a','#2a2a2a','#111111','#8a2b2b','cap','#d63a2a','','Sirkuit merah menyala di setiap lengan. Cepat dan penuh tenaga.'],
+[17,'Astronot Blok','Fantasy','Epic',0,'#f5d6b8','#2a2a2a','#eaf2ff','#aebdd3','#5d7090','#aebdd3','cap','','','Pakaian antariksa putih. Melompat tinggi di papan mana pun.'],
+[18,'Penjelajah Gurun','Adventure','Rare',1,'#e8b98a','#4a2e1a','#e8c36a','#b5833a','#5f3f25','#fff3b0','cap','#d9763c','','Baju pasir dan jubah jingga untuk melintasi gurun blok.']];
+const mk = (r) => { const own = !!r[4]; return { isDice:false, notDice:true, edge:'#000', id:r[0], name:r[1], cat:r[2], rar:r[3], rarU:r[3].toUpperCase(), rc:RC[r[3]], owned:own, locked:!own, skin:r[5], hair:r[6], shirt:r[7], pants:r[8], boots:r[9], hat:r[10]||'#000', cap:r[11]==='cap', crown:r[11]==='crown', cape:!!r[12], capeC:r[12]||'#000', wings:!!r[13], wingC:r[13]||'#000', desc:r[14], op:own?1:.5, sw:[r[7],r[8],r[6],r[5]], bc: r[0]===sel?'#7dff2e':'#22385f', sh: r[0]===sel?'0 0 0 2px rgba(125,255,46,.25),0 10px 26px rgba(125,255,46,.18)':'none', pick:() => this.setState({ sel:r[0] }) }; };
+const DD = [
+[101,'Dadu Klasik','Dadu','Common',1,'#ffffff','#1b2a3b','#1b2a3b','Dadu putih standar dengan titik biru tua. Jelas, adil, dan mudah dibaca.'],
+[102,'Dadu TNT','Dadu','Rare',1,'#d63a2a','#ffffff','#4a0d07','Merah menyala dengan titik putih. Setiap lemparan terasa meledak.'],
+[103,'Dadu Rumput','Dadu','Common',1,'#5fae3e','#1f4a12','#2c5a1c','Hijau segar ala blok rumput. Cocok untuk papan hutan.'],
+[104,'Dadu Emas','Dadu','Epic',1,'#ffd23f','#6b4a00','#6b4a00','Dadu emas berkilau. Pembawa hoki di petak-petak terakhir.'],
+[105,'Dadu Diamond','Dadu','Epic',0,'#4aedd9','#0b4f4a','#0b4f4a','Biru kehijauan sebening berlian. Dibuka lewat Toko.'],
+[106,'Dadu Obsidian','Dadu','Legendary',0,'#2a1747','#d3b4ff','#0d0618','Ungu gelap dengan titik bercahaya. Dadu paling langka.']];
+const mk2 = (r) => { const own = !!r[4]; return { isDice:true, notDice:false, id:r[0], name:r[1], cat:r[2], rar:r[3], rarU:r[3].toUpperCase(), rc:RC[r[3]], owned:own, locked:!own, edge:r[7], desc:r[8], op:own?1:.5, sw:[r[5],r[6],r[7]], skin:'#000', hair:'#000', shirt:'#000', pants:'#000', boots:'#000', hat:'#000', cap:false, crown:false, cape:false, capeC:'#000', wings:false, wingC:'#000', ...faces(r[5], r[6], 13, 'f'), ...faces(r[5], r[6], 3.4, 't'), bc: r[0]===sel?'#7dff2e':'#22385f', sh: r[0]===sel?'0 0 0 2px rgba(125,255,46,.25),0 10px 26px rgba(125,255,46,.18)':'none', pick:() => this.setState({ sel:r[0] }) }; };
+const all = D.map(mk).concat(DD.map(mk2));
 const list = all.filter(i => flt==='Semua' || i.cat===flt || i.rar===flt);
 const b = all.find(i => i.id===sel) || all[0];
-const s = { ...b, status: b.locked ? 'Belum dimiliki' : b.id===eq ? 'Sedang dipakai' : 'Siap dipakai', btnText: b.locked ? 'Terkunci' : b.id===eq ? 'Sedang Dipakai' : 'Terapkan', btn: b.locked ? 'background:#1b2f52;color:#6b7a99;cursor:not-allowed' : b.id===eq ? 'background:rgba(125,255,46,.12);color:#7dff2e;border:2px solid #7dff2e' : 'background:#7dff2e;color:#08140a;box-shadow:0 7px 0 #3fa312,0 16px 38px rgba(125,255,46,.35)' };
-const names = ['Semua','Default','Adventure','Fantasy','Rare','Epic','Legendary'];
-return { s, list, eqName: (all.find(i => i.id===eq)||all[0]).name,
+const cur = b.isDice ? eqd : eq;
+const s = { ...b, status: b.locked ? 'Belum dimiliki' : b.id===cur ? 'Sedang dipakai' : 'Siap dipakai', btnText: b.locked ? 'Terkunci' : b.id===cur ? 'Sedang Dipakai' : 'Terapkan', btn: b.locked ? 'background:#1b2f52;color:#6b7a99;cursor:not-allowed' : b.id===cur ? 'background:rgba(125,255,46,.12);color:#7dff2e;border:2px solid #7dff2e' : 'background:#7dff2e;color:#08140a;box-shadow:0 7px 0 #3fa312,0 16px 38px rgba(125,255,46,.35)' };
+const names = ['Semua','Default','Adventure','Fantasy','Musim','Dadu','Rare','Epic','Legendary'];
+return { s, list, eqName: (all.find(i => i.id===eq)||all[0]).name+' · '+(all.find(i => i.id===eqd)||all[0]).name,
  filters: names.map(n => ({ name:n, on:n===flt, style: n===flt ? 'background:#7dff2e;color:#08140a;border:0;box-shadow:0 3px 0 #3fa312' : 'background:#101d38;color:#b9c9e4;border:1px solid #22385f', pick:() => this.setState({ flt:n }) })),
- apply: () => { if (b.owned) this.setState({ eq:b.id }); } };
+ apply: () => { if (b.owned) this.setState(b.isDice ? { eqd:b.id } : { eq:b.id }); } };
 }
 }
 </script>
@@ -307,5 +335,86 @@ return { s, list, eqName: (all.find(i => i.id===eq)||all[0]).name,
 
 
 <div style="height:84px"></div>
-<nav aria-label="Navigasi utama" style="position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;justify-content:space-around;gap:2px;background:rgba(10,20,40,.94);backdrop-filter:blur(10px);border:1px solid #2f3f7a;border-radius:22px;padding:6px;box-shadow:0 14px 40px rgba(0,0,0,.6)"><a href="lobby.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9H3zM9 20v-6h6v6"></path></svg>Lobi</a><a href="inventory.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8l8-4 8 4v8l-8 4-8-4zM4 8l8 4 8-4M12 12v8"></path></svg>Inventaris</a><a href="skins.html" aria-current="page" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;background:#7dff2e;color:#08140a"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a4 4 0 100 8 4 4 0 000-8zM4 21c0-4 4-6 8-6s8 2 8 6"></path></svg>Skin</a><a href="shop.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 016 0v2"></path></svg>Toko</a><a href="leaderboard.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v6a4 4 0 01-8 0zM8 6H4v2a3 3 0 003 3M16 6h4v2a3 3 0 01-3 3M12 14v4M8 20h8"></path></svg>Peringkat</a></nav>
+<nav aria-label="Navigasi utama" style="position:fixed;left:50%;transform:translateX(-50%);width:min(640px,calc(100% - 20px));box-sizing:border-box;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;justify-content:space-around;gap:2px;background:rgba(10,20,40,.94);backdrop-filter:blur(10px);border:1px solid #2f3f7a;border-radius:22px;padding:6px;box-shadow:0 14px 40px rgba(0,0,0,.6)"><a href="lobby.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9H3zM9 20v-6h6v6"></path></svg>Lobi</a><a href="inventory.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8l8-4 8 4v8l-8 4-8-4zM4 8l8 4 8-4M12 12v8"></path></svg>Inventaris</a><a href="skins.html" aria-current="page" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;background:#7dff2e;color:#08140a"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a4 4 0 100 8 4 4 0 000-8zM4 21c0-4 4-6 8-6s8 2 8 6"></path></svg>Skin</a><a href="shop.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 016 0v2"></path></svg>Toko</a><a href="leaderboard.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v6a4 4 0 01-8 0zM8 6H4v2a3 3 0 003 3M16 6h4v2a3 3 0 01-3 3M12 14v4M8 20h8"></path></svg>Peringkat</a></nav>
+
+<audio id="bgMusic" src="assets/music/zen.mp3" loop preload="auto"></audio>
+<style>
+#volPanel{position:fixed;right:16px;bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:41;
+  display:flex;align-items:center;gap:6px;background:rgba(10,20,40,.92);backdrop-filter:blur(10px);
+  border:1px solid #2f3f7a;border-radius:999px;padding:6px 8px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+#volBtn{width:34px;height:34px;border-radius:50%;border:1px solid #2f3f7a;background:#101d38;color:#eaf2ff;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+#volBtn svg{width:18px;height:18px}
+#volSlider{-webkit-appearance:none;appearance:none;width:96px;height:4px;border-radius:999px;
+  background:linear-gradient(90deg,#7dff2e var(--p,50%),#22385f var(--p,50%));outline:none;cursor:pointer}
+#volSlider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+  background:#7dff2e;border:2px solid #08140a;cursor:pointer}
+#volSlider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#7dff2e;border:2px solid #08140a;cursor:pointer}
+#volLabel{font-family:'Lilita One',sans-serif;font-size:11px;color:#b9c9e4;min-width:30px;text-align:center}
+</style>
+<script>
+(function(){
+  'use strict';
+  var STEPS=[6,5,15,30,50,75,100];
+  function load(){ try{ return JSON.parse(localStorage.getItem('ut-music')); }catch(e){ return null; } }
+  function save(v){ try{ localStorage.setItem('ut-music',JSON.stringify(v)); }catch(e){} }
+  function snap(v){ var best=STEPS[0],d=Math.abs(v-STEPS[0]); for(var i=1;i<STEPS.length;i++){ var dd=Math.abs(v-STEPS[i]); if(dd<d){d=dd;best=STEPS[i]} } return best; }
+  var s=load()||{on:true,v:50}; s.v=snap(s.v);
+  var audio=document.getElementById('bgMusic');
+  if(audio){ audio.volume=s.v/100; audio.muted=!s.on; if(s.on){ audio.play().catch(function(){}); } }
+  function apply(){
+    if(!audio) return;
+    audio.volume=s.v/100; audio.muted=!s.on;
+    var sl=document.getElementById('volSlider'); if(sl){ sl.value=s.v; sl.style.setProperty('--p',s.v+'%'); }
+    var lb=document.getElementById('volLabel'); if(lb){ lb.textContent=s.on?(s.v+'%'):'OFF'; }
+    var b=document.getElementById('volBtn'); if(b){ b.setAttribute('aria-pressed',String(s.on)); }
+  }
+  function build(){
+    var d=document.createElement('div'); d.id='volPanel';
+    var b=document.createElement('button'); b.id='volBtn'; b.type='button'; b.setAttribute('aria-label','Volume');
+    b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M19 5a9 9 0 010 14"/></svg>';
+    b.addEventListener('click',function(){ s.on=!s.on; save(s); apply(); });
+    var sl=document.createElement('input'); sl.type='range'; sl.id='volSlider'; sl.min=0; sl.max=100; sl.step=1; sl.value=s.v;
+    sl.addEventListener('input',function(){ s.v=snap(parseInt(sl.value,10)||0); save(s); apply(); });
+    var lb=document.createElement('span'); lb.id='volLabel';
+    d.appendChild(b); d.appendChild(sl); d.appendChild(lb);
+    document.body.appendChild(d); apply();
+  }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',build); }
+  else { build(); }
+})();
+</script>
 </body></html>
+<script>
+(function(){
+  var cur=null;
+  function reduced(){return window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches}
+  function clr(w){if(!w)return;var a=w.querySelectorAll('.dt');for(var i=0;i<a.length;i++){a[i].style.removeProperty('--rx');a[i].style.removeProperty('--ry');a[i].style.removeProperty('--s')}}
+  function tilt(w,ev,press){
+    if(reduced())return;
+    var r=w.getBoundingClientRect(),dx=((ev.clientX-r.left)/r.width-.5)*2,dy=((ev.clientY-r.top)/r.height-.5)*2;
+    dx=Math.max(-1,Math.min(1,dx));dy=Math.max(-1,Math.min(1,dy));
+    var a=w.querySelectorAll('.dt');
+    for(var i=0;i<a.length;i++){
+      var d=a[i],sm=d.classList.contains('dtA');
+      d.style.setProperty('--rx',((sm?-28:-24)-dy*8)+'deg');
+      d.style.setProperty('--ry',((sm?-38:-30)+dx*10)+'deg');
+      d.style.setProperty('--s',press?'.94':'1');
+    }
+  }
+  function hit(ev){var t=ev.target;return t&&t.closest?t.closest('.dtw'):null}
+  document.addEventListener('pointermove',function(ev){
+    var w=hit(ev);if(cur&&cur!==w)clr(cur);cur=w;
+    if(w)tilt(w,ev,ev.buttons>0||ev.pointerType==='touch');
+  });
+  document.addEventListener('pointerdown',function(ev){var w=hit(ev);if(w){cur=w;tilt(w,ev,true)}});
+  function up(ev){
+    if(!cur)return;
+    if(ev.pointerType&&ev.pointerType!=='mouse'){clr(cur);cur=null}
+    else tilt(cur,ev,false);
+  }
+  document.addEventListener('pointerup',up);
+  document.addEventListener('pointercancel',function(){clr(cur);cur=null});
+  document.documentElement.addEventListener('mouseleave',function(){clr(cur);cur=null});
+})();
+</script>
