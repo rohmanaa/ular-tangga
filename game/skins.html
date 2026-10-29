@@ -1,134 +1,311 @@
-<!doctype html>
-<html lang="id">
-<head>
+<!DOCTYPE html>
+<html lang="id"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#2a211b">
-<title>Skin — Ular Tangga Blok</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/app.css">
-<link rel="stylesheet" href="assets/css/nav.css">
-<style>
-.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}.layout>*{min-width:0}
-@media(min-width:820px){.layout{grid-template-columns:minmax(300px,5fr) minmax(0,7fr);align-items:start}.preview{position:sticky;top:12px}}
-.preview .stage{min-height:230px}.preview .stage svg.art-char{height:150px}@media(min-width:820px){.preview .stage{min-height:300px}.preview .stage svg.art-char{height:200px}}
-.pv-info{display:flex;flex-direction:column;gap:10px;margin-top:12px}
-.pv-info h2{font-size:20px}
-.skin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;list-style:none;margin:0;padding:0}
-.skin-btn{width:100%;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 6px 10px;background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:8px;box-shadow:0 4px 0 var(--ink);cursor:pointer;font:inherit;min-height:44px;text-align:center;position:relative}
-.skin-btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
-.skin-btn[aria-pressed=true]{background:var(--sun);outline:4px solid var(--ink);outline-offset:2px}
-.skin-btn .thumb{width:64px;height:64px;display:grid;place-items:center;background:linear-gradient(180deg,#bfe8ff,#e6f7ff);border:3px solid var(--ink)}
-.skin-btn .thumb svg{width:100%;height:100%;image-rendering:pixelated}
-.skin-btn.locked .thumb{filter:grayscale(1) contrast(.85);opacity:.75}
-.skin-btn .nm{font-family:var(--font-display);font-size:11px;text-transform:uppercase;font-weight:700;line-height:1.1}
-.note{font-size:12.5px;margin:0;opacity:.9}
-</style>
+<title>Kustomisasi Karakter Ular Tangga Blok</title>
+<script src="assets/js/vendor/react.production.min.js"></script>
+<script src="assets/js/vendor/react-dom.production.min.js"></script>
+<script src="assets/js/vendor/dc-runtime.js"></script>
 </head>
-<body class="app" data-page="skins">
-<div class="page">
-  <header class="topbar">
-    <a class="brand" href="ular%20tangga.html" aria-label="Ular Tangga Blok — Beranda">
-      <span class="brand-cube" aria-hidden="true"></span>
-      <span class="brand-name">Ular Tangga<small>BLOCK WORLD ADVENTURE</small></span>
-    </a>
-    <a class="coin-chip" id="coinChip" href="shop.html" aria-label="Saldo koin"></a>
-  </header>
+<body>
+<x-dc>
+<helmet>
+<style>/* latin-ext */
+@font-face {
+  font-family: 'Lilita One';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/lilitaone/v17/i7dPIFZ9Zz-WBtRtedDbYE98RWq7.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Lilita One';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/lilitaone/v17/i7dPIFZ9Zz-WBtRtedDbYEF8RQ.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style>
+body{margin:0;background:#0a1428}
+button{font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer}
+:focus-visible{outline:3px solid #7dff2e;outline-offset:2px}
+@keyframes idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes shd{0%,100%{transform:scaleX(1);opacity:.35}50%{transform:scaleX(.93);opacity:.27}}
+.fig{animation:idle 3.2s ease-in-out infinite}
+.shd{animation:shd 3.2s ease-in-out infinite;transform-origin:120px 304px}
+.car{scrollbar-width:thin;scrollbar-color:#2f3f7a #101d38}
+.sk{transition:transform .15s}.sk:hover{transform:translateY(-3px)}
+@media(prefers-reduced-motion:reduce){.fig,.shd{animation:none}}
+</style>
+</helmet>
+<div style="min-height:980px;box-sizing:border-box;padding:28px 20px 48px;background:radial-gradient(ellipse at 50% -10%,rgba(125,255,46,.10),rgba(125,255,46,0) 55%),#0a1428;color:#eaf2ff;font-family:'Plus Jakarta Sans',sans-serif">
+<div style="max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:18px">
 
-  <main id="main">
-    <h1 class="page-title">Skin</h1>
-    <p class="lede">Pratinjau karakter blokmu, lalu terapkan skin yang sudah kamu miliki.</p>
-
-    <div class="layout">
-      <section class="preview panel" aria-labelledby="pvName">
-        <div class="stage" id="stage"></div>
-        <div class="pv-info">
-          <h2 id="pvName"></h2>
-          <div class="card-meta" id="pvMeta"></div>
-          <p class="card-desc" id="pvDesc"></p>
-          <div id="pvAction"></div>
-          <p class="note" id="pvNote"></p>
-        </div>
-      </section>
-
-      <section aria-label="Daftar skin">
-        <div class="tabs" id="tabs" role="group" aria-label="Kategori skin"></div>
-        <ul class="skin-grid" id="grid"></ul>
-      </section>
-    </div>
-  </main>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between">
+<div><div style="color:#7dff2e;font-weight:700;font-size:13px;letter-spacing:.14em">RUANG GANTI</div>
+<h1 style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:clamp(34px,6vw,54px);line-height:1;margin:6px 0 0">Kustomisasi Karakter</h1></div>
+<div style="background:#101d38;border:1px solid #22385f;border-radius:14px;padding:10px 16px;font-size:14px;color:#b9c9e4">Sedang dipakai <b style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:18px;color:#7dff2e;margin-left:6px">{{eqName}}</b></div>
 </div>
 
-<script src="assets/js/item-catalog.js"></script>
-<script src="assets/js/player-data.js"></script>
-<script src="assets/js/item-art.js"></script>
-<script src="assets/js/app-ui.js"></script>
-<script src="assets/js/navigation.js"></script>
-<script>
-(function(){
-  'use strict';
-  var C=ItemCatalog,PD=PlayerData,UI=window.UI,el=UI.el;
-  var skins=C.items.filter(function(i){return i.kind==='skin';});
-  var groups=['Default','Adventure','Fantasy','Rare','Epic','Legendary'].filter(function(g){return skins.some(function(s){return s.group===g;});});
-  var group='all', sel=null;
+<div style="display:flex;flex-wrap:wrap;gap:18px;align-items:stretch">
 
-  /* Pilihan awal: ?skin=<id> jika valid, jika tidak skin aktif */
-  try{ var p=new URLSearchParams(location.search).get('skin'); var it=C.byId(p); if(it&&it.kind==='skin') sel=it.id; }catch(e){}
-  if(!sel) sel=PD.equippedId('skin');
+<div style="position:relative;flex:999 1 540px;min-width:0;height:clamp(440px,60vw,600px);border-radius:24px;overflow:hidden;border:1px solid #22385f;background:linear-gradient(180deg,#1a6fd6 0%,#6cb8f2 55%,#bfe6ff 100%);box-shadow:0 24px 60px rgba(0,0,0,.45)">
+<svg sc-camel-view-box="0 0 800 520" sc-camel-preserve-aspect-ratio="xMidYMax slice" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%">
+<defs><pattern id="gp" width="20" height="20" sc-camel-pattern-units="userSpaceOnUse"><rect width="10" height="10" fill="#fff" opacity=".07"></rect><rect x="10" y="10" width="10" height="10" fill="#000" opacity=".08"></rect></pattern></defs>
+<circle cx="640" cy="110" r="70" fill="#fff6c2" opacity=".35"></circle><rect x="610" y="80" width="60" height="60" fill="#fff3a8"></rect>
+<g fill="#fff" opacity=".85"><rect x="90" y="90" width="90" height="22"></rect><rect x="116" y="68" width="48" height="22"></rect><rect x="420" y="140" width="110" height="22"></rect><rect x="448" y="118" width="56" height="22"></rect></g>
+<polygon points="0,420 0,300 80,300 80,270 180,270 180,310 280,310 280,280 360,280 360,330 460,330 460,290 560,290 560,260 680,260 680,310 800,310 800,420" fill="#2f7a3a" opacity=".85"></polygon>
+<polygon points="0,420 0,350 120,350 120,330 240,330 240,360 380,360 380,340 520,340 520,370 660,370 660,335 800,335 800,420" fill="#1f5a2a"></polygon>
+<g><rect x="70" y="330" width="16" height="70" fill="#5f3f25"></rect><rect x="40" y="290" width="76" height="26" fill="#2d7a21"></rect><rect x="52" y="264" width="52" height="26" fill="#3f9e2b"></rect><rect x="62" y="244" width="32" height="20" fill="#58b02d"></rect></g>
+<g><rect x="690" y="340" width="16" height="64" fill="#5f3f25"></rect><rect x="660" y="302" width="76" height="26" fill="#2d7a21"></rect><rect x="672" y="278" width="52" height="26" fill="#3f9e2b"></rect><rect x="682" y="258" width="32" height="20" fill="#58b02d"></rect></g>
+<rect y="404" width="800" height="116" fill="#5f3f25"></rect><rect y="404" width="800" height="16" fill="#6fd13a"></rect><rect y="420" width="800" height="100" fill="url(#gp)"></rect>
+<rect y="404" width="800" height="5" fill="#9bec4f"></rect>
+</svg>
+<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 62%,rgba(255,250,200,.30),rgba(255,250,200,0) 55%),radial-gradient(ellipse at 50% 50%,rgba(0,0,0,0) 55%,rgba(3,12,6,.45) 100%)"></div>
+<span style="position:absolute;top:16px;left:16px;font-family:'Lilita One',sans-serif;font-size:14px;letter-spacing:.06em;padding:6px 12px;border-radius:9px;background:{{s.rc}};color:#08140a">{{s.rarU}}</span>
 
-  function renderTabs(){
-    var box=document.getElementById('tabs'); box.textContent='';
-    ['all'].concat(groups).forEach(function(g){
-      var n=g==='all'?skins.length:skins.filter(function(s){return s.group===g;}).length;
-      box.appendChild(el('button',{class:'tab',type:'button','aria-pressed':String(group===g),on:{click:function(){group=g;render();}}},
-        [g==='all'?'Semua':g,el('span',{class:'n',text:'('+n+')'})]));
-    });
-  }
+<svg sc-camel-view-box="0 0 240 320" role="img" aria-label="Pratinjau karakter {{s.name}}" style="position:absolute;left:50%;bottom:5%;height:84%;width:auto;transform:translateX(-50%);overflow:visible">
+<defs><pattern id="px" width="8" height="8" sc-camel-pattern-units="userSpaceOnUse"><rect width="4" height="4" fill="#fff" opacity=".10"></rect><rect x="4" y="4" width="4" height="4" fill="#000" opacity=".10"></rect></pattern></defs>
+<ellipse class="shd" cx="120" cy="304" rx="78" ry="11" fill="#000"></ellipse>
+<g class="fig">
+<sc-if value="{{s.wings}}" hint-placeholder-val="{{false}}"><g style="fill:{{s.wingC}}" opacity=".92"><polygon points="86,130 4,60 12,160 70,196"></polygon><polygon points="154,130 236,60 228,160 170,196"></polygon><polygon points="86,130 30,88 34,140 76,170" fill="#fff" opacity=".25"></polygon><polygon points="154,130 210,88 206,140 164,170" fill="#fff" opacity=".25"></polygon></g></sc-if>
+<sc-if value="{{s.cape}}" hint-placeholder-val="{{false}}"><rect x="82" y="120" width="76" height="150" style="fill:{{s.capeC}}"></rect><rect x="82" y="120" width="76" height="150" fill="url(#px)"></rect></sc-if>
+<rect x="92" y="208" width="27" height="88" style="fill:{{s.pants}}"></rect><rect x="121" y="208" width="27" height="88" style="fill:{{s.pants}}"></rect>
+<rect x="92" y="278" width="27" height="18" style="fill:{{s.boots}}"></rect><rect x="121" y="278" width="27" height="18" style="fill:{{s.boots}}"></rect>
+<rect x="88" y="120" width="64" height="96" style="fill:{{s.shirt}}"></rect>
+<rect x="88" y="196" width="64" height="9" fill="#3a2a1a"></rect><rect x="113" y="195" width="14" height="11" fill="#ffe27a"></rect>
+<rect x="60" y="120" width="26" height="58" style="fill:{{s.shirt}}"></rect><rect x="154" y="120" width="26" height="58" style="fill:{{s.shirt}}"></rect>
+<rect x="60" y="178" width="26" height="34" style="fill:{{s.skin}}"></rect><rect x="154" y="178" width="26" height="34" style="fill:{{s.skin}}"></rect>
+<rect x="92" y="52" width="56" height="62" style="fill:{{s.skin}}"></rect>
+<rect x="92" y="52" width="56" height="16" style="fill:{{s.hair}}"></rect><rect x="92" y="52" width="9" height="36" style="fill:{{s.hair}}"></rect><rect x="139" y="52" width="9" height="36" style="fill:{{s.hair}}"></rect>
+<rect x="103" y="82" width="11" height="9" fill="#fff"></rect><rect x="107" y="83" width="6" height="8" fill="#1b2236"></rect><rect x="126" y="82" width="11" height="9" fill="#fff"></rect><rect x="130" y="83" width="6" height="8" fill="#1b2236"></rect>
+<rect x="111" y="99" width="18" height="4" fill="#8a4b3c"></rect>
+<sc-if value="{{s.cap}}" hint-placeholder-val="{{false}}"><rect x="88" y="40" width="64" height="18" style="fill:{{s.hat}}"></rect><rect x="88" y="54" width="64" height="5" fill="#000" opacity=".25"></rect></sc-if>
+<sc-if value="{{s.crown}}" hint-placeholder-val="{{false}}"><g><rect x="90" y="38" width="60" height="16" fill="#ffe27a"></rect><polygon points="90,38 99,16 108,38" fill="#ffe27a"></polygon><polygon points="111,38 120,12 129,38" fill="#ffe27a"></polygon><polygon points="132,38 141,16 150,38" fill="#ffe27a"></polygon><rect x="90" y="48" width="60" height="6" fill="#c48f00"></rect><rect x="116" y="40" width="8" height="8" fill="#e24b4b"></rect></g></sc-if>
+<g fill="url(#px)"><rect x="92" y="52" width="56" height="62"></rect><rect x="88" y="120" width="64" height="96"></rect><rect x="60" y="120" width="26" height="92"></rect><rect x="154" y="120" width="26" height="92"></rect><rect x="92" y="208" width="27" height="88"></rect><rect x="121" y="208" width="27" height="88"></rect></g>
+<g fill="#000" opacity=".16"><rect x="140" y="52" width="8" height="62"></rect><rect x="144" y="120" width="8" height="96"></rect><rect x="172" y="120" width="8" height="92"></rect><rect x="140" y="208" width="8" height="88"></rect><rect x="111" y="208" width="8" height="88"></rect></g>
+<g fill="#fff" opacity=".10"><rect x="92" y="52" width="56" height="5"></rect><rect x="88" y="120" width="64" height="5"></rect><rect x="60" y="120" width="26" height="5"></rect><rect x="154" y="120" width="26" height="5"></rect></g>
+</g>
+</svg>
+</div>
 
-  function renderGrid(){
-    var grid=document.getElementById('grid'); grid.textContent='';
-    var list=skins.filter(function(s){return group==='all'||s.group===group;});
-    list.forEach(function(s){
-      var owned=PD.owns(s.id), active=PD.isEquipped(s.id);
-      var th=el('span',{class:'thumb'}); th.innerHTML=ItemArt.face(s.id);
-      var status=active?el('span',{class:'badge on'},['✓ Aktif']):owned?el('span',{class:'badge own',text:'Dimiliki'}):el('span',{class:'badge lock'},['Terkunci · ',UI.coinSpan(s.price)]);
-      var b=el('button',{class:'skin-btn'+(owned?'':' locked'),type:'button','aria-pressed':String(sel===s.id),
-        'aria-label':s.name+', '+C.RARITY[s.rarity].label+', '+(active?'aktif':owned?'dimiliki':'belum dimiliki'),
-        on:{click:function(){sel=s.id;render();}}},
-        [th,el('span',{class:'nm',text:s.name}),UI.rarityBadge(s.rarity),status]);
-      grid.appendChild(el('li',null,[b]));
-    });
-  }
+<aside aria-label="Detail skin" style="flex:1 1 320px;max-width:100%;box-sizing:border-box;background:linear-gradient(180deg,#1b2f52,#101d38);border:1px solid #22385f;border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+<span style="font-family:'Lilita One',sans-serif;font-size:13px;letter-spacing:.06em;padding:5px 10px;border-radius:8px;background:{{s.rc}};color:#08140a">{{s.rarU}}</span>
+<sc-if value="{{s.owned}}" hint-placeholder-val="{{true}}"><span style="display:inline-flex;align-items:center;gap:6px;background:#7dff2e;color:#08140a;font-weight:700;font-size:12px;border-radius:99px;padding:5px 11px"><svg width="12" height="12" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>Dimiliki</span></sc-if>
+<sc-if value="{{s.locked}}" hint-placeholder-val="{{false}}"><span style="display:inline-flex;align-items:center;gap:6px;background:#101d38;color:#b9c9e4;border:1px solid #2f3f7a;font-weight:700;font-size:12px;border-radius:99px;padding:5px 11px"><svg width="12" height="12" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg>Terkunci</span></sc-if>
+</div>
+<h2 style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:34px;line-height:1;margin:2px 0 0">{{s.name}}</h2>
+<div style="color:#b9c9e4;font-size:14px;font-weight:600">Set {{s.cat}} · {{s.status}}</div>
+<p style="color:#c9d8f0;font-size:15px;line-height:1.55;margin:0">{{s.desc}}</p>
+<div><div style="font-size:12px;font-weight:700;letter-spacing:.1em;color:#8497b3;margin-bottom:8px">PALET WARNA</div>
+<div style="display:flex;gap:8px">
+<sc-for list="{{s.sw}}" as="c" hint-placeholder-count="4"><span style="width:34px;height:34px;border-radius:9px;border:2px solid rgba(255,255,255,.25);background:{{c}}"></span></sc-for>
+</div></div>
+<div style="flex:1"></div>
+<sc-if value="{{s.locked}}" hint-placeholder-val="{{false}}"><a href="#toko" style="display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border:2px solid #7dff2e;border-radius:14px;color:#7dff2e;background:rgba(125,255,46,.06);font-family:'Lilita One',sans-serif;font-size:20px;text-decoration:none;box-shadow:0 4px 0 #1f5a14">Lihat di Toko</a></sc-if>
+<button type="button" sc-camel-on-click="{{apply}}" aria-disabled="{{s.locked}}" style="width:100%;min-height:60px;border:0;border-radius:16px;font-family:'Lilita One',sans-serif;font-size:26px;{{s.btn}}">{{s.btnText}}</button>
+</aside>
+</div>
 
-  function renderPreview(){
-    var s=C.byId(sel)||skins[0]; sel=s.id;
-    var owned=PD.owns(s.id), active=PD.isEquipped(s.id);
-    var stage=document.getElementById('stage'); stage.textContent='';
-    var h=el('div',{class:'char-idle'}); h.innerHTML=ItemArt.character(s.id); stage.appendChild(h);
-    document.getElementById('pvName').textContent=s.name;
-    var meta=document.getElementById('pvMeta'); meta.textContent='';
-    meta.appendChild(UI.rarityBadge(s.rarity)); meta.appendChild(el('span',{class:'badge own',text:s.group}));
-    meta.appendChild(active?el('span',{class:'badge on'},['✓ Aktif']):owned?el('span',{class:'badge own',text:'Dimiliki'}):el('span',{class:'badge lock',text:'Belum dimiliki'}));
-    document.getElementById('pvDesc').textContent=s.desc;
-    var act=document.getElementById('pvAction'); act.textContent='';
-    if(owned){
-      act.appendChild(el('button',{class:'btn green block',type:'button',disabled:active,on:{click:function(){
-        var r=PD.equip(s.id); if(r.ok) UI.toast(s.name+' diterapkan sebagai skin aktif.','ok'); else UI.toast('Gagal menerapkan skin.','error');
-      }}},[active?'Sedang dipakai':'Terapkan skin']));
-    }else{
-      act.appendChild(el('a',{class:'btn block',href:'shop.html?item='+encodeURIComponent(s.id)},['Lihat di Toko — ',UI.coinSpan(s.price)]));
-    }
-    document.getElementById('pvNote').textContent=owned
-      ?'Skin aktif dipakai sebagai bidak Pemain 1 saat kamu memulai dari lobi. Skin lawan dipilih di lobi dari skin yang kamu miliki.'
-      :'Skin ini baru bisa dipilih di lobi setelah dibeli di Toko.';
-  }
+<div style="background:#101d38;border:1px solid #22385f;border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:14px">
+<div role="tablist" aria-label="Filter skin" class="car" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="7"><button role="tab" type="button" aria-selected="{{f.on}}" sc-camel-on-click="{{f.pick}}" style="flex:none;min-height:44px;border-radius:12px;padding:0 18px;font-weight:700;font-size:14px;{{f.style}}">{{f.name}}</button></sc-for>
+</div>
+<div class="car" style="display:flex;gap:12px;overflow-x:auto;padding:6px 4px 12px">
+<sc-for list="{{list}}" as="k" hint-placeholder-count="6">
+<button class="sk" type="button" sc-camel-on-click="{{k.pick}}" aria-label="{{k.name}}, {{k.rar}}" style="flex:none;width:112px;position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px 10px;border-radius:16px;background:#101d38;color:#eaf2ff;border:2px solid {{k.bc}};box-shadow:{{k.sh}}">
+<span style="position:absolute;top:8px;left:8px;width:10px;height:10px;border-radius:3px;background:{{k.rc}}"></span>
+<svg width="52" height="82" sc-camel-view-box="0 0 40 64" aria-hidden="true" style="opacity:{{k.op}}"><rect x="4" y="21" width="6" height="16" style="fill:{{k.shirt}}"></rect><rect x="30" y="21" width="6" height="16" style="fill:{{k.shirt}}"></rect><rect x="11" y="41" width="9" height="18" style="fill:{{k.pants}}"></rect><rect x="20" y="41" width="9" height="18" style="fill:{{k.pants}}"></rect><rect x="11" y="55" width="9" height="4" style="fill:{{k.boots}}"></rect><rect x="20" y="55" width="9" height="4" style="fill:{{k.boots}}"></rect><rect x="10" y="21" width="20" height="20" style="fill:{{k.shirt}}"></rect><rect x="12" y="3" width="16" height="17" style="fill:{{k.skin}}"></rect><rect x="12" y="3" width="16" height="5" style="fill:{{k.hair}}"></rect><rect x="15" y="12" width="3" height="3" fill="#1b2236"></rect><rect x="22" y="12" width="3" height="3" fill="#1b2236"></rect></svg>
+<span style="font-family:'Lilita One',sans-serif;font-size:14px;line-height:1.1;text-align:center">{{k.name}}</span>
+<sc-if value="{{k.locked}}" hint-placeholder-val="{{false}}"><span style="position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:7px;background:#0a1428;border:1px solid #2f3f7a;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" sc-camel-view-box="0 0 24 24" fill="none" stroke="#b9c9e4" stroke-width="3" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg></span></sc-if>
+</button>
+</sc-for>
+</div>
+</div>
 
-  function render(){ renderTabs(); renderGrid(); renderPreview(); }
-  PD.subscribe(render);
-  render();
-})();
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:980}}">
+class Component extends DCLogic {
+renderVals() {
+const st = this.state || {};
+const flt = st.flt ?? 'Semua', sel = st.sel ?? 1, eq = st.eq ?? 1;
+const RC = { Common:'#7e93b6', Rare:'#3b92ee', Epic:'#b07af0', Legendary:'#f2b705' };
+// id,nama,set,rarity,milik,kulit,rambut,baju,celana,sepatu,topi,tipe topi,jubah,sayap,deskripsi
+const D = [
+[1,'Penjelajah','Default','Common',1,'#f2c9a0','#5a3a22','#3b92ee','#2f3f7a','#3a3a3a','','','','','Pakaian standar para pemain baru. Sederhana, nyaman, siap menaiki tangga.'],
+[2,'Petualang Hutan','Adventure','Common',1,'#e8b98a','#3b2a1a','#58b02d','#6b4a2b','#3a2a1a','#2d7a21','cap','','','Topi hijau dan rompi lumut untuk menembus rimba blok.'],
+[3,'Pendaki Gunung','Adventure','Rare',1,'#f2c9a0','#4a2e1a','#f08a24','#3d4a66','#28324a','#b5600f','cap','#b5600f','','Jaket oranye cerah dengan jubah kecil anti angin puncak.'],
+[4,'Penyihir Rimba','Fantasy','Rare',1,'#f5d6b8','#d8d8e8','#6a3db0','#28324a','#1b2236','#9a63e8','cap','#6a3db0','','Jubah ungu bertabur mantra untuk lemparan dadu yang beruntung.'],
+[5,'Peri Hutan','Fantasy','Epic',1,'#f5d6b8','#9ff2e0','#2fbfa3','#1b8672','#145f50','','','','#9ff2e0','Sayap tembus pandang yang berkilau di bawah cahaya pagi.'],
+[6,'Ksatria Baja','Adventure','Epic',0,'#e8b98a','#3b2a1a','#aebdd3','#5d7090','#3d4a66','#8497b3','cap','#3b92ee','','Zirah baja dan jubah biru. Dibuka lewat Toko.'],
+[7,'Naga Emas','Fantasy','Legendary',0,'#f2c9a0','#7a5230','#f2b705','#a35a22','#5f3f25','','crown','#c48f00','#ffe27a','Mahkota emas, sayap naga, dan jubah kerajaan. Skin paling langka.'],
+[8,'Ninja Bayangan','Adventure','Epic',0,'#e8b98a','#1b2236','#28324a','#1b2236','#0f1626','#1b2236','cap','','','Serba gelap dan senyap. Tersedia di Toko musim ini.']];
+const mk = (r) => { const own = !!r[4]; return { id:r[0], name:r[1], cat:r[2], rar:r[3], rarU:r[3].toUpperCase(), rc:RC[r[3]], owned:own, locked:!own, skin:r[5], hair:r[6], shirt:r[7], pants:r[8], boots:r[9], hat:r[10]||'#000', cap:r[11]==='cap', crown:r[11]==='crown', cape:!!r[12], capeC:r[12]||'#000', wings:!!r[13], wingC:r[13]||'#000', desc:r[14], op:own?1:.5, sw:[r[7],r[8],r[6],r[5]], bc: r[0]===sel?'#7dff2e':'#22385f', sh: r[0]===sel?'0 0 0 2px rgba(125,255,46,.25),0 10px 26px rgba(125,255,46,.18)':'none', pick:() => this.setState({ sel:r[0] }) }; };
+const all = D.map(mk);
+const list = all.filter(i => flt==='Semua' || i.cat===flt || i.rar===flt);
+const b = all.find(i => i.id===sel) || all[0];
+const s = { ...b, status: b.locked ? 'Belum dimiliki' : b.id===eq ? 'Sedang dipakai' : 'Siap dipakai', btnText: b.locked ? 'Terkunci' : b.id===eq ? 'Sedang Dipakai' : 'Terapkan', btn: b.locked ? 'background:#1b2f52;color:#6b7a99;cursor:not-allowed' : b.id===eq ? 'background:rgba(125,255,46,.12);color:#7dff2e;border:2px solid #7dff2e' : 'background:#7dff2e;color:#08140a;box-shadow:0 7px 0 #3fa312,0 16px 38px rgba(125,255,46,.35)' };
+const names = ['Semua','Default','Adventure','Fantasy','Rare','Epic','Legendary'];
+return { s, list, eqName: (all.find(i => i.id===eq)||all[0]).name,
+ filters: names.map(n => ({ name:n, on:n===flt, style: n===flt ? 'background:#7dff2e;color:#08140a;border:0;box-shadow:0 3px 0 #3fa312' : 'background:#101d38;color:#b9c9e4;border:1px solid #22385f', pick:() => this.setState({ flt:n }) })),
+ apply: () => { if (b.owned) this.setState({ eq:b.id }); } };
+}
+}
 </script>
-</body>
-</html>
+
+
+
+<div style="height:84px"></div>
+<nav aria-label="Navigasi utama" style="position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;justify-content:space-around;gap:2px;background:rgba(10,20,40,.94);backdrop-filter:blur(10px);border:1px solid #2f3f7a;border-radius:22px;padding:6px;box-shadow:0 14px 40px rgba(0,0,0,.6)"><a href="lobby.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9H3zM9 20v-6h6v6"></path></svg>Lobi</a><a href="inventory.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8l8-4 8 4v8l-8 4-8-4zM4 8l8 4 8-4M12 12v8"></path></svg>Inventaris</a><a href="skins.html" aria-current="page" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;background:#7dff2e;color:#08140a"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a4 4 0 100 8 4 4 0 000-8zM4 21c0-4 4-6 8-6s8 2 8 6"></path></svg>Skin</a><a href="shop.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 016 0v2"></path></svg>Toko</a><a href="leaderboard.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v6a4 4 0 01-8 0zM8 6H4v2a3 3 0 003 3M16 6h4v2a3 3 0 01-3 3M12 14v4M8 20h8"></path></svg>Peringkat</a></nav>
+</body></html>

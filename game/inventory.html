@@ -1,153 +1,299 @@
-<!doctype html>
-<html lang="id">
-<head>
+<!DOCTYPE html>
+<html lang="id"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#2a211b">
-<title>Inventory — Ular Tangga Blok</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/app.css">
-<link rel="stylesheet" href="assets/css/nav.css">
+<title>Inventaris Ular Tangga Blok</title>
+<script src="assets/js/vendor/react.production.min.js"></script>
+<script src="assets/js/vendor/react-dom.production.min.js"></script>
+<script src="assets/js/vendor/dc-runtime.js"></script>
 </head>
-<body class="app" data-page="inventory">
-<div class="page">
-  <header class="topbar">
-    <a class="brand" href="ular%20tangga.html" aria-label="Ular Tangga Blok — Beranda">
-      <span class="brand-cube" aria-hidden="true"></span>
-      <span class="brand-name">Ular Tangga<small>BLOCK WORLD ADVENTURE</small></span>
-    </a>
-    <a class="coin-chip" id="coinChip" href="shop.html" aria-label="Saldo koin"></a>
-  </header>
+<body>
+<x-dc>
+<helmet>
+<style>/* latin-ext */
+@font-face {
+  font-family: 'Lilita One';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/lilitaone/v17/i7dPIFZ9Zz-WBtRtedDbYE98RWq7.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Lilita One';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/lilitaone/v17/i7dPIFZ9Zz-WBtRtedDbYEF8RQ.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style>
+body{margin:0;background:#0a1428}
+button,input,select{font-family:'Plus Jakarta Sans',sans-serif}
+button{cursor:pointer}
+:focus-visible{outline:3px solid #7dff2e;outline-offset:2px}
+.it{transition:transform .15s}.it:hover{transform:translateY(-3px)}
+.tabs{scrollbar-width:none}
+</style>
+</helmet>
+<div style="min-height:900px;background:radial-gradient(ellipse at 50% -10%,rgba(125,255,46,.10),rgba(125,255,46,0) 55%),#0a1428;color:#eaf2ff;font-family:'Plus Jakarta Sans',sans-serif;box-sizing:border-box;padding:28px 20px 48px">
+<div style="max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:20px">
 
-  <main id="main">
-    <h1 class="page-title">Inventory</h1>
-    <p class="lede" id="total">Memuat koleksi…</p>
-
-    <div class="toolbar">
-      <div class="tabs" id="tabs" role="group" aria-label="Kategori"></div>
-      <div class="filters">
-        <div class="field"><label for="q">Cari nama item</label><input id="q" type="search" placeholder="mis. Steve" autocomplete="off"></div>
-        <div class="field"><label for="rar">Rarity</label>
-          <select id="rar"><option value="">Semua rarity</option><option value="common">Umum</option><option value="rare">Langka</option><option value="epic">Epik</option><option value="legendary">Legendaris</option></select></div>
-        <div class="field"><label for="sort">Urutkan</label>
-          <select id="sort"><option value="new">Terbaru diperoleh</option><option value="old">Terlama diperoleh</option><option value="name">Nama (A–Z)</option><option value="rar">Rarity (tertinggi)</option></select></div>
-        <div class="field"><label for="st">Status</label>
-          <select id="st"><option value="">Semua</option><option value="on">Sedang dipakai</option><option value="off">Belum dipakai</option></select></div>
-      </div>
-    </div>
-
-    <p class="result-count" id="count" aria-live="polite"></p>
-    <ul class="grid" id="grid"></ul>
-    <div id="empty" hidden></div>
-  </main>
+<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between">
+<div>
+<div style="color:#7dff2e;font-weight:700;font-size:13px;letter-spacing:.14em">KOLEKSIMU</div>
+<h1 style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:clamp(36px,6vw,56px);line-height:1;margin:6px 0 0">Inventaris</h1>
+</div>
+<div style="min-width:240px;flex:0 1 320px;background:#101d38;border:1px solid #22385f;border-radius:16px;padding:12px 16px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:#b9c9e4"><span>Koleksi terkumpul</span><b style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:22px;color:#7dff2e">{{ownedCount}}<span style="color:#b9c9e4;font-size:15px"> / {{total}}</span></b></div>
+<div style="height:8px;border-radius:99px;background:#0a1428;border:1px solid #22385f;margin-top:8px;overflow:hidden"><div style="height:100%;border-radius:99px;background:linear-gradient(90deg,#58b02d,#7dff2e);width:{{pct}}"></div></div>
+</div>
 </div>
 
-<script src="assets/js/item-catalog.js"></script>
-<script src="assets/js/player-data.js"></script>
-<script src="assets/js/item-art.js"></script>
-<script src="assets/js/app-ui.js"></script>
-<script src="assets/js/navigation.js"></script>
-<script>
-(function(){
-  'use strict';
-  var C=ItemCatalog,PD=PlayerData,UI=window.UI,el=UI.el;
-  var state={cat:'all',q:'',rar:'',sort:'new',st:''};
-  var tabsBox=document.getElementById('tabs');
+<div style="background:#101d38;border:1px solid #22385f;border-radius:20px;padding:12px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;box-shadow:0 20px 50px rgba(4,10,24,.4)">
+<div class="tabs" role="tablist" aria-label="Kategori" style="display:flex;gap:6px;background:#0a1428;border:1px solid #22385f;border-radius:14px;padding:5px;overflow-x:auto;max-width:100%">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="6">
+<button role="tab" type="button" sc-camel-on-click="{{t.pick}}" aria-selected="{{t.on}}" style="flex:none;min-height:44px;border:0;border-radius:10px;padding:0 16px;font-weight:700;font-size:14px;white-space:nowrap;{{t.style}}">{{t.name}}</button>
+</sc-for>
+</div>
+<label style="position:relative;flex:1 1 200px;min-width:0"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#7e93b6" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" style="position:absolute;left:14px;top:14px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg><input type="search" placeholder="Cari item…" aria-label="Cari item" value="{{q}}" sc-camel-on-input="{{onSearch}}" style="width:100%;box-sizing:border-box;min-height:46px;background:#0a1428;border:1px solid #22385f;border-radius:14px;color:#eaf2ff;font-size:15px;padding:0 16px 0 44px"></label>
+<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#b9c9e4">Urutkan
+<sc-raw-select aria-label="Urutkan" sc-camel-on-change="{{onSort}}" style="min-height:46px;background:#0a1428;border:1px solid #22385f;border-radius:14px;color:#eaf2ff;font-size:14px;font-weight:600;padding:0 12px">
+<option value="rar">Kelangkaan</option><option value="az">Nama A–Z</option><option value="own">Dimiliki dulu</option></sc-raw-select></label>
+</div>
 
-  function norm(s){return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
+<div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+<div style="flex:999 1 520px;min-width:0">
+<sc-if value="{{hasItems}}" hint-placeholder-val="{{true}}">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:14px">
+<sc-for list="{{items}}" as="item" hint-placeholder-count="8">
+<button class="it" type="button" sc-camel-on-click="{{item.pick}}" aria-label="{{item.name}}, {{item.rar}}" style="position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px 12px;background:#101d38;border-radius:18px;color:#eaf2ff;border:2px solid {{item.rc}};box-shadow:{{item.glow}}">
+<span style="position:absolute;top:8px;left:8px;width:10px;height:10px;border-radius:3px;background:{{item.rc}}"></span>
+<sc-if value="{{item.owned}}" hint-placeholder-val="{{true}}"><span style="position:absolute;top:6px;right:6px;display:flex;align-items:center;gap:3px;background:#7dff2e;color:#08140a;font-weight:700;font-size:11px;border-radius:99px;padding:3px 8px">✓ Milik</span></sc-if>
+<sc-if value="{{item.locked}}" hint-placeholder-val="{{false}}"><span style="position:absolute;top:6px;right:6px;background:#0a1428;color:#b9c9e4;font-weight:700;font-size:11px;border-radius:99px;padding:3px 8px;border:1px solid #22385f">Terkunci</span></sc-if>
+<svg width="76" height="76" sc-camel-view-box="-28 -4 56 56" aria-hidden="true" style="opacity:{{item.op}};margin-top:10px"><polygon points="0,0 24,12 0,24 -24,12" style="fill:{{item.c0}}"></polygon><polygon points="-24,12 0,24 0,48 -24,36" style="fill:{{item.c1}}"></polygon><polygon points="0,24 24,12 24,36 0,48" style="fill:{{item.c2}}"></polygon><path d="{{item.g}}" fill="#0b1a2e" fill-opacity=".85"></path></svg>
+<span style="font-family:'Lilita One',sans-serif;font-size:16px;line-height:1.1;text-align:center">{{item.name}}</span>
+<span style="font-size:12px;font-weight:700;color:{{item.rc}}">{{item.rar}}</span>
+</button>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{noItems}}" hint-placeholder-val="{{false}}">
+<div style="background:#101d38;border:2px dashed #22385f;border-radius:20px;padding:56px 24px;text-align:center">
+<svg width="84" height="84" sc-camel-view-box="-28 -4 56 56" aria-hidden="true"><polygon points="0,0 24,12 0,24 -24,12" fill="#22385f"></polygon><polygon points="-24,12 0,24 0,48 -24,36" fill="#1b2f52"></polygon><polygon points="0,24 24,12 24,36 0,48" fill="#16264a"></polygon><path d="M-14 24l8 4M14 24l-8 4M-8 34q8-5 16 0" stroke="#7e93b6" stroke-width="3" fill="none" stroke-linecap="round"></path></svg>
+<h2 style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:28px;margin:14px 0 6px">Belum ada item di sini</h2>
+<p style="color:#b9c9e4;font-size:16px;margin:0 0 20px">Tidak ada yang cocok dengan pencarianmu. Coba kata lain atau lihat semua koleksi.</p>
+<button type="button" sc-camel-on-click="{{reset}}" style="min-height:48px;border:2px solid #7dff2e;border-radius:14px;background:rgba(125,255,46,.06);color:#7dff2e;font-family:'Lilita One',sans-serif;font-size:20px;padding:0 24px;box-shadow:0 4px 0 #1f5a14">Tampilkan semua</button>
+</div>
+</sc-if>
+</div>
 
-  function visible(owned){
-    var q=norm(state.q.trim());
-    var list=owned.filter(function(o){
-      var it=o.item;
-      if(state.cat!=='all'&&it.category!==state.cat) return false;
-      if(state.rar&&it.rarity!==state.rar) return false;
-      if(state.st==='on'&&!o.equipped) return false;
-      if(state.st==='off'&&o.equipped) return false;
-      if(q&&norm(it.name).indexOf(q)<0) return false;
-      return true;
-    });
-    list.sort(function(a,b){
-      if(state.sort==='name') return a.item.name.localeCompare(b.item.name,'id');
-      if(state.sort==='rar') return (C.RARITY[b.item.rarity].rank-C.RARITY[a.item.rarity].rank)||a.item.name.localeCompare(b.item.name,'id');
-      if(state.sort==='old') return (a.acquiredAt-b.acquiredAt)||(a.seq-b.seq);
-      return (b.acquiredAt-a.acquiredAt)||(b.seq-a.seq);
-    });
-    return list;
-  }
-
-  function renderTabs(owned){
-    tabsBox.textContent='';
-    var cats=[{key:'all',label:'Semua'}].concat(C.CATEGORIES);
-    cats.forEach(function(c){
-      var n=c.key==='all'?owned.length:owned.filter(function(o){return o.item.category===c.key;}).length;
-      tabsBox.appendChild(el('button',{class:'tab',type:'button','aria-pressed':String(state.cat===c.key),on:{click:function(){state.cat=c.key;render();}}},
-        [c.label,el('span',{class:'n',text:'('+n+')'})]));
-    });
-  }
-
-  function card(o){
-    var it=o.item;
-    var art=el('div',{class:'card-art'}); art.innerHTML=ItemArt.forItem(it.id);
-    if(it.stackable&&o.qty>1) art.appendChild(el('span',{class:'qty','aria-label':'Jumlah '+o.qty,text:'x'+o.qty}));
-    var meta=el('div',{class:'card-meta'},[UI.rarityBadge(it.rarity),el('span',{class:'badge own',text:C.KIND_META[it.kind].noun})]);
-    if(o.equipped) meta.appendChild(el('span',{class:'badge on'},['✓ Dipakai']));
-    var actions=el('div',{class:'card-actions'});
-    actions.appendChild(el('button',{class:'btn small'+(o.equipped?' light':''),type:'button',disabled:o.equipped,
-      'aria-label':(o.equipped?'Sedang dipakai: ':'Gunakan ')+it.name,
-      on:{click:function(){var r=PD.equip(it.id);
-        if(r.ok) UI.toast(it.name+' sekarang dipakai.','ok'); else UI.toast('Tidak bisa memakai '+it.name+'.','error');}}},
-      [o.equipped?'Sedang dipakai':'Gunakan']));
-    if(it.kind==='skin') actions.appendChild(el('a',{class:'btn small light',href:'skins.html?skin='+encodeURIComponent(it.id)},['Lihat di Skin']));
-    return el('li',{class:'card-item'+(o.equipped?' is-active':''),'data-rarity':it.rarity},[
-      art,el('div',{class:'card-name',text:it.name}),meta,
-      el('p',{class:'card-sub',text:'Diperoleh '+UI.fmtDate(o.acquiredAt)}),actions]);
-  }
-
-  function render(){
-    var owned=PD.ownedItems();
-    document.getElementById('total').textContent='Kamu memiliki '+owned.length+' dari '+C.items.length+' item di katalog.';
-    renderTabs(owned);
-    var list=visible(owned), grid=document.getElementById('grid'), empty=document.getElementById('empty');
-    grid.textContent='';
-    document.getElementById('count').textContent='Menampilkan '+list.length+' item';
-    list.forEach(function(o){grid.appendChild(card(o));});
-    empty.textContent=''; empty.hidden=list.length>0;
-    if(!list.length){
-      var filtered=state.q||state.rar||state.st;
-      var catEmpty=state.cat!=='all'&&!owned.some(function(o){return o.item.category===state.cat;});
-      var box=el('div',{class:'notice empty'});
-      if(owned.length===0){
-        box.appendChild(el('strong',{text:'Koleksi masih kosong'}));
-        box.appendChild(el('span',{text:'Beli item pertamamu di Toko.'}));
-      }else if(catEmpty&&!filtered){
-        box.appendChild(el('strong',{text:'Belum ada item '+C.categoryLabel(state.cat)}));
-        box.appendChild(el('span',{text:'Kamu belum memiliki item di kategori ini. Cek Toko untuk menemukan yang baru.'}));
-      }else{
-        box.appendChild(el('strong',{text:'Tidak ada item yang cocok'}));
-        box.appendChild(el('span',{text:'Coba ubah pencarian atau filter.'}));
-      }
-      box.appendChild(el('div',{style:'margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap'},[
-        filtered?el('button',{class:'btn small light',type:'button',on:{click:resetFilters}},['Reset filter']):null,
-        el('a',{class:'btn small',href:'shop.html'},['Cari item di Toko'])]));
-      empty.appendChild(box);
-    }
-  }
-  function resetFilters(){
-    state.q='';state.rar='';state.st='';state.sort='new';
-    document.getElementById('q').value='';document.getElementById('rar').value='';document.getElementById('st').value='';document.getElementById('sort').value='new';
-    render();
-  }
-
-  document.getElementById('q').addEventListener('input',function(e){state.q=e.target.value;render();});
-  document.getElementById('rar').addEventListener('change',function(e){state.rar=e.target.value;render();});
-  document.getElementById('sort').addEventListener('change',function(e){state.sort=e.target.value;render();});
-  document.getElementById('st').addEventListener('change',function(e){state.st=e.target.value;render();});
-  PD.subscribe(render);
-  render();
-})();
+<aside aria-label="Detail item" style="flex:1 1 320px;max-width:100%;background:linear-gradient(180deg,#1a2f55,#101d38);border:1px solid #22385f;border-radius:22px;padding:22px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;position:sticky;top:16px">
+<span style="align-self:flex-start;font-family:'Lilita One',sans-serif;font-size:13px;letter-spacing:.06em;padding:5px 10px;border-radius:8px;background:{{s.rc}};color:#0b1a2e">{{s.rarU}}</span>
+<div style="width:150px;height:150px;border-radius:24px;background:radial-gradient(circle,rgba(255,255,255,.10),rgba(255,255,255,0) 70%),#0a1428;border:2px solid {{s.rc}};display:flex;align-items:center;justify-content:center;box-shadow:{{s.glow}}">
+<svg width="104" height="104" sc-camel-view-box="-28 -4 56 56" aria-hidden="true"><polygon points="0,0 24,12 0,24 -24,12" style="fill:{{s.c0}}"></polygon><polygon points="-24,12 0,24 0,48 -24,36" style="fill:{{s.c1}}"></polygon><polygon points="0,24 24,12 24,36 0,48" style="fill:{{s.c2}}"></polygon><path d="{{s.g}}" fill="#0b1a2e" fill-opacity=".85"></path></svg></div>
+<h2 style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:30px;margin:4px 0 0">{{s.name}}</h2>
+<div style="color:#b9c9e4;font-size:14px;font-weight:600">{{s.cat}} · {{s.status}}</div>
+<p style="color:#c9d8f0;font-size:15px;line-height:1.55;margin:0">{{s.desc}}</p>
+<button type="button" sc-camel-on-click="{{useIt}}" aria-disabled="{{s.locked}}" style="margin-top:8px;width:100%;min-height:56px;border:0;border-radius:14px;font-family:'Lilita One',sans-serif;font-size:24px;{{s.btn}}">{{s.btnText}}</button>
+</aside>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+renderVals() {
+const st = this.state || {};
+const cat = st.cat ?? 'Semua', q = (st.q ?? '').toLowerCase(), sort = st.sort ?? 'rar', sel = st.sel ?? 1, eq = st.eq ?? 1;
+const G = { Skin:'M-14 22l8 4v7l-8-4zM14 22l-8 4v7l8-4z', Aksesori:'M-20 12l20 10 20-10v5l-20 10-20-10z', Efek:'M0 16l3 8 8 1-6 5 2 8-7-5-7 5 2-8-6-5 8-1z', Emote:'M-12 26h24l-4 9h-16z', Lainnya:'M-6 22h4v4h-4zM2 22h4v4h-4zM-2 30h4v4h-4z' };
+const RC = { Umum:['#8497b3',0], Langka:['#3b92ee',1], Epik:['#9a63e8',2], Legendaris:['#f2b705',3] };
+const D = [
+[1,'Naga Emas','Skin','Legendaris',1,'#ffe27a','#f2b705','#c48f00','Skin naga berlapis emas, favorit para juara musim.'],
+[2,'Ksatria Voxel','Skin','Epik',1,'#8fd0ff','#3b92ee','#1f5fb8','Baju zirah biru untuk penakluk tangga tertinggi.'],
+[3,'Ninja Bayangan','Skin','Langka',1,'#6b7a99','#3d4a66','#28324a','Senyap dan cepat, melesat di antara blok.'],
+[4,'Ular Neon','Skin','Langka',1,'#c6ff5a','#58b02d','#2d7a21','Hijau menyala, bikin lawan waspada.'],
+[5,'Astronot','Skin','Umum',1,'#e4ecf7','#aebdd3','#8497b3','Siap menjelajah papan sampai ke bulan.'],
+[6,'Topi Penyihir','Aksesori','Epik',1,'#d8b8ff','#9a63e8','#6a3db0','Topi runcing bertabur bintang ungu.'],
+[7,'Mahkota Raja','Aksesori','Legendaris',0,'#ffe27a','#f2b705','#c48f00','Hadiah puncak peringkat. Raih peringkat 1 untuk membukanya.'],
+[8,'Kacamata Piksel','Aksesori','Umum',1,'#aebdd3','#8497b3','#5d7090','Gaya retro yang selalu cocok.'],
+[9,'Jejak Api','Efek','Epik',1,'#ffc98a','#f08a24','#b5600f','Tinggalkan jejak api di tiap langkah.'],
+[10,'Percikan Bintang','Efek','Legendaris',0,'#fff3b0','#ffe27a','#f2b705','Selesaikan 50 misi musim untuk membukanya.'],
+[11,'Gelembung Hijau','Efek','Umum',1,'#c6ff5a','#58b02d','#2d7a21','Gelembung ringan saat bidak bergerak.'],
+[12,'Joget Dadu','Emote','Langka',1,'#ff9a9a','#e24b4b','#a82a2a','Goyang dulu sebelum melempar dadu.'],
+[13,'Salam Blok','Emote','Umum',1,'#9ff2e0','#2fbfa3','#1b8672','Sapaan ramah untuk semua pemain.'],
+[14,'Tawa Kubus','Emote','Epik',0,'#ffb3d1','#e0568f','#a8316a','Menangkan 25 pertandingan untuk membukanya.'],
+[15,'Kotak Misteri','Lainnya','Langka',1,'#9ff2e0','#2fbfa3','#1b8672','Buka untuk mendapat kejutan acak.'],
+[16,'Tiket Musim','Lainnya','Umum',1,'#aebdd3','#8497b3','#5d7090','Tanda ikut serta di musim ini.']];
+const mk = (r) => { const rc = RC[r[3]][0]; const owned = !!r[4]; return { id:r[0], name:r[1], cat:r[2], rar:r[3], rarU:r[3].toUpperCase(), rk:RC[r[3]][1], owned, locked:!owned, rc, glow: r[3]==='Legendaris' ? '0 0 0 1px rgba(255,226,122,.2),0 14px 36px rgba(242,183,5,.22)' : r[3]==='Epik' ? '0 10px 28px rgba(154,99,232,.18)' : 'none', c0:r[5], c1:r[6], c2:r[7], g:G[r[2]], op: owned ? 1 : 0.45, desc:r[8], pick:() => this.setState({ sel:r[0] }) }; };
+const all = D.map(mk);
+let items = all.filter(i => (cat==='Semua' || i.cat===cat) && i.name.toLowerCase().includes(q));
+items.sort((a,b) => sort==='az' ? a.name.localeCompare(b.name) : sort==='own' ? (b.owned-a.owned)||(b.rk-a.rk) : (b.rk-a.rk)||a.name.localeCompare(b.name));
+const base = all.find(i => i.id===sel) || all[0];
+const s = { ...base, status: !base.owned ? 'Terkunci' : base.id===eq ? 'Sedang dipakai' : 'Dimiliki', btnText: !base.owned ? 'Terkunci' : base.id===eq ? 'Sedang Dipakai' : 'Gunakan', btn: !base.owned ? 'background:#1b2f52;color:#8fa6c9;cursor:not-allowed' : base.id===eq ? 'background:rgba(125,255,46,.12);color:#7dff2e;border:2px solid #7dff2e' : 'background:#7dff2e;color:#08140a;box-shadow:0 6px 0 #3fa312,0 14px 34px rgba(125,255,46,.3)' };
+const names = ['Semua','Skin','Aksesori','Efek','Emote','Lainnya'];
+const owned = all.filter(i => i.owned).length;
+return {
+ s, items, hasItems: items.length>0, noItems: items.length===0, q: st.q ?? '',
+ ownedCount: owned, total: all.length, pct: Math.round(owned/all.length*100)+'%',
+ tabs: names.map(n => ({ name:n, on: n===cat, style: n===cat ? 'background:#7dff2e;color:#08140a;box-shadow:0 3px 0 #3fa312' : 'background:transparent;color:#b9c9e4', pick:() => this.setState({ cat:n }) })),
+ onSearch: (e) => this.setState({ q:e.target.value }),
+ onSort: (e) => this.setState({ sort:e.target.value }),
+ reset: () => this.setState({ q:'', cat:'Semua' }),
+ useIt: () => { if (base.owned) this.setState({ eq:base.id }); }
+};
+}
+}
 </script>
-</body>
-</html>
+
+
+
+<div style="height:84px"></div>
+<nav aria-label="Navigasi utama" style="position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;justify-content:space-around;gap:2px;background:rgba(10,20,40,.94);backdrop-filter:blur(10px);border:1px solid #2f3f7a;border-radius:22px;padding:6px;box-shadow:0 14px 40px rgba(0,0,0,.6)"><a href="lobby.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9H3zM9 20v-6h6v6"></path></svg>Lobi</a><a href="inventory.html" aria-current="page" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;background:#7dff2e;color:#08140a"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8l8-4 8 4v8l-8 4-8-4zM4 8l8 4 8-4M12 12v8"></path></svg>Inventaris</a><a href="skins.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a4 4 0 100 8 4 4 0 000-8zM4 21c0-4 4-6 8-6s8 2 8 6"></path></svg>Skin</a><a href="shop.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 016 0v2"></path></svg>Toko</a><a href="leaderboard.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v6a4 4 0 01-8 0zM8 6H4v2a3 3 0 003 3M16 6h4v2a3 3 0 01-3 3M12 14v4M8 20h8"></path></svg>Peringkat</a></nav>
+</body></html>
