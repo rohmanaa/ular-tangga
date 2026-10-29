@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Papan Peringkat Top Voxel — Ular Tangga Blok</title>
+<meta name="description" content="Para penjelajah blok terbaik yang telah menaklukkan puncak papan permainan Ular Tangga Blok.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-26 -2 52 52'%3E%3Cpolygon points='0,0 24,12 0,24 -24,12' fill='%23c6ff5a'/%3E%3Cpolygon points='-24,12 0,24 0,48 -24,36' fill='%2358b02d'/%3E%3Cpolygon points='0,24 24,12 24,36 0,48' fill='%232d7a21'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{margin:0;background:#0a1428}
+a{color:inherit;text-decoration:none}
+:root{--px:48px}
+@media(max-width:700px){:root{--px:20px}}
+.page{background:#0a1428;color:#eaf2ff;font-family:'Plus Jakarta Sans',system-ui,sans-serif;overflow-x:clip}
+.lil{font-family:'Lilita One',sans-serif;font-weight:400}
+:focus-visible{outline:3px solid #7dff2e;outline-offset:3px;border-radius:8px}
+
+.cta{display:inline-flex;align-items:center;gap:10px;background:#7dff2e;color:#08140a;font-family:'Lilita One',sans-serif;font-size:24px;padding:16px 36px;border-radius:14px;border:0;cursor:pointer;box-shadow:0 6px 0 #3fa312,0 14px 34px rgba(125,255,46,.35);transition:transform .12s,box-shadow .12s,background .12s}
+.cta:hover{background:#9bff58}
+.cta:active{transform:translateY(4px);box-shadow:0 2px 0 #3fa312,0 6px 16px rgba(125,255,46,.3)}
+.btn2{display:inline-flex;align-items:center;gap:10px;background:rgba(10,20,40,.4);color:#eaf2ff;border:2px solid rgba(255,255,255,.55);font:700 16px 'Plus Jakarta Sans',sans-serif;padding:14px 24px;border-radius:14px;cursor:pointer;backdrop-filter:blur(6px);transition:border-color .15s,color .15s,transform .12s}
+.btn2:hover{border-color:#7dff2e;color:#7dff2e}
+.btn2:active{transform:translateY(2px)}
+.btn-line{display:inline-flex;align-items:center;gap:10px;color:#7dff2e;border:2px solid #7dff2e;font-family:'Lilita One',sans-serif;font-size:22px;padding:14px 30px;border-radius:14px;box-shadow:0 5px 0 #1f5a14;background:rgba(125,255,46,.06);transition:transform .12s,box-shadow .12s,background .12s}
+.btn-line:hover{background:rgba(125,255,46,.16)}
+.btn-line:active{transform:translateY(3px);box-shadow:0 2px 0 #1f5a14}
+.card{background:#101d38;border:1px solid #22385f;border-radius:20px}
+.nav a.l2{color:#b9c9e4;font-weight:600;font-size:15px}
+.nav a.l2:hover,.nav a.l2.on{color:#fff}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(125,255,46,.6)}100%{box-shadow:0 0 0 12px rgba(125,255,46,0)}}
+.dot{width:10px;height:10px;border-radius:50%;background:#7dff2e;animation:pulse 1.6s infinite;flex:none}
+.live-pill{display:inline-flex;align-items:center;gap:10px;background:rgba(125,255,46,.1);border:1px solid rgba(125,255,46,.4);color:#c9d8f0;padding:8px 16px;border-radius:999px;font-size:14px}
+.live-pill b{color:#fff;font-size:15px}
+.eyebrow{color:#7dff2e;font-weight:700;font-size:14px;letter-spacing:.14em}
+
+/* ---- podium ---- */
+.podium{display:grid;grid-template-columns:1fr 1.12fr 1fr;gap:22px;align-items:end;max-width:1020px;margin:0 auto}
+.pd{padding:26px 22px;text-align:center;display:flex;flex-direction:column;align-items:center;position:relative;transition:transform .2s}
+.pd:hover{transform:translateY(-6px)}
+.pd .tag{position:absolute;top:14px;left:14px;font-family:'Lilita One',sans-serif;font-size:13px;letter-spacing:.06em;padding:5px 10px;border-radius:8px}
+.pd .av{margin:22px 0 10px;position:relative;display:flex;justify-content:center}
+.pd h3{font-family:'Lilita One',sans-serif;font-weight:400;font-size:24px;margin:2px 0 4px;word-break:break-word}
+.pd .sub{color:#b9c9e4;font-size:14px;margin-bottom:16px}
+.pd .stat{width:100%;background:#0a1428;border:1px solid #22385f;border-radius:14px;padding:10px 14px}
+.pd .stat span{display:block;font-size:12px;color:#9fb3d1}
+.pd .stat b{font-family:'Lilita One',sans-serif;font-weight:400;font-size:21px}
+.pd1{padding:34px 26px 28px;border-color:rgba(255,226,122,.6);background:linear-gradient(180deg,#1a2f55,#101d38);box-shadow:0 0 0 1px rgba(255,226,122,.12),0 24px 60px rgba(242,183,5,.16)}
+.pd1 h3{font-size:28px}
+.pd1 .stat{border-color:rgba(255,226,122,.35)}
+.pd1 .stat b{color:#ffe27a;font-size:24px}
+.pd2{border-color:rgba(213,224,240,.35)}
+.pd3{border-color:rgba(246,182,127,.35)}
+.crown{position:absolute;top:-30px;left:50%;margin-left:-22px;animation:bob 3.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@media(max-width:820px){.podium{grid-template-columns:1fr;max-width:420px}.pd1{order:-1;margin-top:20px}}
+
+footer .ft{max-width:1280px;margin:0 auto;padding:28px var(--px);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;color:#9fb3d1;font-size:14px}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+.lb-hero{position:relative;background:linear-gradient(180deg,rgba(10,20,40,0) 60%,#0a1428 100%),linear-gradient(180deg,#1357c4 0%,#3b92ee 45%,#8fd0ff 100%);overflow:hidden}
+.lb-deco{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.9}
+@keyframes fl-a{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes drift{0%,100%{transform:translateX(0)}50%{transform:translateX(26px)}}
+.fl-a{animation:fl-a 12s ease-in-out infinite}
+.fl-b{animation:fl-a 15s ease-in-out infinite reverse}
+.cl{animation:drift 40s ease-in-out infinite}
+
+.ctrl{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:14px 16px;box-shadow:0 20px 50px rgba(4,10,24,.4)}
+.tabs{display:flex;gap:6px;background:#0a1428;border:1px solid #22385f;border-radius:14px;padding:5px;flex-wrap:wrap}
+.tab{background:transparent;border:0;color:#b9c9e4;font:700 14px 'Plus Jakarta Sans',sans-serif;padding:10px 18px;border-radius:10px;cursor:pointer;transition:background .15s,color .15s}
+.tab:hover{color:#fff}
+.tab[aria-selected="true"]{background:#7dff2e;color:#08140a;box-shadow:0 3px 0 #3fa312}
+.search{position:relative;flex:1 1 220px;max-width:340px}
+.search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#7e93b6}
+.search input{width:100%;background:#0a1428;border:1px solid #22385f;border-radius:14px;color:#eaf2ff;font:500 15px 'Plus Jakarta Sans',sans-serif;padding:13px 16px 13px 44px}
+.search input::placeholder{color:#7e93b6}
+.search input:focus{outline:none;border-color:#7dff2e}
+
+.list{list-style:none;margin:0;padding:6px 0;overflow:hidden}
+.row{display:grid;grid-template-columns:52px minmax(0,1fr) 120px 170px 110px;gap:16px;align-items:center;padding:12px 22px;border-top:1px solid #1b2f52}
+.row.head{border-top:0;color:#8fa6c9;font-size:12px;font-weight:700;letter-spacing:.1em;padding-top:14px;padding-bottom:10px}
+.row:not(.head):hover{background:rgba(125,255,46,.05)}
+.rk{font-family:'Lilita One',sans-serif;font-size:24px;color:#b9c9e4;text-align:center}
+.rk.top{color:#7dff2e}
+.who{display:flex;align-items:center;gap:14px;min-width:0}
+.who .nm{display:block;font-family:'Lilita One',sans-serif;font-size:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who small{display:block;color:#9fb3d1;font-size:13px;margin-top:1px}
+.who svg{flex:none}
+.num b{display:block;font-family:'Lilita One',sans-serif;font-weight:400;font-size:19px}
+.num small{color:#8fa6c9;font-size:12px}
+.pts b{color:#7dff2e}
+.wr{display:flex;align-items:center;gap:10px}
+.wr .bar{flex:1;height:8px;border-radius:99px;background:#0a1428;border:1px solid #22385f;overflow:hidden}
+.wr .bar i{display:block;height:100%;background:linear-gradient(90deg,#58b02d,#7dff2e);border-radius:99px}
+.wr em{font-style:normal;font-weight:700;font-size:13px;color:#c9d8f0;min-width:38px;text-align:right}
+.empty{padding:46px 20px;text-align:center;color:#9fb3d1}
+@media(max-width:760px){
+  .row{grid-template-columns:38px minmax(0,1fr) auto;gap:12px;padding:12px 16px}
+  .row .wins,.row .wr{display:none}
+  .row.head .hide-m{display:none}
+}
+.more{display:flex;justify-content:center;margin-top:26px}
+.more button{cursor:pointer;background:transparent;font-family:'Plus Jakarta Sans',sans-serif}
+.tabnote{color:#8fa6c9;font-size:13px;text-align:center;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="page">
+
+<section class="lb-hero">
+<svg class="lb-deco" viewBox="0 0 1440 420" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<defs><filter id="bl2" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur stdDeviation="14"/></filter>
+<g id="c"><polygon points="0,0 24,12 0,24 -24,12" style="fill:var(--t)"/><polygon points="-24,12 0,24 0,48 -24,36" style="fill:var(--l)"/><polygon points="0,24 24,12 24,36 0,48" style="fill:var(--r)"/></g>
+<style>.w{--t:#fff;--l:#dbe8f7;--r:#bcd0ea}.g{--t:#9bec4f;--l:#58b02d;--r:#3f8a21}.d{--t:#9a6a3c;--l:#7a5230;--r:#5f3f25}.l{--t:#6fd13a;--l:#3f9e2b;--r:#2d7a21}</style></defs>
+<ellipse cx="260" cy="120" rx="150" ry="34" fill="#fff" opacity=".5" filter="url(#bl2)"/>
+<ellipse cx="1180" cy="90" rx="140" ry="30" fill="#fff" opacity=".45" filter="url(#bl2)"/>
+<g class="cl"><use href="#c" class="w" transform="translate(150 70) scale(.9)"/><use href="#c" class="w" transform="translate(172 59) scale(.9)"/><use href="#c" class="w" transform="translate(194 70) scale(.9)"/><use href="#c" class="w" transform="translate(172 81) scale(.9)"/><use href="#c" class="w" transform="translate(216 59) scale(.9)"/></g>
+<g class="fl-a"><use href="#c" class="d" transform="translate(1210 190) scale(.8)"/><use href="#c" class="d" transform="translate(1234 202) scale(.8)"/><use href="#c" class="g" transform="translate(1210 172) scale(.8)"/><use href="#c" class="g" transform="translate(1234 184) scale(.8)"/><use href="#c" class="g" transform="translate(1186 184) scale(.8)"/><use href="#c" class="l" transform="translate(1210 154) scale(.8)"/></g>
+<g class="fl-b"><use href="#c" class="d" transform="translate(120 250) scale(.6)"/><use href="#c" class="g" transform="translate(120 232) scale(.6)"/><use href="#c" class="g" transform="translate(144 244) scale(.6)"/><use href="#c" class="l" transform="translate(120 214) scale(.6)"/></g>
+</svg>
+<div style="max-width:1280px;margin:0 auto;padding:0 var(--px);position:relative">
+<div class="nav" style="display:flex;align-items:center;justify-content:space-between;min-height:88px;gap:24px;flex-wrap:wrap">
+<a href="index.html" style="display:flex;align-items:center;gap:12px"><svg width="40" height="44" viewBox="-26 -2 52 52" aria-hidden="true"><polygon points="0,0 24,12 0,24 -24,12" fill="#c6ff5a"/><polygon points="-24,12 0,24 0,48 -24,36" fill="#58b02d"/><polygon points="0,24 24,12 24,36 0,48" fill="#2d7a21"/></svg><span style="font-family:'Lilita One',sans-serif;font-size:26px;line-height:.9;letter-spacing:.5px">ULAR TANGGA<br><span style="color:#7dff2e;font-size:34px">BLOK</span></span></a>
+<div style="display:flex;gap:36px;align-items:center;flex-wrap:wrap">
+<a class="l2" href="index.html#fitur" style="color:#e3f1ff">Fitur</a><a class="l2" href="index.html#cara" style="color:#e3f1ff">Cara Bermain</a><a class="l2 on" href="leaderboard.html" style="color:#fff;border-bottom:2px solid #7dff2e;padding-bottom:4px">Peringkat</a>
+<a href="index.html#main" style="border:2px solid #7dff2e;color:#7dff2e;font-weight:700;padding:10px 22px;border-radius:12px;font-size:15px;background:rgba(10,20,40,.35)">Masuk</a>
+</div></div>
+<div style="text-align:center;padding:28px 0 130px">
+<div style="display:inline-flex;align-items:center;gap:10px;background:rgba(10,20,40,.35);border:1px solid rgba(125,255,46,.55);color:#c9ffa0;padding:8px 16px;border-radius:999px;font-size:14px;font-weight:700">Musim Ini · Diperbarui Live</div>
+<h1 style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:clamp(40px,6vw,72px);line-height:1;margin:20px 0 16px;letter-spacing:.5px;text-shadow:0 4px 0 rgba(10,30,70,.35)">Papan Peringkat<br><span style="color:#7dff2e">Top Voxel</span></h1>
+<p style="font-size:19px;line-height:1.6;color:#eaf5ff;max-width:560px;margin:0 auto 24px">Para penjelajah blok terbaik yang telah menaklukkan puncak papan permainan!</p>
+<span class="live-pill" style="background:rgba(10,20,40,.4)"><span class="dot"></span><span><b>12.480</b> pemain online sekarang</span></span>
+</div>
+</div>
+</section>
+
+<main style="max-width:1120px;margin:-84px auto 0;padding:0 var(--px) 40px;position:relative">
+
+<div class="card ctrl">
+<div class="tabs" role="tablist" aria-label="Periode peringkat">
+<button class="tab" role="tab" data-tab="season" aria-selected="true" type="button">Musim Ini</button>
+<button class="tab" role="tab" data-tab="month" aria-selected="false" type="button">Bulan Ini</button>
+<button class="tab" role="tab" data-tab="all" aria-selected="false" type="button">Sepanjang Masa</button>
+</div>
+<label class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" placeholder="Cari nama pemain…" aria-label="Cari nama pemain" autocomplete="off"></label>
+</div>
+
+<div style="padding:84px 0 0"><div class="podium" id="podium" style="margin-top:0"></div></div>
+
+<div class="card list" style="margin-top:36px">
+<ul class="list" style="padding:6px 0;border:0;margin:0;list-style:none">
+<li class="row head"><span style="text-align:center">#</span><span>PEMAIN</span><span class="wins hide-m">KEMENANGAN</span><span class="wr hide-m">WIN RATE</span><span>POIN</span></li>
+</ul>
+<ul class="list" id="rows" style="padding:0;margin:0;list-style:none"></ul>
+</div>
+
+<div class="more" id="more"><button class="btn-line" id="moreBtn" type="button">Tampilkan peringkat 11–20</button></div>
+<p class="tabnote" id="tabNote"></p>
+
+<div style="border-radius:28px;padding:56px 28px;text-align:center;margin-top:64px;background:radial-gradient(ellipse at 50% 0%,rgba(125,255,46,.22),rgba(125,255,46,0) 60%),#101d38;border:1px solid #2a4a2a">
+<h2 style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:clamp(30px,5.5vw,46px);line-height:1.05;margin:0 0 12px">Namamu belum ada di sini?</h2>
+<p style="color:#c9d8f0;font-size:18px;margin:0 0 28px">Lempar dadu, panjat tangga, dan naik ke puncak papan peringkat.</p>
+<a class="cta" href="index.html#main">Main Sekarang <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+</div>
+
+</main>
+<footer style="border-top:1px solid #1b2f52"><div class="ft"><span style="font-family:'Lilita One',sans-serif;font-size:20px;color:#eaf2ff">ULAR TANGGA <span style="color:#7dff2e">BLOK</span></span><span>© 2026 Ular Tangga Blok. Semua hak dilindungi.</span></div></footer>
+</div>
+<script>
+(function(){
+  var PAL=[
+    ['#ffe27a','#f2b705','#c48f00'],['#e4ecf7','#aebdd3','#8497b3'],['#f0a96a','#d17a36','#a35a22'],
+    ['#c6ff5a','#58b02d','#2d7a21'],['#8fd0ff','#3b92ee','#1f5fb8'],['#ffb3d1','#e0568f','#a8316a'],
+    ['#d8b8ff','#9a63e8','#6a3db0'],['#ffc98a','#f08a24','#b5600f'],['#9ff2e0','#2fbfa3','#1b8672'],['#ff9a9a','#e24b4b','#a82a2a']];
+  // Data contoh. Ganti dengan hasil API: [{n,lv,sk,w,wr}, ...]
+  var BASE=[
+    ['RajaBlok99',58,'Naga Emas',2890,78],['Budi_VoxelMaster',42,'Ksatria',1240,74],['Siti_NinjaBlok',39,'Ninja',980,71],
+    ['BlokMaster_Dito',37,'Penjelajah',940,69],['NaraPixel',35,'Robot',905,68],['SiUlarHijau',34,'Ular Neon',860,66],
+    ['KubikKuning',33,'Lebah',812,66],['Putra_Tangga',31,'Pendaki',790,64],['Lintang_Voxel',30,'Astronot',744,63],
+    ['PixelPanda',29,'Panda',701,62],['Gilang3D',28,'Kapten Blok',668,61],['Mawar_Blocky',27,'Penyihir',630,60],
+    ['AriTanggaEmas',26,'Raja Tangga',598,60],['DewiKubus',25,'Peri Hutan',570,59],['Fajar_Dadu6',24,'Penjudi',545,58],
+    ['Nusa_Block',23,'Garuda',512,58],['Rani_Voxel',22,'Pelaut',488,57],['TomiTangga',21,'Montir',460,56],
+    ['LarasBlok',20,'Pemanah',431,55],['Bayu_Ular',19,'Pawang Ular',402,54]
+  ].map(function(r,i){return{i:i,n:r[0],lv:r[1],sk:r[2],w:r[3],wr:r[4]}});
+  var SCALE={season:function(p){return p.w},month:function(p){return Math.round(p.w*.22*(.8+((p.i*7)%5)/10))},all:function(p){return Math.round(p.w*2.6*(.85+((p.i*3)%6)/12))}};
+  var LABEL={season:'Peringkat musim ini',month:'Peringkat bulan ini',all:'Peringkat sepanjang masa'};
+  var tab='season',query='',shown=10;
+
+  function cube(c,w,h){return '<svg width="'+w+'" height="'+h+'" viewBox="-28 -4 56 56" aria-hidden="true"><polygon points="0,0 24,12 0,24 -24,12" fill="'+c[0]+'"/><polygon points="-24,12 0,24 0,48 -24,36" fill="'+c[1]+'"/><polygon points="0,24 24,12 24,36 0,48" fill="'+c[2]+'"/><path d="M-14 22l8 4v7l-8-4zM14 22l-8 4v7l8-4z" fill="#0b1a2e"/></svg>'}
+  var fmt=function(n){return n.toLocaleString('id-ID')};
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+
+  function data(){
+    var f=SCALE[tab];
+    return BASE.map(function(p){var w=f(p);return{n:p.n,lv:p.lv,sk:p.sk,w:w,wr:p.wr,pts:Math.round(w*3.4+p.lv*12),pal:PAL[3+(p.i%7)]}})
+      .sort(function(a,b){return b.pts-a.pts}).map(function(p,i){p.rank=i+1;if(i<3)p.pal=PAL[i];return p});
+  }
+
+  function podium(top){
+    var cfg=[
+      {c:'pd2',tag:'#2 PERAK',ts:'background:#d5e0f0;color:#0b1a2e',s:72,h:76},
+      {c:'pd1',tag:'#1 JUARA',ts:'background:#ffe27a;color:#3a2a00',s:92,h:98},
+      {c:'pd3',tag:'#3 PERUNGGU',ts:'background:#f0a96a;color:#2e1604',s:72,h:76}];
+    var who=[1,0,2]; // kartu kiri=#2, tengah=#1, kanan=#3
+    return cfg.map(function(o,k){
+      var p=top[who[k]],first=(k===1);
+      var crown=first?'<svg class="crown" width="44" height="34" viewBox="0 0 40 30" aria-hidden="true"><polygon points="3,25 6,7 14,15 20,3 26,15 34,7 37,25" fill="#ffe27a" stroke="#c48f00" stroke-width="2" stroke-linejoin="round"/><rect x="3" y="25" width="34" height="4" rx="1" fill="#f2b705"/></svg>':'';
+      return '<div class="card pd '+o.c+'"><span class="tag" style="'+o.ts+'">'+o.tag+'</span>'
+        +'<div class="av">'+crown+cube(p.pal,o.s,o.h)+'</div>'
+        +'<h3>'+esc(p.n)+'</h3>'
+        +'<div class="sub"'+(first?' style="color:#ffe27a;font-weight:600"':'')+'>Level '+p.lv+' · Skin '+esc(p.sk)+'</div>'
+        +'<div class="stat"><span>Kemenangan</span><b>'+fmt(p.w)+' match</b></div></div>';
+    }).join('');
+  }
+
+  function row(p){
+    return '<li class="row"><span class="rk'+(p.rank<=3?' top':'')+'">'+p.rank+'</span>'
+      +'<span class="who">'+cube(p.pal,38,40)+'<span style="min-width:0"><span class="nm">'+esc(p.n)+'</span><small>Level '+p.lv+' · Skin '+esc(p.sk)+'</small></span></span>'
+      +'<span class="num wins"><b>'+fmt(p.w)+'</b><small>kemenangan</small></span>'
+      +'<span class="wr"><span class="bar"><i style="width:'+p.wr+'%"></i></span><em>'+p.wr+'%</em></span>'
+      +'<span class="num pts"><b>'+fmt(p.pts)+'</b><small>poin</small></span></li>';
+  }
+
+  function render(){
+    var all=data(),q=query.trim().toLowerCase(),pod=document.getElementById('podium'),list=document.getElementById('rows'),more=document.getElementById('more');
+    document.getElementById('tabNote').textContent=LABEL[tab]+' · top 20 pemain';
+    var rows;
+    if(q){
+      pod.hidden=true;
+      rows=all.filter(function(p){return p.n.toLowerCase().indexOf(q)>-1});
+      more.hidden=true;
+    }else{
+      pod.hidden=false;pod.innerHTML=podium(all.slice(0,3));
+      rows=all.slice(3);
+      var vis=rows.slice(0,shown-3);
+      more.hidden=rows.length<=vis.length;
+      rows=vis;
+    }
+    list.innerHTML=rows.length?rows.map(row).join(''):'<li class="empty">Tidak ada pemain dengan nama “'+esc(query)+'”.</li>';
+  }
+
+  document.querySelectorAll('.tab').forEach(function(b){
+    b.addEventListener('click',function(){
+      tab=b.dataset.tab;shown=10;
+      document.querySelectorAll('.tab').forEach(function(x){x.setAttribute('aria-selected',x===b?'true':'false')});
+      render();
+    });
+  });
+  document.getElementById('q').addEventListener('input',function(e){query=e.target.value;render()});
+  document.getElementById('moreBtn').addEventListener('click',function(){shown=20;render()});
+  render();
+})();
+</script>
+</body>
+</html>
