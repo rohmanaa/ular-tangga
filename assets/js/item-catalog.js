@@ -1,0 +1,110 @@
+/* Katalog item Ular Tangga Blok — SATU-SATUNYA sumber harga & metadata item.
+   Hanya berisi item yang benar-benar didukung gameplay (skin karakter, skin dadu, tema papan).
+   `gameKey` = kunci yang dipakai lobby.html / gameplay.html.
+   Kepemilikan pemain TIDAK disimpan di sini (lihat player-data.js). */
+(function (g) {
+  'use strict';
+
+  var RARITY = {
+    common:    { key: 'common',    label: 'Umum',       rank: 1, stars: '★' },
+    rare:      { key: 'rare',      label: 'Langka',     rank: 2, stars: '★★' },
+    epic:      { key: 'epic',      label: 'Epik',       rank: 3, stars: '★★★' },
+    legendary: { key: 'legendary', label: 'Legendaris', rank: 4, stars: '★★★★' }
+  };
+
+  var CATEGORIES = [
+    { key: 'skin',     label: 'Skin' },
+    { key: 'aksesori', label: 'Aksesori' },
+    { key: 'efek',     label: 'Efek' },
+    { key: 'emote',    label: 'Emote' },
+    { key: 'lainnya',  label: 'Lainnya' }
+  ];
+
+  var SKIN_GROUPS = ['Default', 'Adventure', 'Fantasy', 'Rare', 'Epic', 'Legendary'];
+
+  /* kind: skin -> bidak karakter | dice -> skin dadu | theme -> tema papan */
+  var KIND_META = {
+    skin:  { category: 'skin',     noun: 'Skin',       slot: 'skin' },
+    dice:  { category: 'aksesori', noun: 'Skin dadu',  slot: 'dice' },
+    theme: { category: 'lainnya',  noun: 'Tema papan', slot: 'theme' }
+  };
+
+  function skin(gameKey, name, group, rarity, price, desc, extra) {
+    return Object.assign({ id: 'skin.' + gameKey, kind: 'skin', gameKey: gameKey, name: name, group: group,
+      rarity: rarity, price: price, desc: desc, starter: price === 0 }, extra || {});
+  }
+  function dice(gameKey, name, rarity, price, desc, art, extra) {
+    return Object.assign({ id: 'dice.' + gameKey, kind: 'dice', gameKey: gameKey, name: 'Dadu ' + name,
+      rarity: rarity, price: price, desc: desc, starter: price === 0, art: art }, extra || {});
+  }
+  function theme(gameKey, name, rarity, price, desc, art, extra) {
+    return Object.assign({ id: 'theme.' + gameKey, kind: 'theme', gameKey: gameKey, name: 'Tema ' + name,
+      rarity: rarity, price: price, desc: desc, starter: price === 0, art: art }, extra || {});
+  }
+
+  var ITEMS = [
+    /* ---- Skin karakter ---- */
+    skin('steve',    'Steve',    'Default',   'common', 0,   'Petualang blok klasik. Siap melangkah ke petak mana pun.'),
+    skin('alex',     'Alex',     'Default',   'common', 0,   'Penjelajah lincah berambut oranye dengan jiwa petualang.'),
+    skin('creeper',  'Creeper',  'Adventure', 'common', 0,   'Hijau, diam-diam, dan penuh kejutan di setiap giliran.'),
+    skin('zombie',   'Zombie',   'Adventure', 'common', 0,   'Berjalan lambat tapi pantang menyerah sampai petak 100.'),
+    skin('skeleton', 'Skeleton', 'Rare',      'rare',   300, 'Tulang-belulang pemanah dari gua gelap. Dingin dan tajam.'),
+    skin('ender',    'Enderman', 'Epic',      'epic',   700, 'Makhluk tinggi dari dimensi lain dengan mata ungu menyala.', { featured: true }),
+
+    /* ---- Skin dadu (Aksesori) ---- */
+    dice('klasik',   'Klasik',   'common',    0,   'Dadu putih sederhana yang tidak pernah ketinggalan zaman.',
+         { bg: '#ffffff', pip: '#1b2a3b', edge: '#1b2a3b' }),
+    dice('rumput',   'Rumput',   'common',    100, 'Dadu hijau segar bergaya blok rumput.',
+         { bg: '#5fae3e', pip: '#1f4a12', edge: '#2c5a1c' }),
+    dice('tnt',      'TNT',      'rare',      200, 'Dadu merah meledak-ledak. Semoga angkanya ikut meledak!',
+         { bg: '#d63a2a', pip: '#ffffff', edge: '#4a0d07' }),
+    dice('diamond',  'Diamond',  'epic',      450, 'Dadu biru kristal berkilau seperti berlian dari tambang dalam.',
+         { bg: '#4aedd9', pip: '#0b4f4a', edge: '#0b4f4a' }),
+    dice('obsidian', 'Obsidian', 'epic',      500, 'Dadu ungu gelap dari obsidian dengan titik berpendar.',
+         { bg: '#2a1747', pip: '#d3b4ff', edge: '#0d0618' }),
+    dice('emas',     'Emas',     'legendary', 900, 'Dadu emas berkilau untuk pemain yang percaya diri.',
+         { bg: '#ffd23f', pip: '#6b4a00', edge: '#6b4a00' }, { featured: true }),
+
+    /* ---- Tema papan (Lainnya) ---- */
+    theme('minecraft', 'Minecraft', 'common', 0,   'Padang rumput blok bergaya klasik.',
+          { skyTop: '#6EC6FF', skyBot: '#E6F7FF', a: '#5FAE3E', b: '#8A5B33' }),
+    theme('rumput',    'Rumput',    'common', 0,   'Hamparan rumput hijau cerah di bawah langit biru.',
+          { skyTop: '#5EC1FF', skyBot: '#DDF4FF', a: '#78D957', b: '#9A6A3B' }),
+    theme('gurun',     'Gurun',     'rare',   250, 'Pasir hangat dan langit keemasan.',
+          { skyTop: '#FFD27A', skyBot: '#FFF4D8', a: '#FFD98C', b: '#D9763C' }),
+    theme('salju',     'Salju',     'rare',   250, 'Dataran putih dingin dengan salju turun.',
+          { skyTop: '#46AEEF', skyBot: '#E4F6FF', a: '#F4FCFF', b: '#54AEDB' }),
+    theme('hutan',     'Hutan',     'rare',   300, 'Rimbun, teduh, dan penuh pepohonan blok.',
+          { skyTop: '#27B2B8', skyBot: '#C9F5E4', a: '#46C46E', b: '#1F5F4D' }),
+    theme('nether',    'Nether',    'epic',   600, 'Dunia api dan batu merah yang berbahaya.',
+          { skyTop: '#2a0606', skyBot: '#8a2410', a: '#8A2B2B', b: '#3A0D0D' }, { featured: true })
+  ];
+
+  var BY_ID = {};
+  ITEMS.forEach(function (it) {
+    var meta = KIND_META[it.kind];
+    it.category = meta.category;
+    it.slot = meta.slot;
+    it.stackable = !!it.stackable;
+    it.featured = !!it.featured;
+    if (it.art) Object.freeze(it.art);
+    Object.freeze(it);
+    if (BY_ID[it.id]) throw new Error('ID item ganda: ' + it.id);
+    BY_ID[it.id] = it;
+  });
+
+  g.ItemCatalog = Object.freeze({
+    version: 1,
+    RARITY: RARITY,
+    CATEGORIES: CATEGORIES,
+    SKIN_GROUPS: SKIN_GROUPS,
+    KIND_META: KIND_META,
+    items: Object.freeze(ITEMS.slice()),
+    byId: function (id) { return Object.prototype.hasOwnProperty.call(BY_ID, id) ? BY_ID[id] : null; },
+    byGameKey: function (kind, gameKey) { return BY_ID[kind + '.' + gameKey] || null; },
+    starters: function () { return ITEMS.filter(function (i) { return i.starter; }); },
+    categoryLabel: function (key) { var c = CATEGORIES.filter(function (x) { return x.key === key; })[0]; return c ? c.label : key; },
+    /* Item default tiap slot saat data pemain dibuat */
+    defaultEquipped: { skin: 'skin.steve', dice: 'dice.klasik', theme: 'theme.minecraft' }
+  });
+})(window);

@@ -238,6 +238,39 @@ body.playing .side{display:block}
   </div>
 </section>
 
+<section class="overlay" id="pauseMenu" role="dialog" aria-modal="true" aria-labelledby="pmTitle" hidden>
+  <div class="card center">
+    <p class="eyebrow" id="pmSub">Permainan dijeda</p>
+    <h2 id="pmTitle">Menu</h2>
+    <p id="pmCpu" hidden>Komputer menunggu sampai kamu melanjutkan.</p>
+    <button class="btn big" type="button" id="pmResume">Lanjutkan</button>
+    <p class="lbl">Waktu</p>
+    <div class="pm-time">
+      <button class="btn light small" id="pmDay" type="button" aria-pressed="true">Siang</button>
+      <button class="btn light small" id="pmNight" type="button" aria-pressed="false">Malam</button>
+    </div>
+    <button class="btn light" type="button" id="pmExit">Keluar</button>
+  </div>
+</section>
+
+<section class="overlay" id="exitConfirm" role="alertdialog" aria-modal="true" aria-labelledby="ecTitle" aria-describedby="ecText" hidden style="z-index:30">
+  <div class="card center">
+    <h2 id="ecTitle">Keluar?</h2>
+    <p id="ecText">Permainan yang sedang berjalan tidak akan disimpan. Kembali ke lobi?</p>
+    <div class="modes">
+      <button class="btn light" type="button" id="ecNo">Batal</button>
+      <button class="btn" type="button" id="ecYes">Ya, keluar</button>
+    </div>
+  </div>
+</section>
+
+<style>
+.pm-time{display:flex;gap:8px}.pm-time .btn{flex:1}
+.btn.light[aria-pressed=true]{background:var(--sun)}
+#pauseMenu,#exitConfirm{background:rgba(10,14,30,.55)}
+#pauseMenu .card h2,#exitConfirm .card h2{font-size:clamp(24px,7vw,32px)}
+</style>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 if (typeof THREE === 'undefined') {
@@ -259,6 +292,9 @@ if (typeof THREE === 'undefined') {
   window.__NO_THREE = true;
 }
 </script>
+<script src="assets/js/item-catalog.js"></script>
+<script src="assets/js/player-data.js"></script>
+<script src="assets/js/game-integration.js"></script>
 <script>
     if (window.__NO_THREE) { throw new Error('Three.js tidak dimuat'); }
 (function(){
@@ -1406,6 +1442,7 @@ cv.addEventListener('wheel',e=>{ e.preventDefault(); goal.zoom=clamp(goal.zoom*M
 
 /* ---------- Permainan ---------- */
 const STALE={};
+let paused=false;
 let players=[],cur=0,busy=false,gameOver=false,gameId=0,mode='cpu',pendingTheme=null;
 
 function setMsg(t){ $('msg').textContent=t; }
@@ -1497,7 +1534,7 @@ function beginTurn(extra){
   if(extra) setMsg(p.name+' dapat giliran tambahan, lempar lagi.'+(p.cpu?'':' Tekan Lempar dadu.'));
   else setMsg(p.cpu?p.name+' sedang melempar dadu...':(mode==='cpu'?'Giliranmu. Tekan Roll dadu.':'Giliran '+p.name+'. Tekan Lempar dadu.'));
   setRoll(!p.cpu);
-  if(p.cpu){ const gid=gameId; setTimeout(async()=>{ if(gid!==gameId||gameOver) return; const ks=['sword','feather','potion','apple','tnt'].filter(k=>p.pu[k]); if(ks.length&&Math.random()<0.6) await usePU(ks[0],true); const go=()=>{ if(gid!==gameId||gameOver) return; if(busy){ setTimeout(go,500); return; } doRoll(); }; go(); },950); }
+  if(p.cpu){ const gid=gameId; setTimeout(async()=>{ if(gid!==gameId||gameOver) return; const ks=['sword','feather','potion','apple','tnt'].filter(k=>p.pu[k]); const go=()=>{ if(gid!==gameId||gameOver) return; if(busy||paused){ setTimeout(go,paused?250:500); return; } doRoll(); }; if(paused){ go(); return; } if(ks.length&&Math.random()<0.6) await usePU(ks[0],true); go(); },950); }
 }
 function nextTurn(){ cur=(cur+1)%players.length; busy=false; beginTurn(); }
 
@@ -1635,7 +1672,7 @@ async function playTurn(p,v,gid,bn){
   else nextTurn();
 }
 async function doRoll(){
-  if(busy||gameOver||!players.length) return;
+  if(busy||paused||gameOver||!players.length) return;
   busy=true; setRoll(false);
   const gid=gameId,p=players[cur];let v=1+Math.floor(Math.random()*6);
   if(p.p4){ v=4+Math.floor(Math.random()*3); p.p4=false; }
@@ -1709,7 +1746,26 @@ $('btnTheme').addEventListener('click',()=>{
   chooseTheme(THEMES[(i+1)%THEMES.length].key);
 });
 $('btnSnd').addEventListener('click',()=>{ muted=!muted; ensureAudio(); $('btnSnd').textContent='Suara: '+(muted?'mati':'nyala'); });
-$('btnMenu').addEventListener('click',()=>{ location.href=LOBBY_URL; });
+/* ---------- Menu jeda: lanjutkan, siang/malam, keluar (dengan konfirmasi) ---------- */
+function syncPauseNight(){ $('pmDay').setAttribute('aria-pressed',String(!night)); $('pmNight').setAttribute('aria-pressed',String(night)); }
+function openPause(){
+  if(paused) return; paused=true;
+  $('pmCpu').hidden=mode!=='cpu'; syncPauseNight();
+  $('pauseMenu').hidden=false; $('pmResume').focus();
+}
+function closePause(){ paused=false; $('exitConfirm').hidden=true; $('pauseMenu').hidden=true; $('btnMenu').focus(); }
+$('btnMenu').addEventListener('click',openPause);
+$('pmResume').addEventListener('click',closePause);
+$('pmDay').addEventListener('click',()=>{ setNight(false); syncPauseNight(); });
+$('pmNight').addEventListener('click',()=>{ setNight(true); syncPauseNight(); });
+$('pmExit').addEventListener('click',()=>{ $('exitConfirm').hidden=false; $('ecNo').focus(); });
+$('ecNo').addEventListener('click',()=>{ $('exitConfirm').hidden=true; $('pmExit').focus(); });
+$('ecYes').addEventListener('click',()=>{ location.href=LOBBY_URL; });
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape'||document.body.classList.contains('playing')===false) return;
+  if(!$('exitConfirm').hidden){ $('exitConfirm').hidden=true; return; }
+  if(paused) closePause(); else if($('win').hidden) openPause();
+});
 $('btnAgain').addEventListener('click',()=>{ ensureAudio(); startGame(mode,lastSkins); });
 $('btnToMenu').addEventListener('click',()=>{ location.href=LOBBY_URL; });
 

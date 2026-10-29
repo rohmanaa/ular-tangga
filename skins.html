@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2a211b">
+<title>Skin — Ular Tangga Blok</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/nav.css">
+<style>
+.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}.layout>*{min-width:0}
+@media(min-width:820px){.layout{grid-template-columns:minmax(300px,5fr) minmax(0,7fr);align-items:start}.preview{position:sticky;top:12px}}
+.preview .stage{min-height:230px}.preview .stage svg.art-char{height:150px}@media(min-width:820px){.preview .stage{min-height:300px}.preview .stage svg.art-char{height:200px}}
+.pv-info{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.pv-info h2{font-size:20px}
+.skin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;list-style:none;margin:0;padding:0}
+.skin-btn{width:100%;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 6px 10px;background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:8px;box-shadow:0 4px 0 var(--ink);cursor:pointer;font:inherit;min-height:44px;text-align:center;position:relative}
+.skin-btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.skin-btn[aria-pressed=true]{background:var(--sun);outline:4px solid var(--ink);outline-offset:2px}
+.skin-btn .thumb{width:64px;height:64px;display:grid;place-items:center;background:linear-gradient(180deg,#bfe8ff,#e6f7ff);border:3px solid var(--ink)}
+.skin-btn .thumb svg{width:100%;height:100%;image-rendering:pixelated}
+.skin-btn.locked .thumb{filter:grayscale(1) contrast(.85);opacity:.75}
+.skin-btn .nm{font-family:var(--font-display);font-size:11px;text-transform:uppercase;font-weight:700;line-height:1.1}
+.note{font-size:12.5px;margin:0;opacity:.9}
+</style>
+</head>
+<body class="app" data-page="skins">
+<div class="page">
+  <header class="topbar">
+    <a class="brand" href="ular%20tangga.html" aria-label="Ular Tangga Blok — Beranda">
+      <span class="brand-cube" aria-hidden="true"></span>
+      <span class="brand-name">Ular Tangga<small>BLOCK WORLD ADVENTURE</small></span>
+    </a>
+    <a class="coin-chip" id="coinChip" href="shop.html" aria-label="Saldo koin"></a>
+  </header>
+
+  <main id="main">
+    <h1 class="page-title">Skin</h1>
+    <p class="lede">Pratinjau karakter blokmu, lalu terapkan skin yang sudah kamu miliki.</p>
+
+    <div class="layout">
+      <section class="preview panel" aria-labelledby="pvName">
+        <div class="stage" id="stage"></div>
+        <div class="pv-info">
+          <h2 id="pvName"></h2>
+          <div class="card-meta" id="pvMeta"></div>
+          <p class="card-desc" id="pvDesc"></p>
+          <div id="pvAction"></div>
+          <p class="note" id="pvNote"></p>
+        </div>
+      </section>
+
+      <section aria-label="Daftar skin">
+        <div class="tabs" id="tabs" role="group" aria-label="Kategori skin"></div>
+        <ul class="skin-grid" id="grid"></ul>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script src="assets/js/item-catalog.js"></script>
+<script src="assets/js/player-data.js"></script>
+<script src="assets/js/item-art.js"></script>
+<script src="assets/js/app-ui.js"></script>
+<script src="assets/js/navigation.js"></script>
+<script>
+(function(){
+  'use strict';
+  var C=ItemCatalog,PD=PlayerData,UI=window.UI,el=UI.el;
+  var skins=C.items.filter(function(i){return i.kind==='skin';});
+  var groups=['Default','Adventure','Fantasy','Rare','Epic','Legendary'].filter(function(g){return skins.some(function(s){return s.group===g;});});
+  var group='all', sel=null;
+
+  /* Pilihan awal: ?skin=<id> jika valid, jika tidak skin aktif */
+  try{ var p=new URLSearchParams(location.search).get('skin'); var it=C.byId(p); if(it&&it.kind==='skin') sel=it.id; }catch(e){}
+  if(!sel) sel=PD.equippedId('skin');
+
+  function renderTabs(){
+    var box=document.getElementById('tabs'); box.textContent='';
+    ['all'].concat(groups).forEach(function(g){
+      var n=g==='all'?skins.length:skins.filter(function(s){return s.group===g;}).length;
+      box.appendChild(el('button',{class:'tab',type:'button','aria-pressed':String(group===g),on:{click:function(){group=g;render();}}},
+        [g==='all'?'Semua':g,el('span',{class:'n',text:'('+n+')'})]));
+    });
+  }
+
+  function renderGrid(){
+    var grid=document.getElementById('grid'); grid.textContent='';
+    var list=skins.filter(function(s){return group==='all'||s.group===group;});
+    list.forEach(function(s){
+      var owned=PD.owns(s.id), active=PD.isEquipped(s.id);
+      var th=el('span',{class:'thumb'}); th.innerHTML=ItemArt.face(s.id);
+      var status=active?el('span',{class:'badge on'},['✓ Aktif']):owned?el('span',{class:'badge own',text:'Dimiliki'}):el('span',{class:'badge lock'},['Terkunci · ',UI.coinSpan(s.price)]);
+      var b=el('button',{class:'skin-btn'+(owned?'':' locked'),type:'button','aria-pressed':String(sel===s.id),
+        'aria-label':s.name+', '+C.RARITY[s.rarity].label+', '+(active?'aktif':owned?'dimiliki':'belum dimiliki'),
+        on:{click:function(){sel=s.id;render();}}},
+        [th,el('span',{class:'nm',text:s.name}),UI.rarityBadge(s.rarity),status]);
+      grid.appendChild(el('li',null,[b]));
+    });
+  }
+
+  function renderPreview(){
+    var s=C.byId(sel)||skins[0]; sel=s.id;
+    var owned=PD.owns(s.id), active=PD.isEquipped(s.id);
+    var stage=document.getElementById('stage'); stage.textContent='';
+    var h=el('div',{class:'char-idle'}); h.innerHTML=ItemArt.character(s.id); stage.appendChild(h);
+    document.getElementById('pvName').textContent=s.name;
+    var meta=document.getElementById('pvMeta'); meta.textContent='';
+    meta.appendChild(UI.rarityBadge(s.rarity)); meta.appendChild(el('span',{class:'badge own',text:s.group}));
+    meta.appendChild(active?el('span',{class:'badge on'},['✓ Aktif']):owned?el('span',{class:'badge own',text:'Dimiliki'}):el('span',{class:'badge lock',text:'Belum dimiliki'}));
+    document.getElementById('pvDesc').textContent=s.desc;
+    var act=document.getElementById('pvAction'); act.textContent='';
+    if(owned){
+      act.appendChild(el('button',{class:'btn green block',type:'button',disabled:active,on:{click:function(){
+        var r=PD.equip(s.id); if(r.ok) UI.toast(s.name+' diterapkan sebagai skin aktif.','ok'); else UI.toast('Gagal menerapkan skin.','error');
+      }}},[active?'Sedang dipakai':'Terapkan skin']));
+    }else{
+      act.appendChild(el('a',{class:'btn block',href:'shop.html?item='+encodeURIComponent(s.id)},['Lihat di Toko — ',UI.coinSpan(s.price)]));
+    }
+    document.getElementById('pvNote').textContent=owned
+      ?'Skin aktif dipakai sebagai bidak Pemain 1 saat kamu memulai dari lobi. Skin lawan dipilih di lobi dari skin yang kamu miliki.'
+      :'Skin ini baru bisa dipilih di lobi setelah dibeli di Toko.';
+  }
+
+  function render(){ renderTabs(); renderGrid(); renderPreview(); }
+  PD.subscribe(render);
+  render();
+})();
+</script>
+</body>
+</html>

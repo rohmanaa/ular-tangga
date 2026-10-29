@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ular Tangga Blok - Inventaris Koleksi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: VT323 (Pixel Font) & Outfit (Modern Clean UI Font) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=VT323&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Three.js for 3D Voxel Item Renderer -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#131c2e',
+                            950: '#090d16',
+                        },
+                        voxel: {
+                            lime: '#84cc16',
+                            limeGlow: '#a3e635',
+                            dark: '#0f172a',
+                            panel: '#1e293b',
+                            card: '#1e293b99',
+                            border: '#334155'
+                        },
+                        rarity: {
+                            common: '#94a3b8',
+                            rare: '#38bdf8',
+                            epic: '#a855f7',
+                            legendary: '#f59e0b'
+                        }
+                    },
+                    fontFamily: {
+                        pixel: ['"VT323"', 'monospace'],
+                        sans: ['"Outfit"', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'voxel-sm': '0 4px 0 0 rgba(0,0,0,0.4)',
+                        'voxel-md': '0 6px 0 0 rgba(0,0,0,0.5), inset 0 2px 0 0 rgba(255,255,255,0.1)',
+                        'voxel-glow': '0 0 15px rgba(132, 204, 22, 0.4)',
+                        'rarity-legendary': '0 0 20px rgba(245, 158, 11, 0.35)',
+                        'rarity-epic': '0 0 20px rgba(168, 85, 247, 0.35)',
+                        'rarity-rare': '0 0 20px rgba(56, 189, 248, 0.35)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Pixel Pattern Background & Voxel UI styling */
+        body {
+            background-color: #0b0f19;
+            background-image: 
+                radial-gradient(rgba(30, 41, 59, 0.8) 2px, transparent 0),
+                radial-gradient(rgba(15, 23, 42, 0.9) 2px, #0b0f19 50%);
+            background-size: 24px 24px, 48px 48px;
+            background-position: 0 0, 12px 12px;
+            font-family: 'Outfit', sans-serif;
+            color: #f8fafc;
+            user-select: none;
+        }
+
+        /* Subtle pixelated block border utility */
+        .block-border {
+            border: 2px solid #334155;
+            box-shadow: inset -3px -3px 0px 0px rgba(0, 0, 0, 0.4), inset 3px 3px 0px 0px rgba(255, 255, 255, 0.08);
+        }
+
+        .block-border-active {
+            border: 2px solid #84cc16;
+            box-shadow: 0 0 12px rgba(132, 204, 22, 0.3), inset -3px -3px 0px 0px rgba(0, 0, 0, 0.5), inset 3px 3px 0px 0px rgba(255, 255, 255, 0.2);
+        }
+
+        .block-btn {
+            transition: all 0.1s ease;
+            position: relative;
+        }
+        .block-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 0 rgba(0,0,0,0.6);
+        }
+
+        /* Rarity Visual Styles */
+        .border-rarity-common { border-color: #64748b; }
+        .border-rarity-rare { border-color: #38bdf8; }
+        .border-rarity-epic { border-color: #a855f7; }
+        .border-rarity-legendary { border-color: #f59e0b; }
+
+        .bg-rarity-common { background-color: rgba(100, 116, 139, 0.15); }
+        .bg-rarity-rare { background-color: rgba(56, 189, 248, 0.15); }
+        .bg-rarity-epic { background-color: rgba(168, 85, 247, 0.15); }
+        .bg-rarity-legendary { background-color: rgba(245, 158, 11, 0.15); }
+
+        .text-rarity-common { color: #cbd5e1; }
+        .text-rarity-rare { color: #38bdf8; }
+        .text-rarity-epic { color: #c084fc; }
+        .text-rarity-legendary { color: #fbbf24; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #84cc16;
+        }
+
+        /* Glassmorphism panel */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col justify-between p-2 sm:p-4 md:p-6">
+
+    <!-- TOP BAR / HEADER -->
+    <header class="w-full max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 bg-slate-900/80 p-3 sm:p-4 rounded-xl border border-slate-800 shadow-xl backdrop-blur-md">
+        <!-- Game Logo & Title -->
+        <div class="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-start">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-lime-500 rounded-lg flex items-center justify-center shadow-lg shadow-lime-500/20 border-2 border-lime-300">
+                    <i class="fa-solid font-pixel text-slate-950 text-2xl font-bold">🐍</i>
+                </div>
+                <div>
+                    <h1 class="font-pixel text-2xl sm:text-3xl tracking-wide text-lime-400 leading-none">ULAR TANGGA BLOK</h1>
+                    <p class="text-xs text-slate-400 font-medium tracking-wider uppercase">Koleksi & Inventaris Voxel</p>
+                </div>
+            </div>
+
+            <!-- Mobile Mute Button Switch -->
+            <button id="soundToggleBtnMobile" onclick="toggleSound()" class="sm:hidden block-btn p-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-300 hover:text-lime-400">
+                <i id="soundIconMobile" class="fa-solid fa-volume-high"></i>
+            </button>
+        </div>
+
+        <!-- Collection Progress & Global Stats -->
+        <div class="flex items-center space-x-4 w-full sm:w-auto justify-between sm:justify-end">
+            <!-- Progress Bar -->
+            <div class="flex flex-col min-w-[180px] sm:min-w-[220px]">
+                <div class="flex justify-between items-center text-xs mb-1">
+                    <span class="text-slate-400 font-medium">Kemajuan Koleksi</span>
+                    <span id="collectionProgressText" class="font-pixel text-sm text-lime-400">0/0 (0%)</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden border border-slate-700">
+                    <div id="collectionProgressBar" class="bg-gradient-to-r from-lime-600 to-lime-400 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Coin / Currency Box -->
+            <div class="hidden md:flex items-center space-x-2 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-slate-800">
+                <i class="fa-solid fa-cube text-amber-400 text-sm"></i>
+                <span class="font-pixel text-lg text-amber-300 tracking-wider">12,450</span>
+            </div>
+
+            <!-- Sound FX Toggle Desktop -->
+            <button id="soundToggleBtn" onclick="toggleSound()" class="hidden sm:flex block-btn items-center space-x-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 hover:text-lime-400 transition">
+                <i id="soundIcon" class="fa-solid fa-volume-high"></i>
+                <span class="text-xs font-semibold uppercase tracking-wider">SFX</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="flex-1 max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4 overflow-hidden min-h-0">
+
+        <!-- SIDEBAR / CATEGORY NAV (3 Cols on Desktop) -->
+        <aside class="lg:col-span-3 flex lg:flex-col overflow-x-auto lg:overflow-x-visible space-x-2 lg:space-x-0 lg:space-y-2 pb-2 lg:pb-0 scrollbar-none flex-shrink-0">
+            <!-- Navigation Buttons -->
+            <button onclick="selectCategory('all')" id="cat-all" class="category-btn active block-btn flex items-center justify-between p-3 rounded-xl bg-slate-800 border-2 border-lime-500 text-lime-400 font-semibold min-w-[120px] lg:min-w-0 transition-all">
+                <div class="flex items-center space-x-3">
+                    <i class="fa-solid fa-border-all text-lg w-5 text-center"></i>
+                    <span class="whitespace-nowrap">Semua</span>
+                </div>
+                <span id="count-all" class="ml-2 px-2 py-0.5 text-xs font-pixel bg-lime-500/20 text-lime-300 rounded-full">0</span>
+            </button>
+
+            <button onclick="selectCategory('skins')" id="cat-skins" class="category-btn block-btn flex items-center justify-between p-3 rounded-xl bg-slate-800/60 hover:bg-slate-800 border-2 border-slate-700/60 text-slate-300 hover:text-white font-semibold min-w-[120px] lg:min-w-0 transition-all">
+                <div class="flex items-center space-x-3">
+                    <i class="fa-solid fa-user-ninja text-lg w-5 text-center text-sky-400"></i>
+                    <span class="whitespace-nowrap">Skins Ular</span>
+                </div>
+                <span id="count-skins" class="ml-2 px-2 py-0.5 text-xs font-pixel bg-slate-700 text-slate-300 rounded-full">0</span>
+            </button>
+
+            <button onclick="selectCategory('accessories')" id="cat-accessories" class="category-btn block-btn flex items-center justify-between p-3 rounded-xl bg-slate-800/60 hover:bg-slate-800 border-2 border-slate-700/60 text-slate-300 hover:text-white font-semibold min-w-[120px] lg:min-w-0 transition-all">
+                <div class="flex items-center space-x-3">
+                    <i class="fa-solid fa-hat-wizard text-lg w-5 text-center text-purple-400"></i>
+                    <span class="whitespace-nowrap">Aksesori</span>
+                </div>
+                <span id="count-accessories" class="ml-2 px-2 py-0.5 text-xs font-pixel bg-slate-700 text-slate-300 rounded-full">0</span>
+            </button>
+
+            <button onclick="selectCategory('effects')" id="cat-effects" class="category-btn block-btn flex items-center justify-between p-3 rounded-xl bg-slate-800/60 hover:bg-slate-800 border-2 border-slate-700/60 text-slate-300 hover:text-white font-semibold min-w-[120px] lg:min-w-0 transition-all">
+                <div class="flex items-center space-x-3">
+                    <i class="fa-solid fa-wand-magic-sparkles text-lg w-5 text-center text-amber-400"></i>
+                    <span class="whitespace-nowrap">Efek Jalur</span>
+                </div>
+                <span id="count-effects" class="ml-2 px-2 py-0.5 text-xs font-pixel bg-slate-700 text-slate-300 rounded-full">0</span>
+            </button>
+
+            <button onclick="selectCategory('emotes')" id="cat-emotes" class="category-btn block-btn flex items-center justify-between p-3 rounded-xl bg-slate-800/60 hover:bg-slate-800 border-2 border-slate-700/60 text-slate-300 hover:text-white font-semibold min-w-[120px] lg:min-w-0 transition-all">
+                <div class="flex items-center space-x-3">
+                    <i class="fa-solid fa-icons text-lg w-5 text-center text-emerald-400"></i>
+                    <span class="whitespace-nowrap">Emote Blok</span>
+                </div>
+                <span id="count-emotes" class="ml-2 px-2 py-0.5 text-xs font-pixel bg-slate-700 text-slate-300 rounded-full">0</span>
+            </button>
+
+            <button onclick="selectCategory('other')" id="cat-other" class="category-btn block-btn flex items-center justify-between p-3 rounded-xl bg-slate-800/60 hover:bg-slate-800 border-2 border-slate-700/60 text-slate-300 hover:text-white font-semibold min-w-[120px] lg:min-w-0 transition-all">
+                <div class="flex items-center space-x-3">
+                    <i class="fa-solid fa-dice-d6 text-lg w-5 text-center text-pink-400"></i>
+                    <span class="whitespace-nowrap">Dadu & Lainnya</span>
+                </div>
+                <span id="count-other" class="ml-2 px-2 py-0.5 text-xs font-pixel bg-slate-700 text-slate-300 rounded-full">0</span>
+            </button>
+
+            <!-- Quick Tip Box (Desktop Only) -->
+            <div class="hidden lg:block mt-auto p-4 bg-slate-900/60 border border-slate-800 rounded-xl">
+                <div class="flex items-center space-x-2 text-lime-400 text-xs font-bold uppercase mb-1">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <span>Tips Voxel</span>
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    Lengkapi set item Legendary untuk mendapatkan bonus <span class="text-amber-300">+25% Kecepatan Tangga</span> di arena permainan!
+                </p>
+            </div>
+        </aside>
+
+        <!-- CENTER INVENTORY GRID PANEL (6 Cols Desktop, Full Width Mobile) -->
+        <main class="lg:col-span-5 flex flex-col bg-slate-900/80 border border-slate-800 rounded-2xl p-3 sm:p-4 shadow-2xl backdrop-blur-md min-h-0 overflow-hidden">
+            
+            <!-- SEARCH AND FILTER CONTROLS -->
+            <div class="flex flex-col gap-2 mb-3 flex-shrink-0">
+                <div class="flex items-center space-x-2">
+                    <!-- Search Input -->
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Cari nama item..." 
+                            class="w-full pl-9 pr-8 py-2 bg-slate-950 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-lime-500 transition">
+                        <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Toggle Filter Bar Button on Mobile -->
+                    <button onclick="toggleMobileFilter()" class="sm:hidden block-btn p-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-300">
+                        <i class="fa-solid fa-filter"></i>
+                    </button>
+                </div>
+
+                <!-- Secondary Filters Row -->
+                <div id="filterControls" class="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 pt-1">
+                    <!-- Rarity Filter Dropdown -->
+                    <div class="flex items-center space-x-1.5 w-full sm:w-auto">
+                        <span class="text-xs text-slate-400 uppercase font-semibold tracking-wider">Rarity:</span>
+                        <select id="rarityFilter" onchange="applyFilters()" class="flex-1 sm:flex-none bg-slate-950 border border-slate-700 text-xs text-slate-200 py-1.5 px-2.5 rounded-lg focus:outline-none focus:border-lime-500">
+                            <option value="all">Semua Rarity</option>
+                            <option value="legendary">Legendary (Emas)</option>
+                            <option value="epic">Epic (Ungu)</option>
+                            <option value="rare">Rare (Biru)</option>
+                            <option value="common">Common (Abu-abu)</option>
+                        </select>
+                    </div>
+
+                    <!-- Sort Controls -->
+                    <div class="flex items-center space-x-1.5 w-full sm:w-auto">
+                        <span class="text-xs text-slate-400 uppercase font-semibold tracking-wider">Urut:</span>
+                        <select id="sortOption" onchange="applyFilters()" class="flex-1 sm:flex-none bg-slate-950 border border-slate-700 text-xs text-slate-200 py-1.5 px-2.5 rounded-lg focus:outline-none focus:border-lime-500">
+                            <option value="rarity-desc">Rarity Tertinggi</option>
+                            <option value="newest">Terbaru</option>
+                            <option value="name-asc">Abjad (A-Z)</option>
+                            <option value="owned">Dimiliki Pertama</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ITEMS GRID (Scrollable) -->
+            <div id="inventoryGrid" class="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-2.5 p-1 pr-1.5">
+                <!-- Dynamic Items Inserted via JavaScript -->
+            </div>
+
+            <!-- EMPTY STATE CONTAINER (Hidden by Default) -->
+            <div id="emptyState" class="hidden flex-1 flex flex-col items-center justify-center text-center p-6 space-y-3">
+                <div class="w-16 h-16 bg-slate-800/80 rounded-2xl flex items-center justify-center border border-slate-700 text-slate-500 text-3xl">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <div>
+                    <h3 class="font-pixel text-xl text-slate-300">Barang Tidak Ditemukan</h3>
+                    <p class="text-xs text-slate-500 max-w-xs mt-1">Tidak ada item koleksi yang sesuai dengan kata kunci atau filter yang Anda pilih.</p>
+                </div>
+                <button onclick="resetAllFilters()" class="block-btn px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-xs font-semibold text-lime-400">
+                    Reset Filter Search
+                </button>
+            </div>
+
+            <!-- ITEM COUNT FOOTER -->
+            <div class="mt-3 pt-2 border-t border-slate-800/80 flex justify-between items-center text-xs text-slate-400">
+                <span id="filteredCountText">Menampilkan 0 item</span>
+                <span class="flex items-center space-x-1.5">
+                    <span class="w-2 h-2 rounded-full bg-lime-500"></span>
+                    <span>Inventaris Sinkron</span>
+                </span>
+            </div>
+        </main>
+
+        <!-- RIGHT ITEM DETAIL PANEL (4 Cols Desktop, Sliding Modal on Mobile) -->
+        <section id="detailPanel" class="lg:col-span-4 bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col justify-between shadow-2xl backdrop-blur-md overflow-y-auto fixed lg:relative inset-x-0 bottom-0 top-16 lg:top-0 z-40 translate-y-full lg:translate-y-0 transition-transform duration-300 ease-out">
+            
+            <!-- Mobile Close Button -->
+            <button onclick="closeDetailPanelMobile()" class="lg:hidden absolute top-3 right-3 p-2 bg-slate-800 rounded-full text-slate-400 hover:text-white z-10">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- ITEM CONTENT WRAPPER -->
+            <div class="flex-1 flex flex-col space-y-4">
+                
+                <!-- 3D VOXEL MODEL CANVAS CONTAINER -->
+                <div class="relative w-full h-48 sm:h-56 bg-slate-950/80 rounded-xl border border-slate-800 overflow-hidden group flex items-center justify-center shadow-inner">
+                    <!-- Rarity Backdrop Glow -->
+                    <div id="detailGlowBg" class="absolute inset-0 opacity-20 transition-all duration-500"></div>
+
+                    <!-- Three.js Canvas Container -->
+                    <div id="threeCanvasContainer" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
+
+                    <!-- 3D Rotation Helper Overlay -->
+                    <div class="absolute bottom-2 right-2 px-2 py-1 bg-slate-900/80 border border-slate-800 rounded text-[10px] text-slate-400 pointer-events-none flex items-center space-x-1">
+                        <i class="fa-solid fa-rotate"></i>
+                        <span>Putar 3D</span>
+                    </div>
+
+                    <!-- Status Badges overlay -->
+                    <div class="absolute top-3 left-3 flex flex-col gap-1.5">
+                        <span id="detailRarityBadge" class="px-2.5 py-1 text-xs font-pixel rounded-md tracking-wide uppercase border font-bold">
+                            LEGENDARY
+                        </span>
+                        <span id="detailEquippedBadge" class="hidden px-2.5 py-0.5 bg-lime-500 text-slate-950 font-bold text-[10px] rounded tracking-wider uppercase">
+                            <i class="fa-solid fa-check mr-1"></i>DIPAKAI
+                        </span>
+                    </div>
+                </div>
+
+                <!-- ITEM HEADER & TITLE -->
+                <div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span id="detailCategoryTag" class="text-xs font-bold text-slate-400 uppercase tracking-widest">Skins Ular</span>
+                            <h2 id="detailTitle" class="font-pixel text-2xl sm:text-3xl text-white tracking-wide leading-tight">Ular Naga Voxel</h2>
+                        </div>
+                    </div>
+                    <p id="detailDescription" class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
+                        Ular mistis dengan sisik berbahan kristal piksel neon. Memberikan kilau berkilau saat melintasi papan permainan.
+                    </p>
+                </div>
+
+                <!-- STATS / BUFFS LIST -->
+                <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3 space-y-2">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-chart-simple text-lime-400"></i>
+                        <span>Efek & Atribut Voxel</span>
+                    </h4>
+                    <div id="detailStatsList" class="space-y-1.5">
+                        <!-- Dynamic Stats -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTON AREA -->
+            <div class="pt-4 border-t border-slate-800/80 mt-4">
+                <button id="actionEquipBtn" onclick="toggleEquipCurrentItem()" class="w-full block-btn py-3.5 px-4 bg-lime-500 hover:bg-lime-400 text-slate-950 font-bold font-pixel text-xl tracking-wider rounded-xl shadow-lg shadow-lime-500/20 border-2 border-lime-300 flex items-center justify-center space-x-2 transition-all">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span id="actionBtnText">GUNAKAN ITEM</span>
+                </button>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center space-y-2 pointer-events-none"></div>
+
+    <!-- AUDIO SYNTHESIZER & JAVASCRIPT LOGIC -->
+    <script>
+        // ==========================================
+        // 1. ITEMS DATABASE
+        // ==========================================
+        const INVENTORY_DATA = [
+            {
+                id: 'skin_dragon',
+                name: 'Ular Naga Voxel',
+                category: 'skins',
+                rarity: 'legendary',
+                owned: true,
+                equipped: true,
+                description: 'Ular mistis berpiksel emas yang bersinar terang. Dipercaya membawa keberuntungan lemparan dadu.',
+                stats: [
+                    { label: 'Kecepatan Gerak', value: '+15%', color: 'text-lime-400' },
+                    { label: 'Bonus Koin Tangga', value: '+20%', color: 'text-amber-400' }
+                ],
+                colorHex: 0xf59e0b,
+                modelType: 'dragon'
+            },
+            {
+                id: 'skin_cyber_python',
+                name: 'Pitun Cyberpunk',
+                category: 'skins',
+                rarity: 'epic',
+                owned: true,
+                equipped: false,
+                description: 'Pitun bersisi neon futuristik dari kota neon 2077. Menyala dalam gelap.',
+                stats: [
+                    { label: 'Efek Jejak Neon', value: 'Aktif', color: 'text-sky-400' },
+                    { label: 'Proteksi Perangkap', value: '+5%', color: 'text-purple-400' }
+                ],
+                colorHex: 0xa855f7,
+                modelType: 'snake'
+            },
+            {
+                id: 'skin_mecha_viper',
+                name: 'Viper Mekanik',
+                category: 'skins',
+                rarity: 'rare',
+                owned: false,
+                equipped: false,
+                description: 'Ular baja yang dirancang khusus untuk melintasi petak-petak papan berat.',
+                stats: [
+                    { label: 'Ketahanan Mundur', value: '+10%', color: 'text-sky-400' }
+                ],
+                colorHex: 0x38bdf8,
+                modelType: 'snake'
+            },
+            {
+                id: 'skin_classic_green',
+                name: 'Ular Hijau Blok',
+                category: 'skins',
+                rarity: 'common',
+                owned: true,
+                equipped: false,
+                description: 'Gaya klasik ular hijau petak standar. Simpel dan elegan.',
+                stats: [
+                    { label: 'Gaya Tradisional', value: 'Standar', color: 'text-slate-300' }
+                ],
+                colorHex: 0x22c55e,
+                modelType: 'snake'
+            },
+            {
+                id: 'acc_crown',
+                name: 'Mahkota Raja Blok',
+                category: 'accessories',
+                rarity: 'legendary',
+                owned: true,
+                equipped: true,
+                description: 'Mahkota bertatahkan permata piksel untuk penguasa papan permainan.',
+                stats: [
+                    { label: 'Gaya Penguasa', value: 'Maksimal', color: 'text-amber-400' },
+                    { label: 'Aura Kemewahan', value: 'Emas', color: 'text-amber-300' }
+                ],
+                colorHex: 0xfbbf24,
+                modelType: 'crown'
+            },
+            {
+                id: 'acc_viking_helm',
+                name: 'Helm Viking Piksel',
+                category: 'accessories',
+                rarity: 'rare',
+                owned: true,
+                equipped: false,
+                description: 'Pelindung kepala tanduk ganda yang tangguh melintasi gigitan ular.',
+                stats: [
+                    { label: 'Karisma Voxel', value: '+8%', color: 'text-sky-400' }
+                ],
+                colorHex: 0x94a3b8,
+                modelType: 'hat'
+            },
+            {
+                id: 'acc_wizard_hat',
+                name: 'Topi Penyihir Voxel',
+                category: 'accessories',
+                rarity: 'epic',
+                owned: false,
+                equipped: false,
+                description: 'Topi bertabur bintang magis yang dapat meramalkan posisi dadu.',
+                stats: [
+                    { label: 'Keberuntungan Dadu', value: '+12%', color: 'text-purple-400' }
+                ],
+                colorHex: 0xc084fc,
+                modelType: 'hat'
+            },
+            {
+                id: 'eff_rainbow',
+                name: 'Jalur Pelangi Voxel',
+                category: 'effects',
+                rarity: 'legendary',
+                owned: true,
+                equipped: false,
+                description: 'Meninggalkan jejak warna-warni spektrum kristal setiap kali berpindah petak.',
+                stats: [
+                    { label: 'Animasi Jalur', value: 'Pelangi Spektrum', color: 'text-pink-400' }
+                ],
+                colorHex: 0xec4899,
+                modelType: 'effect'
+            },
+            {
+                id: 'eff_fire_particle',
+                name: 'Jejak Aflame Magma',
+                category: 'effects',
+                rarity: 'epic',
+                owned: true,
+                equipped: true,
+                description: 'Partikel lahar berpijar yang membakar petak tempat Anda melangkah.',
+                stats: [
+                    { label: 'Visual Pertunjukan', value: 'Api Lahar', color: 'text-orange-400' }
+                ],
+                colorHex: 0xf97316,
+                modelType: 'effect'
+            },
+            {
+                id: 'eff_sparkles',
+                name: 'Pendar Bintang Piksel',
+                category: 'effects',
+                rarity: 'common',
+                owned: true,
+                equipped: false,
+                description: 'Percikan kilatan cahaya sederhana saat merayap naik tangga.',
+                stats: [
+                    { label: 'Visual Pertunjukan', value: 'Kilau Ringan', color: 'text-slate-300' }
+                ],
+                colorHex: 0xe2e8f0,
+                modelType: 'effect'
+            },
+            {
+                id: 'emote_gg',
+                name: 'Emote: "Good Game!"',
+                category: 'emotes',
+                rarity: 'common',
+                owned: true,
+                equipped: true,
+                description: 'Tampilkan balon ucapan GG berpiksel di atas kepala pemain.',
+                stats: [
+                    { label: 'Interaksi Sosial', value: 'Sportif', color: 'text-emerald-400' }
+                ],
+                colorHex: 0x10b981,
+                modelType: 'emote'
+            },
+            {
+                id: 'emote_salty',
+                name: 'Emote: Garam Voxel',
+                category: 'emotes',
+                rarity: 'rare',
+                owned: false,
+                equipped: false,
+                description: 'Tunjukkan kekecewaan lucu saat meluncur turun dari kepala ular!',
+                stats: [
+                    { label: 'Ekspresi Kekecewaan', value: 'Humoris', color: 'text-sky-400' }
+                ],
+                colorHex: 0x38bdf8,
+                modelType: 'emote'
+            },
+            {
+                id: 'dice_crystal',
+                name: 'Dadu Kristal Rubik',
+                category: 'other',
+                rarity: 'epic',
+                owned: true,
+                equipped: true,
+                description: 'Dadu bercahaya dari bahan obsidian kristal dengan angka neon.',
+                stats: [
+                    { label: 'Kecepatan Putar', value: '+20%', color: 'text-purple-400' },
+                    { label: 'Gaya Dadu', value: 'Transparan', color: 'text-purple-300' }
+                ],
+                colorHex: 0x8b5cf6,
+                modelType: 'dice'
+            },
+            {
+                id: 'dice_gold',
+                name: 'Dadu Emas Murni',
+                category: 'other',
+                rarity: 'legendary',
+                owned: false,
+                equipped: false,
+                description: 'Dadu berlapis emas murni 24 karat yang mengeluarkan denting mewah.',
+                stats: [
+                    { label: 'Pengali Hadiah', value: '1.5x Koin', color: 'text-amber-400' }
+                ],
+                colorHex: 0xf59e0b,
+                modelType: 'dice'
+            }
+        ];
+
+        // Global State
+        let activeCategory = 'all';
+        let currentSelectedItem = INVENTORY_DATA[0];
+        let soundEnabled = true;
+
+        // ==========================================
+        // 2. WEB AUDIO API SOUND SYNTHESIZER
+        // ==========================================
+        const AudioFX = {
+            ctx: null,
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) this.ctx = new AudioContext();
+                }
+            },
+
+            playClick() {
+                if (!soundEnabled) return;
+                this.init();
+                if (!this.ctx) return;
+
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.05);
+
+                gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.05);
+            },
+
+            playEquip() {
+                if (!soundEnabled) return;
+                this.init();
+                if (!this.ctx) return;
+
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.setValueAtTime(523.25, now + 0.08); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.16); // E5
+
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start();
+                osc.stop(now + 0.3);
+            },
+
+            playUnequip() {
+                if (!soundEnabled) return;
+                this.init();
+                if (!this.ctx) return;
+
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(500, now);
+                osc.frequency.exponentialRampToValueAtTime(200, now + 0.15);
+
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start();
+                osc.stop(now + 0.15);
+            }
+        };
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const iconDesktop = document.getElementById('soundIcon');
+            const iconMobile = document.getElementById('soundIconMobile');
+            
+            const iconClass = soundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark text-slate-500';
+            if (iconDesktop) iconDesktop.className = iconClass;
+            if (iconMobile) iconMobile.className = iconClass;
+
+            showToast(soundEnabled ? 'Efek Suara Aktif' : 'Efek Suara Dimatikan', 'info');
+            if (soundEnabled) AudioFX.playClick();
+        }
+
+        // ==========================================
+        // 3. THREE.JS 3D VOXEL PREVIEW RENDERER
+        // ==========================================
+        let scene, camera, renderer, currentVoxelMesh;
+        let isDragging = false, previousMousePosition = { x: 0, y: 0 };
+
+        function initThreeJS() {
+            const container = document.getElementById('threeCanvasContainer');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+            camera.position.set(3, 3, 4);
+            camera.lookAt(0, 0, 0);
+
+            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+
+            // Clear previous canvas if re-initializing
+            container.innerHTML = '';
+            container.appendChild(renderer.domElement);
+
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(5, 10, 7);
+            scene.add(dirLight);
+
+            const pointLight = new THREE.PointLight(0x84cc16, 1, 10);
+            pointLight.position.set(-2, -2, -2);
+            scene.add(pointLight);
+
+            // Orbit Controls via Mouse/Touch Drag
+            const domElement = renderer.domElement;
+
+            const onPointerDown = (e) => {
+                isDragging = true;
+                previousMousePosition = {
+                    x: e.clientX || e.touches[0].clientX,
+                    y: e.clientY || e.touches[0].clientY
+                };
+            };
+
+            const onPointerMove = (e) => {
+                if (!isDragging || !currentVoxelMesh) return;
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+                const deltaX = clientX - previousMousePosition.x;
+                const deltaY = clientY - previousMousePosition.y;
+
+                currentVoxelMesh.rotation.y += deltaX * 0.01;
+                currentVoxelMesh.rotation.x += deltaY * 0.01;
+
+                previousMousePosition = { x: clientX, y: clientY };
+            };
+
+            const onPointerUp = () => { isDragging = false; };
+
+            domElement.addEventListener('mousedown', onPointerDown);
+            domElement.addEventListener('mousemove', onPointerMove);
+            window.addEventListener('mouseup', onPointerUp);
+
+            domElement.addEventListener('touchstart', onPointerDown);
+            domElement.addEventListener('touchmove', onPointerMove);
+            window.addEventListener('touchend', onPointerUp);
+
+            // Handle Window Resize
+            window.addEventListener('resize', () => {
+                if (!container) return;
+                const newW = container.clientWidth;
+                const newH = container.clientHeight;
+                camera.aspect = newW / newH;
+                camera.updateProjectionMatrix();
+                renderer.setSize(newW, newH);
+            });
+
+            animate3D();
+        }
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            if (currentVoxelMesh && !isDragging) {
+                currentVoxelMesh.rotation.y += 0.008; // Idle rotation
+            }
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
+        }
+
+        // Build procedural voxel shapes for preview
+        function createVoxelModel(item) {
+            if (!scene) return;
+
+            // Remove existing mesh
+            if (currentVoxelMesh) {
+                scene.remove(currentVoxelMesh);
+            }
+
+            const group = new THREE.Group();
+            const color = item.colorHex || 0x84cc16;
+
+            const boxGeo = new THREE.BoxGeometry(0.28, 0.28, 0.28);
+            const mat = new THREE.MeshStandardMaterial({ 
+                color: color, 
+                roughness: 0.3,
+                metalness: 0.2
+            });
+            const darkMat = new THREE.MeshStandardMaterial({ color: 0x1e293b });
+            const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.1 });
+
+            if (item.modelType === 'dragon' || item.modelType === 'snake') {
+                // Construct voxel snake body
+                for (let i = 0; i < 7; i++) {
+                    const block = new THREE.Mesh(boxGeo, mat);
+                    block.position.set(
+                        Math.sin(i * 0.5) * 0.5,
+                        i * 0.2 - 0.5,
+                        Math.cos(i * 0.5) * 0.5
+                    );
+                    group.add(block);
+                }
+                // Snake Head
+                const head = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.35, 0.4), mat);
+                head.position.set(Math.sin(0) * 0.5, -0.4, Math.cos(0) * 0.5 + 0.1);
+                group.add(head);
+
+                // Eyes
+                const eye1 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.08), goldMat);
+                eye1.position.set(head.position.x - 0.15, head.position.y + 0.05, head.position.z + 0.18);
+                const eye2 = eye1.clone();
+                eye2.position.x = head.position.x + 0.15;
+                group.add(eye1, eye2);
+
+            } else if (item.modelType === 'crown') {
+                // Crown Base Voxel Ring
+                const crownMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.8, roughness: 0.2 });
+                for (let x = -1; x <= 1; x++) {
+                    for (let z = -1; z <= 1; z++) {
+                        if (x === 0 && z === 0) continue;
+                        const crownBlock = new THREE.Mesh(boxGeo, crownMat);
+                        crownBlock.position.set(x * 0.3, 0, z * 0.3);
+                        group.add(crownBlock);
+
+                        // Spikes on corners
+                        if (Math.abs(x) === 1 && Math.abs(z) === 1) {
+                            const spike = new THREE.Mesh(boxGeo, crownMat);
+                            spike.position.set(x * 0.3, 0.3, z * 0.3);
+                            group.add(spike);
+                        }
+                    }
+                }
+            } else if (item.modelType === 'dice') {
+                // Voxel Rubik/Dice
+                const diceGeo = new THREE.BoxGeometry(1.2, 1.2, 1.2);
+                const diceMesh = new THREE.Mesh(diceGeo, mat);
+                group.add(diceMesh);
+
+                // Dots on face
+                const dotGeo = new THREE.BoxGeometry(0.18, 0.18, 0.18);
+                const dotMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+                const dot = new THREE.Mesh(dotGeo, dotMat);
+                dot.position.set(0, 0, 0.61);
+                group.add(dot);
+            } else {
+                // Default Generic Block/Hat/Effect
+                const mainBlock = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), mat);
+                group.add(mainBlock);
+            }
+
+            currentVoxelMesh = group;
+            scene.add(currentVoxelMesh);
+        }
+
+        // ==========================================
+        // 4. UI RENDER & FILTER LOGIC
+        // ==========================================
+
+        function updateCategoryCounts() {
+            const counts = {
+                all: INVENTORY_DATA.length,
+                skins: 0,
+                accessories: 0,
+                effects: 0,
+                emotes: 0,
+                other: 0
+            };
+
+            INVENTORY_DATA.forEach(item => {
+                if (counts[item.category] !== undefined) {
+                    counts[item.category]++;
+                }
+            });
+
+            for (const key in counts) {
+                const el = document.getElementById(`count-${key}`);
+                if (el) el.textContent = counts[key];
+            }
+
+            // Collection Progress Counter
+            const ownedCount = INVENTORY_DATA.filter(i => i.owned).length;
+            const totalCount = INVENTORY_DATA.length;
+            const percent = Math.round((ownedCount / totalCount) * 100);
+
+            document.getElementById('collectionProgressText').textContent = `${ownedCount}/${totalCount} (${percent}%)`;
+            document.getElementById('collectionProgressBar').style.width = `${percent}%`;
+        }
+
+        function selectCategory(cat) {
+            AudioFX.playClick();
+            activeCategory = cat;
+
+            // Update UI Sidebar active states
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-800', 'border-lime-500', 'text-lime-400');
+                btn.classList.add('bg-slate-800/60', 'border-slate-700/60', 'text-slate-300');
+            });
+
+            const activeBtn = document.getElementById(`cat-${cat}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-slate-800/60', 'border-slate-700/60', 'text-slate-300');
+                activeBtn.classList.add('bg-slate-800', 'border-lime-500', 'text-lime-400');
+            }
+
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+            const rarityFilter = document.getElementById('rarityFilter').value;
+            const sortOption = document.getElementById('sortOption').value;
+
+            // Toggle clear search button
+            const clearBtn = document.getElementById('clearSearchBtn');
+            if (searchQuery.length > 0) clearBtn.classList.remove('hidden');
+            else clearBtn.classList.add('hidden');
+
+            let filtered = INVENTORY_DATA.filter(item => {
+                // Category match
+                const matchCategory = (activeCategory === 'all' || item.category === activeCategory);
+                // Search match
+                const matchSearch = item.name.toLowerCase().includes(searchQuery) || item.description.toLowerCase().includes(searchQuery);
+                // Rarity match
+                const matchRarity = (rarityFilter === 'all' || item.rarity === rarityFilter);
+
+                return matchCategory && matchSearch && matchRarity;
+            });
+
+            // Sorting logic
+            const rarityWeight = { legendary: 4, epic: 3, rare: 2, common: 1 };
+            
+            filtered.sort((a, b) => {
+                if (sortOption === 'rarity-desc') {
+                    return rarityWeight[b.rarity] - rarityWeight[a.rarity];
+                } else if (sortOption === 'name-asc') {
+                    return a.name.localeCompare(b.name);
+                } else if (sortOption === 'owned') {
+                    return (b.owned === a.owned) ? 0 : b.owned ? 1 : -1;
+                }
+                return 0; // Default order
+            });
+
+            renderGrid(filtered);
+        }
+
+        function renderGrid(items) {
+            const grid = document.getElementById('inventoryGrid');
+            const emptyState = document.getElementById('emptyState');
+            const countText = document.getElementById('filteredCountText');
+
+            grid.innerHTML = '';
+            countText.textContent = `Menampilkan ${items.length} item`;
+
+            if (items.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                grid.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+            }
+
+            items.forEach(item => {
+                const isSelected = currentSelectedItem && currentSelectedItem.id === item.id;
+                const card = document.createElement('div');
+                
+                // Border rarity class
+                const borderClass = `border-rarity-${item.rarity}`;
+                const bgRarity = `bg-rarity-${item.rarity}`;
+
+                card.className = `group relative block-btn p-2.5 rounded-xl border-2 ${borderClass} ${bgRarity} cursor-pointer transition-all duration-200 flex flex-col justify-between ${isSelected ? 'ring-2 ring-lime-400 scale-[1.02] shadow-voxel-glow' : 'hover:border-slate-400'}`;
+                
+                card.onclick = () => selectItem(item);
+
+                card.innerHTML = `
+                    <!-- Top Badges -->
+                    <div class="flex justify-between items-center w-full mb-1">
+                        <span class="text-[10px] font-pixel px-1.5 py-0.5 rounded uppercase font-bold text-rarity-${item.rarity} bg-slate-950/80">
+                            ${item.rarity}
+                        </span>
+                        
+                        ${item.equipped ? `
+                            <span class="bg-lime-500 text-slate-950 text-[9px] font-extrabold px-1.5 py-0.5 rounded uppercase flex items-center gap-0.5">
+                                <i class="fa-solid fa-check"></i> DIPAKAI
+                            </span>
+                        ` : ''}
+                    </div>
+
+                    <!-- Item Thumbnail Box -->
+                    <div class="w-full h-20 sm:h-24 bg-slate-950/60 rounded-lg border border-slate-800/80 flex items-center justify-center relative overflow-hidden my-1">
+                        <!-- Voxel Thumbnail Mock Icon -->
+                        <div class="text-3xl sm:text-4xl transform group-hover:scale-110 transition duration-300 drop-shadow-md">
+                            ${getCategoryIcon(item.category, item.modelType)}
+                        </div>
+
+                        ${!item.owned ? `
+                            <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-[1px] flex items-center justify-center">
+                                <i class="fa-solid fa-lock text-slate-500 text-xl"></i>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Item Title Footer -->
+                    <div class="mt-1">
+                        <h3 class="font-pixel text-sm sm:text-base text-slate-100 truncate group-hover:text-lime-300 transition">
+                            ${item.name}
+                        </h3>
+                        <p class="text-[11px] text-slate-400 truncate">
+                            ${item.owned ? '<span class="text-emerald-400"><i class="fa-solid fa-circle-check"></i> Dimiliki</span>' : '<span class="text-slate-500">Terkunci</span>'}
+                        </p>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        function getCategoryIcon(category, type) {
+            if (type === 'dragon') return '🐉';
+            if (type === 'snake') return '🐍';
+            if (type === 'crown') return '👑';
+            if (type === 'hat') return '🎩';
+            if (type === 'effect') return '✨';
+            if (type === 'emote') return '💬';
+            if (type === 'dice') return '🎲';
+            return '📦';
+        }
+
+        function selectItem(item) {
+            AudioFX.playClick();
+            currentSelectedItem = item;
+
+            // Update Detail Panel
+            document.getElementById('detailTitle').textContent = item.name;
+            document.getElementById('detailCategoryTag').textContent = getCategoryNameIndonesian(item.category);
+            document.getElementById('detailDescription').textContent = item.description;
+
+            // Rarity Tag
+            const rarityBadge = document.getElementById('detailRarityBadge');
+            rarityBadge.textContent = item.rarity.toUpperCase();
+            rarityBadge.className = `px-2.5 py-1 text-xs font-pixel rounded-md tracking-wide uppercase border font-bold text-rarity-${item.rarity} border-rarity-${item.rarity} bg-slate-950/90`;
+
+            // Equipped Tag
+            const equippedBadge = document.getElementById('detailEquippedBadge');
+            if (item.equipped) equippedBadge.classList.remove('hidden');
+            else equippedBadge.classList.add('hidden');
+
+            // Backdrop Glow
+            const glow = document.getElementById('detailGlowBg');
+            glow.className = `absolute inset-0 opacity-25 transition-all duration-500 bg-rarity-${item.rarity}`;
+
+            // Stats Breakdown
+            const statsList = document.getElementById('detailStatsList');
+            statsList.innerHTML = '';
+            item.stats.forEach(stat => {
+                const row = document.createElement('div');
+                row.className = 'flex justify-between items-center text-xs py-1 border-b border-slate-900/60 last:border-0';
+                row.innerHTML = `
+                    <span class="text-slate-400">${stat.label}</span>
+                    <span class="font-bold font-pixel text-sm ${stat.color}">${stat.value}</span>
+                `;
+                statsList.appendChild(row);
+            });
+
+            // Action Button Setup
+            const actionBtn = document.getElementById('actionEquipBtn');
+            const actionBtnText = document.getElementById('actionBtnText');
+
+            if (!item.owned) {
+                actionBtn.className = "w-full block-btn py-3.5 px-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold font-pixel text-xl tracking-wider rounded-xl shadow-lg border-2 border-amber-300 flex items-center justify-center space-x-2 transition-all";
+                actionBtnText.textContent = "BUKA DI TOKO";
+            } else if (item.equipped) {
+                actionBtn.className = "w-full block-btn py-3.5 px-4 bg-rose-600 hover:bg-rose-500 text-white font-bold font-pixel text-xl tracking-wider rounded-xl shadow-lg border-2 border-rose-400 flex items-center justify-center space-x-2 transition-all";
+                actionBtnText.textContent = "LEPAS ITEM";
+            } else {
+                actionBtn.className = "w-full block-btn py-3.5 px-4 bg-lime-500 hover:bg-lime-400 text-slate-950 font-bold font-pixel text-xl tracking-wider rounded-xl shadow-lg shadow-lime-500/20 border-2 border-lime-300 flex items-center justify-center space-x-2 transition-all";
+                actionBtnText.textContent = "GUNAKAN ITEM";
+            }
+
+            // Update 3D Model Render
+            createVoxelModel(item);
+
+            // Open mobile drawer view if on small screens
+            if (window.innerWidth < 1024) {
+                const detailPanel = document.getElementById('detailPanel');
+                detailPanel.classList.remove('translate-y-full');
+            }
+
+            applyFilters();
+        }
+
+        function getCategoryNameIndonesian(cat) {
+            const map = {
+                skins: 'Skins Ular',
+                accessories: 'Aksesori Kepala',
+                effects: 'Efek Jalur',
+                emotes: 'Emote Blok',
+                other: 'Dadu & Item Special'
+            };
+            return map[cat] || 'Koleksi Voxel';
+        }
+
+        function toggleEquipCurrentItem() {
+            if (!currentSelectedItem) return;
+
+            if (!currentSelectedItem.owned) {
+                AudioFX.playClick();
+                showToast(`Item "${currentSelectedItem.name}" dapat dibeli di Toko Blok!`, 'warning');
+                return;
+            }
+
+            if (currentSelectedItem.equipped) {
+                // Unequip item
+                currentSelectedItem.equipped = false;
+                AudioFX.playUnequip();
+                showToast(`Telah melepas "${currentSelectedItem.name}"`, 'info');
+            } else {
+                // Equip item (Unequip other items in same category if applicable)
+                INVENTORY_DATA.forEach(i => {
+                    if (i.category === currentSelectedItem.category) {
+                        i.equipped = false;
+                    }
+                });
+                currentSelectedItem.equipped = true;
+                AudioFX.playEquip();
+                showToast(`Berhasil menggunakan "${currentSelectedItem.name}"!`, 'success');
+            }
+
+            selectItem(currentSelectedItem);
+        }
+
+        function closeDetailPanelMobile() {
+            AudioFX.playClick();
+            const detailPanel = document.getElementById('detailPanel');
+            detailPanel.classList.add('translate-y-full');
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            applyFilters();
+        }
+
+        function resetAllFilters() {
+            AudioFX.playClick();
+            document.getElementById('searchInput').value = '';
+            document.getElementById('rarityFilter').value = 'all';
+            document.getElementById('sortOption').value = 'rarity-desc';
+            selectCategory('all');
+        }
+
+        function toggleMobileFilter() {
+            const filterBar = document.getElementById('filterControls');
+            filterBar.classList.toggle('hidden');
+        }
+
+        // ==========================================
+        // 5. TOAST SYSTEM
+        // ==========================================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+
+            let icon = 'fa-circle-check text-lime-400';
+            if (type === 'warning') icon = 'fa-triangle-exclamation text-amber-400';
+            if (type === 'info') icon = 'fa-circle-info text-sky-400';
+
+            toast.className = `flex items-center space-x-2 px-4 py-2.5 bg-slate-900/95 border border-slate-700 text-slate-100 rounded-xl shadow-2xl backdrop-blur-md transform transition-all duration-300 translate-y-4 opacity-0 text-xs sm:text-sm font-semibold pointer-events-auto`;
+            toast.innerHTML = `
+                <i class="fa-solid ${icon} text-base"></i>
+                <span>${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            }, 10);
+
+            // Remove after delay
+            setTimeout(() => {
+                toast.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        // ==========================================
+        // INITIALIZATION ON PAGE LOAD
+        // ==========================================
+        window.onload = function() {
+            updateCategoryCounts();
+            initThreeJS();
+            selectItem(INVENTORY_DATA[0]);
+        };
+    </script>
+</body>
+</html>

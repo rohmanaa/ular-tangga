@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2a211b">
+<title>Toko — Ular Tangga Blok</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/nav.css">
+<style>
+.feat{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 12px;margin:0 0 6px;list-style:none;scrollbar-width:thin;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+.feat>li{flex:0 0 min(240px,72%);scroll-snap-align:start;display:flex}
+.feat .card-item{width:100%}
+.hint-low{font-size:11.5px;font-weight:800;color:var(--danger)}
+</style>
+</head>
+<body class="app" data-page="shop">
+<div class="page">
+  <header class="topbar">
+    <a class="brand" href="ular%20tangga.html" aria-label="Ular Tangga Blok — Beranda">
+      <span class="brand-cube" aria-hidden="true"></span>
+      <span class="brand-name">Ular Tangga<small>BLOCK WORLD ADVENTURE</small></span>
+    </a>
+    <span class="coin-chip" id="coinChip" role="status"></span>
+  </header>
+
+  <main id="main">
+    <h1 class="page-title">Toko</h1>
+    <p class="lede">Tukar koin dengan skin, dadu, dan tema papan. Koin hanya berlaku di dalam game ini.</p>
+
+    <section aria-labelledby="h-feat" id="featSec">
+      <div class="section-head"><h2 id="h-feat">Item unggulan</h2></div>
+      <ul class="feat" id="feat"></ul>
+    </section>
+
+    <div class="toolbar section">
+      <div class="tabs" id="tabs" role="group" aria-label="Kategori toko"></div>
+      <div class="filters">
+        <div class="field"><label for="q">Cari item</label><input id="q" type="search" placeholder="mis. Emas" autocomplete="off"></div>
+        <div class="field"><label for="rar">Rarity</label>
+          <select id="rar"><option value="">Semua rarity</option><option value="common">Umum</option><option value="rare">Langka</option><option value="epic">Epik</option><option value="legendary">Legendaris</option></select></div>
+        <div class="field"><label for="price">Rentang harga</label>
+          <select id="price"><option value="">Semua harga</option><option value="0-200">1 – 200 koin</option><option value="201-500">201 – 500 koin</option><option value="501-99999">Di atas 500 koin</option></select></div>
+        <div class="field"><label for="own">Kepemilikan</label>
+          <select id="own"><option value="">Semua</option><option value="no">Belum dimiliki</option><option value="yes">Sudah dimiliki</option></select></div>
+      </div>
+    </div>
+
+    <p class="result-count" id="count" aria-live="polite"></p>
+    <ul class="grid" id="grid"></ul>
+    <div id="empty" hidden></div>
+  </main>
+</div>
+
+<script src="assets/js/item-catalog.js"></script>
+<script src="assets/js/player-data.js"></script>
+<script src="assets/js/item-art.js"></script>
+<script src="assets/js/app-ui.js"></script>
+<script src="assets/js/navigation.js"></script>
+<script>
+(function(){
+  'use strict';
+  var C=ItemCatalog,PD=PlayerData,UI=window.UI,el=UI.el;
+  /* Katalog toko = item yang bisa dibeli (bukan item awal gratis). */
+  var SHOP=C.items.filter(function(i){return !i.starter&&i.price>0;});
+  var SHOP_CATS=[{key:'featured',label:'Unggulan'},{key:'skin',label:'Skin'},{key:'aksesori',label:'Aksesori'},{key:'efek',label:'Efek'},{key:'emote',label:'Emote'},{key:'lainnya',label:'Lainnya'}];
+  var state={cat:'featured',q:'',rar:'',price:'',own:''};
+  var buying=false;
+
+  function norm(s){return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
+
+  function filtered(){
+    var q=norm(state.q.trim()), pr=state.price?state.price.split('-').map(Number):null;
+    return SHOP.filter(function(it){
+      if(state.cat==='featured'){ if(!it.featured) return false; }
+      else if(it.category!==state.cat) return false;
+      if(state.rar&&it.rarity!==state.rar) return false;
+      if(pr&&(it.price<pr[0]||it.price>pr[1])) return false;
+      if(state.own==='yes'&&!PD.owns(it.id)) return false;
+      if(state.own==='no'&&PD.owns(it.id)) return false;
+      if(q&&norm(it.name).indexOf(q)<0&&norm(it.desc).indexOf(q)<0) return false;
+      return true;
+    });
+  }
+
+  function renderTabs(){
+    var box=document.getElementById('tabs'); box.textContent='';
+    SHOP_CATS.forEach(function(c){
+      var n=SHOP.filter(function(i){return c.key==='featured'?i.featured:i.category===c.key;}).length;
+      box.appendChild(el('button',{class:'tab',type:'button','aria-pressed':String(state.cat===c.key),on:{click:function(){state.cat=c.key;render();}}},
+        [c.label,el('span',{class:'n',text:'('+n+')'})]));
+    });
+  }
+
+  function card(it){
+    var owned=PD.owns(it.id)&&!it.stackable, coins=PD.coins(), can=coins>=it.price;
+    var art=el('div',{class:'card-art'}); art.innerHTML=ItemArt.forItem(it.id);
+    var meta=el('div',{class:'card-meta'},[UI.rarityBadge(it.rarity),el('span',{class:'badge own',text:C.KIND_META[it.kind].noun})]);
+    if(owned) meta.appendChild(el('span',{class:'badge on'},['✓ Sudah dimiliki']));
+    var buy=owned
+      ?el('button',{class:'btn small light',type:'button',disabled:true},['Dimiliki'])
+      :el('button',{class:'btn small green',type:'button','aria-label':'Beli '+it.name+' seharga '+it.price+' koin',on:{click:function(){confirmBuy(it);}}},['Beli']);
+    var li=el('li',{class:'card-item','data-rarity':it.rarity,id:'item-'+it.id.replace(/\W/g,'_')},[
+      art,el('div',{class:'card-name',text:it.name}),meta,el('p',{class:'card-desc',text:it.desc}),
+      owned?el('p',{class:'card-sub'},[el('a',{href:it.kind==='skin'?'skins.html?skin='+encodeURIComponent(it.id):'inventory.html'},['Lihat koleksi →'])])
+           :el('div',{class:'card-meta'},[el('span',{class:'price'},[UI.coinSpan(it.price)]),(!can?el('span',{class:'hint-low',text:'Koin kurang '+UI.fmt(it.price-coins)}):null)]),
+      el('div',{class:'card-actions'},[el('button',{class:'btn small light',type:'button',on:{click:function(){preview(it);}}},['Preview']),buy])]);
+    return li;
+  }
+
+  function preview(it){
+    var art=el('div',{class:'preview-art'}); art.innerHTML=ItemArt.forItem(it.id);
+    var owned=PD.owns(it.id);
+    var body=el('div',{style:'display:flex;flex-direction:column;gap:10px'},[
+      art,
+      el('div',{class:'card-meta'},[UI.rarityBadge(it.rarity),el('span',{class:'badge own',text:C.KIND_META[it.kind].noun})]),
+      el('p',{class:'card-desc',text:it.desc}),
+      el('div',{class:'kv'},[el('span',{text:'Harga'}),el('span',{class:'price'},[UI.coinSpan(it.price)])]),
+      el('div',{class:'kv'},[el('span',{text:'Saldo kamu'}),el('span',{class:'price'},[UI.coinSpan(PD.coins())])]),
+      el('div',{class:'modal-actions'},[
+        el('button',{class:'btn light',type:'button',on:{click:UI.closeModal}},['Tutup']),
+        owned?el('button',{class:'btn',type:'button',disabled:true},['Sudah dimiliki'])
+             :el('button',{class:'btn green',type:'button',on:{click:function(){UI.closeModal();confirmBuy(it);}}},['Beli'])])
+    ]);
+    UI.openModal('Preview: '+it.name,body);
+  }
+
+  function confirmBuy(it){
+    if(buying) return;
+    if(PD.owns(it.id)&&!it.stackable){ UI.toast('Kamu sudah memiliki '+it.name+'.','error'); render(); return; }
+    var coins=PD.coins(), can=coins>=it.price;
+    var confirmBtn=el('button',{class:'btn green',type:'button',disabled:!can},['Ya, beli']);
+    var body=el('div',{style:'display:flex;flex-direction:column;gap:10px'},[
+      el('p',{style:'margin:0'},['Beli ',el('strong',{text:it.name}),' seharga ',el('strong',{},[UI.coinSpan(it.price)]),'?']),
+      el('div',{class:'kv'},[el('span',{text:'Saldo sekarang'}),el('span',{class:'price'},[UI.coinSpan(coins)])]),
+      can?el('div',{class:'kv'},[el('span',{text:'Saldo setelah beli'}),el('span',{class:'price'},[UI.coinSpan(coins-it.price)])])
+         :el('p',{class:'notice warn',style:'margin:0',role:'alert',text:'Koin kamu kurang '+UI.fmt(it.price-coins)+' untuk item ini.'}),
+      el('div',{class:'modal-actions'},[el('button',{class:'btn light',type:'button',on:{click:UI.closeModal}},['Batal']),confirmBtn])
+    ]);
+    confirmBtn.addEventListener('click',function(){
+      if(buying) return; buying=true; confirmBtn.disabled=true; /* cegah klik ganda */
+      var r=PD.purchase(it.id);
+      UI.closeModal(); buying=false;
+      if(r.ok) UI.toast(it.name+' berhasil dibeli. Sisa koin: '+UI.fmt(r.coins)+'.','ok');
+      else if(r.reason==='saldo-kurang') UI.toast('Koin tidak cukup untuk '+it.name+' (kurang '+UI.fmt(r.kurang)+').','error');
+      else if(r.reason==='sudah-dimiliki') UI.toast('Kamu sudah memiliki '+it.name+'. Saldo tidak berubah.','error');
+      else if(r.reason==='gagal-simpan') UI.toast('Gagal menyimpan pembelian. Saldo tidak berubah.','error');
+      else UI.toast('Item tidak tersedia untuk dibeli.','error');
+      render();
+    });
+    UI.openModal('Konfirmasi pembelian',body,{focus:'.btn.light'});
+  }
+
+  function render(){
+    renderTabs();
+    var list=filtered(), grid=document.getElementById('grid'), empty=document.getElementById('empty');
+    grid.textContent=''; list.forEach(function(it){grid.appendChild(card(it));});
+    var cat=SHOP_CATS.filter(function(c){return c.key===state.cat;})[0];
+    document.getElementById('count').textContent=cat.label+': '+list.length+' item';
+    empty.textContent=''; empty.hidden=list.length>0;
+    if(!list.length){
+      var catHas=SHOP.some(function(i){return state.cat==='featured'?i.featured:i.category===state.cat;});
+      var box=el('div',{class:'notice empty'});
+      if(!catHas){
+        box.appendChild(el('strong',{text:'Belum ada item '+cat.label}));
+        box.appendChild(el('span',{text:'Kategori ini belum tersedia di game. Item akan muncul di sini saat ditambahkan.'}));
+      }else{
+        box.appendChild(el('strong',{text:'Tidak ada item yang cocok'}));
+        box.appendChild(el('span',{text:'Coba ubah pencarian atau filter.'}));
+        box.appendChild(el('div',{style:'margin-top:12px'},[el('button',{class:'btn small light',type:'button',on:{click:reset}},['Reset filter'])]));
+      }
+      empty.appendChild(box);
+    }
+    /* Bagian unggulan di atas (selalu menampilkan semua item unggulan) */
+    var fe=document.getElementById('feat'); fe.textContent='';
+    SHOP.filter(function(i){return i.featured;}).forEach(function(it){var c=card(it); c.removeAttribute('id'); fe.appendChild(el('li',null,[c]));});
+  }
+  function reset(){
+    state.q='';state.rar='';state.price='';state.own='';
+    ['q','rar','price','own'].forEach(function(id){document.getElementById(id).value='';}); render();
+  }
+
+  document.getElementById('q').addEventListener('input',function(e){state.q=e.target.value;render();});
+  ['rar','price','own'].forEach(function(id){document.getElementById(id).addEventListener('change',function(e){state[id]=e.target.value;render();});});
+  PD.subscribe(render);
+
+  /* Tautan dalam: shop.html?item=<id> → buka kategori item & sorot kartunya */
+  try{
+    var want=C.byId(new URLSearchParams(location.search).get('item'));
+    if(want&&!want.starter){ state.cat=want.category; }
+    render();
+    if(want&&!want.starter){
+      var node=document.getElementById('item-'+want.id.replace(/\W/g,'_'));
+      if(node){ node.classList.add('flash'); node.scrollIntoView({block:'center'}); }
+    }
+  }catch(e){ render(); }
+})();
+</script>
+</body>
+</html>

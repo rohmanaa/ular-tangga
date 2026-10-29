@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ular Tangga Blok - Toko In-Game Marketplace</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Retro Press Start 2P & Modern Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <!-- Three.js for 3D Voxel Item Showcase -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        graphite: {
+                            950: '#090d14',
+                            900: '#0d1117',
+                            850: '#131924',
+                            800: '#161b22',
+                            700: '#21262d',
+                            600: '#30363d'
+                        },
+                        lime: {
+                            glow: '#39ff14',
+                            accent: '#10b981',
+                            bright: '#84cc16'
+                        },
+                        gold: {
+                            legendary: '#f59e0b',
+                            bright: '#fbbf24',
+                            glow: '#d97706'
+                        },
+                        rarity: {
+                            common: '#94a3b8',
+                            rare: '#38bdf8',
+                            epic: '#a855f7',
+                            legendary: '#f59e0b'
+                        }
+                    },
+                    fontFamily: {
+                        pixel: ['"Press Start 2P"', 'monospace'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'voxel-panel': '0 10px 30px -5px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)',
+                        'gold-glow': '0 0 25px rgba(245, 158, 11, 0.4)',
+                        'lime-glow': '0 0 20px rgba(57, 255, 20, 0.3)',
+                        'epic-glow': '0 0 20px rgba(168, 85, 247, 0.35)',
+                        'rare-glow': '0 0 20px rgba(56, 189, 248, 0.35)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #090d14;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #f0f6fc;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #21262d;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+
+        /* Voxel borders & Glassmorphism */
+        .voxel-card {
+            background: rgba(22, 27, 34, 0.85);
+            backdrop-filter: blur(12px);
+            border: 2px solid #21262d;
+            box-shadow: inset -3px -3px 0px 0px rgba(0, 0, 0, 0.6), inset 3px 3px 0px 0px rgba(255, 255, 255, 0.05);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .voxel-card:hover {
+            transform: translateY(-3px);
+            border-color: #30363d;
+        }
+
+        .voxel-btn {
+            position: relative;
+            transition: all 0.15s ease;
+            box-shadow: inset -2px -2px 0px 0px rgba(0, 0, 0, 0.4), inset 2px 2px 0px 0px rgba(255, 255, 255, 0.15);
+        }
+        .voxel-btn:active {
+            transform: translateY(2px);
+            box-shadow: inset 1px 1px 0px 0px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Glowing Rarity Borders */
+        .border-rarity-common { border-color: #475569; }
+        .border-rarity-rare { border-color: #38bdf8; box-shadow: 0 0 12px rgba(56, 189, 248, 0.25); }
+        .border-rarity-epic { border-color: #a855f7; box-shadow: 0 0 15px rgba(168, 85, 247, 0.3); }
+        .border-rarity-legendary { border-color: #f59e0b; box-shadow: 0 0 20px rgba(245, 158, 11, 0.35); }
+
+        /* Pulse Animation for Currency */
+        @keyframes shine-pulse {
+            0%, 100% { opacity: 1; filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.6)); }
+            50% { opacity: 0.8; filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.9)); }
+        }
+        .animate-currency {
+            animation: shine-pulse 2.5s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-graphite-950 pb-12">
+
+    <!-- TOP NAVIGATION & HEADER BAR -->
+    <header class="sticky top-0 z-40 w-full bg-graphite-900/90 border-b border-graphite-700/80 backdrop-blur-md px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+            
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-emerald-900/80 border-2 border-lime-bright rounded-xl flex items-center justify-center shadow-lime-glow">
+                        <svg class="w-6 h-6 text-lime-bright" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-bold text-lime-bright uppercase tracking-wider block">Ular Tangga Blok</span>
+                        <h1 class="font-pixel text-sm sm:text-base text-white tracking-wide">TOKO VOXEL IN-GAME</h1>
+                    </div>
+                </div>
+
+                <!-- SFX Toggle (Mobile view position) -->
+                <button onclick="toggleSFX()" id="sfxBtnMobile" class="md:hidden p-2 bg-graphite-800 border border-graphite-700 rounded-lg text-slate-300">
+                    <svg id="sfxIconMobile" class="w-5 h-5 text-lime-bright" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.314M6.535 9H3v6h3.535l4.465 4.465V4.535L6.535 9z"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Player Level Badge & Currencies -->
+            <div class="flex items-center space-x-3 w-full md:w-auto justify-end">
+                
+                <!-- Player Level Info -->
+                <div class="hidden sm:flex items-center space-x-2 bg-graphite-850 border border-graphite-700 px-3 py-1.5 rounded-xl">
+                    <div class="w-6 h-6 rounded-lg bg-emerald-600 flex items-center justify-center font-pixel text-[10px] text-white">42</div>
+                    <div class="text-left">
+                        <p class="text-[10px] text-slate-400 font-bold uppercase leading-none">Pemain</p>
+                        <p class="text-xs font-bold text-slate-200">Kapt_Voxel</p>
+                    </div>
+                </div>
+
+                <!-- Coin Balance (Koin Blok) -->
+                <div class="flex items-center space-x-2 bg-graphite-850 border border-amber-500/40 px-3 py-1.5 rounded-xl shadow-sm">
+                    <svg class="w-5 h-5 text-amber-400 animate-currency" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 7h4a1 1 0 110 2H9v2h3a1 1 0 110 2H8a1 1 0 110-2h3V9H8a1 1 0 110-2z"></path>
+                    </svg>
+                    <div>
+                        <span class="text-[9px] text-amber-300 font-bold block leading-none">KOIN BLOK</span>
+                        <span id="playerCoinsText" class="font-pixel text-xs sm:text-sm text-amber-400">12,500</span>
+                    </div>
+                </div>
+
+                <!-- Gems Balance (Permata) -->
+                <div class="flex items-center space-x-2 bg-graphite-850 border border-cyan-500/40 px-3 py-1.5 rounded-xl shadow-sm">
+                    <svg class="w-5 h-5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 2a1 1 0 01.832.445l4.5 7a1 1 0 01-.042 1.155l-4.5 6A1 1 0 0110 17a1 1 0 01-.79-.399l-4.5-6a1 1 0 01-.042-1.155l4.5-7A1 1 0 0110 2z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <span class="text-[9px] text-cyan-300 font-bold block leading-none">PERMATA</span>
+                        <span id="playerGemsText" class="font-pixel text-xs sm:text-sm text-cyan-400">450</span>
+                    </div>
+                </div>
+
+                <!-- SFX Switch Desktop -->
+                <button onclick="toggleSFX()" id="sfxBtn" class="hidden md:flex p-2 bg-graphite-850 hover:bg-graphite-800 border border-graphite-700 rounded-xl text-slate-300 hover:text-lime-bright transition" title="Efek Suara">
+                    <svg id="sfxIcon" class="w-5 h-5 text-lime-bright" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.314M6.535 9H3v6h3.535l4.465 4.465V4.535L6.535 9z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN MARKETPLACE CONTAINER -->
+    <main class="max-w-7xl mx-auto w-full px-4 pt-6 space-y-8 flex-1">
+
+        <!-- 1. HERO SHOWCASE (FEATURED LEGENDARY ITEM) -->
+        <section class="w-full relative rounded-3xl overflow-hidden bg-gradient-to-r from-graphite-900 via-emerald-950/60 to-graphite-900 border-2 border-gold-legendary/60 shadow-gold-glow">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 items-center min-h-[380px]">
+                
+                <!-- Left Details & Timer -->
+                <div class="lg:col-span-6 p-6 sm:p-8 space-y-4 z-10">
+                    
+                    <!-- Rarity & Timer Badges -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="px-3 py-1 bg-gold-legendary/20 border border-gold-bright text-gold-bright font-pixel text-[10px] rounded-lg tracking-wider uppercase font-bold flex items-center space-x-1.5">
+                            <svg class="w-3.5 h-3.5 text-gold-bright" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                            </svg>
+                            <span>UNGGULAN LEGENDARIS</span>
+                        </span>
+
+                        <!-- Countdown Timer -->
+                        <span class="px-3 py-1 bg-graphite-950/80 border border-graphite-700 text-slate-300 text-xs font-semibold rounded-lg flex items-center space-x-1">
+                            <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Berakhir dalam: <strong id="countdownTimer" class="text-amber-400 font-mono">14j 32m 10d</strong></span>
+                        </span>
+                    </div>
+
+                    <!-- Title & Lore -->
+                    <div>
+                        <h2 class="font-pixel text-xl sm:text-2xl lg:text-3xl text-white tracking-wide leading-snug">
+                            Raja Naga Emas
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
+                            Penguasa Puncak Voxel. Dilengkapi sisik emas murni, aura naga berkilau, dan kemampuan unik meningkatkan keberuntungan lemparan dadu hingga +30%.
+                        </p>
+                    </div>
+
+                    <!-- Price & CTA -->
+                    <div class="pt-2 flex flex-wrap items-center gap-4">
+                        <div class="flex items-center space-x-2 bg-graphite-950/90 border border-gold-legendary/50 px-4 py-2 rounded-xl">
+                            <svg class="w-6 h-6 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 7h4a1 1 0 110 2H9v2h3a1 1 0 110 2H8a1 1 0 110-2h3V9H8a1 1 0 110-2z"></path>
+                            </svg>
+                            <span class="font-pixel text-base sm:text-lg text-amber-300">3,500</span>
+                        </div>
+
+                        <button id="heroBuyBtn" onclick="initiatePurchase('item_dragon_king')" class="voxel-btn px-6 py-3 bg-gradient-to-r from-amber-500 to-gold-bright hover:from-amber-400 hover:to-amber-300 text-slate-950 font-pixel text-xs sm:text-sm font-bold rounded-xl shadow-gold-glow border-2 border-amber-200 flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                            </svg>
+                            <span id="heroBuyBtnText">BELI SEKARANG</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right 3D Interactive Hero Canvas -->
+                <div class="lg:col-span-6 h-[280px] lg:h-[380px] w-full relative">
+                    <div id="heroCanvasContainer" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
+                    
+                    <!-- 3D Hint Overlay -->
+                    <div class="absolute bottom-3 right-3 bg-graphite-950/80 border border-graphite-700/80 px-2.5 py-1 rounded-lg text-[10px] text-slate-400 pointer-events-none">
+                        Putar 3D: Klik & Geser
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- 2. CATEGORY TABS & FILTER CONTROLS -->
+        <section class="space-y-4">
+            
+            <!-- Category Tabs Row -->
+            <div class="flex items-center space-x-2 border-b border-graphite-800 pb-2 overflow-x-auto scrollbar-none">
+                <button onclick="setCategory('unggulan')" id="tab-unggulan" class="category-tab px-4 py-2 bg-emerald-800 border-2 border-lime-bright text-lime-bright font-pixel text-xs rounded-xl whitespace-nowrap transition">
+                    Unggulan
+                </button>
+                <button onclick="setCategory('skins')" id="tab-skins" class="category-tab px-4 py-2 bg-graphite-850 hover:bg-graphite-800 border-2 border-graphite-700 text-slate-300 font-pixel text-xs rounded-xl whitespace-nowrap transition">
+                    Skins
+                </button>
+                <button onclick="setCategory('aksesori')" id="tab-aksesori" class="category-tab px-4 py-2 bg-graphite-850 hover:bg-graphite-800 border-2 border-graphite-700 text-slate-300 font-pixel text-xs rounded-xl whitespace-nowrap transition">
+                    Aksesori
+                </button>
+                <button onclick="setCategory('efek')" id="tab-efek" class="category-tab px-4 py-2 bg-graphite-850 hover:bg-graphite-800 border-2 border-graphite-700 text-slate-300 font-pixel text-xs rounded-xl whitespace-nowrap transition">
+                    Efek
+                </button>
+                <button onclick="setCategory('emote')" id="tab-emote" class="category-tab px-4 py-2 bg-graphite-850 hover:bg-graphite-800 border-2 border-graphite-700 text-slate-300 font-pixel text-xs rounded-xl whitespace-nowrap transition">
+                    Emote
+                </button>
+            </div>
+
+            <!-- Search Field & Filter Controls Bar -->
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                
+                <!-- Search Input Box -->
+                <div class="sm:col-span-6 relative">
+                    <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cari item voxel..." class="w-full pl-10 pr-4 py-2.5 bg-graphite-900 border border-graphite-700 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-lime-accent">
+                </div>
+
+                <!-- Rarity Filter Dropdown -->
+                <div class="sm:col-span-3">
+                    <select id="rarityFilter" onchange="handleSearch()" class="w-full py-2.5 px-3 bg-graphite-900 border border-graphite-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-lime-accent">
+                        <option value="all">Semua Kelangkaan</option>
+                        <option value="common">Common (Biasa)</option>
+                        <option value="rare">Rare (Langka)</option>
+                        <option value="epic">Epic (Epik)</option>
+                        <option value="legendary">Legendary (Legendaris)</option>
+                    </select>
+                </div>
+
+                <!-- Price Sorting Dropdown -->
+                <div class="sm:col-span-3">
+                    <select id="priceSort" onchange="handleSearch()" class="w-full py-2.5 px-3 bg-graphite-900 border border-graphite-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-lime-accent">
+                        <option value="default">Urutkan: Default</option>
+                        <option value="low-high">Harga: Terendah -> Tertinggi</option>
+                        <option value="high-low">Harga: Tertinggi -> Terendah</option>
+                    </select>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- 3. MARKETPLACE PRODUCT GRID -->
+        <section>
+            <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <!-- Dynamically Populated Cards -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden py-16 text-center space-y-3 bg-graphite-900/50 border border-graphite-800 rounded-2xl">
+                <svg class="w-12 h-12 text-slate-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <p class="font-pixel text-xs text-slate-400">TIDAK ADA ITEM DITEMUKAN</p>
+                <p class="text-xs text-slate-500">Coba ubah kata kunci pencarian atau filter kelangkaan.</p>
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- PURCHASE CONFIRMATION MODAL DIALOG -->
+    <div id="purchaseModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-graphite-950/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
+        
+        <div class="bg-graphite-900 border-2 border-graphite-700 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5 transform scale-95 transition-transform duration-300" id="modalContainer">
+            
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between border-b border-graphite-800 pb-3">
+                <h3 class="font-pixel text-sm text-white">KONFIRMASI PEMBELIAN</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Item Details Breakdown -->
+            <div class="flex items-center space-x-4 bg-graphite-850 p-3.5 rounded-xl border border-graphite-700">
+                <div id="modalItemBox" class="w-16 h-16 rounded-lg border-2 flex items-center justify-center bg-graphite-950 flex-shrink-0">
+                    <!-- Icon/Voxel shape injected via JS -->
+                </div>
+                <div class="flex-1 min-w-0">
+                    <span id="modalItemRarity" class="text-[9px] font-pixel font-bold uppercase tracking-wider block">COMMON</span>
+                    <h4 id="modalItemTitle" class="font-pixel text-xs text-white truncate">Nama Item Voxel</h4>
+                    <span id="modalItemCategory" class="text-[11px] text-slate-400 block mt-0.5">Skins</span>
+                </div>
+            </div>
+
+            <!-- Price Breakdown Calculation -->
+            <div class="space-y-2 bg-graphite-950 p-3.5 rounded-xl text-xs">
+                <div class="flex justify-between text-slate-400">
+                    <span>Saldo Koin Anda:</span>
+                    <span id="modalPlayerCoins" class="font-mono text-amber-400 font-bold">12,500</span>
+                </div>
+                <div class="flex justify-between text-slate-400">
+                    <span>Harga Item:</span>
+                    <span id="modalItemPrice" class="font-mono text-amber-300 font-bold">- 1,200</span>
+                </div>
+                <div class="border-t border-graphite-800 pt-2 flex justify-between text-slate-200 font-bold">
+                    <span>Sisa Saldo:</span>
+                    <span id="modalRemainingCoins" class="font-mono text-emerald-400">11,300</span>
+                </div>
+            </div>
+
+            <!-- Error Prompt if Insufficient Balance -->
+            <div id="modalErrorBox" class="hidden p-3 bg-red-950/80 border border-red-500/50 rounded-xl text-red-300 text-xs flex items-center space-x-2">
+                <svg class="w-5 h-5 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>Saldo Koin Blok Anda tidak mencukupi untuk item ini.</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center space-x-3 pt-2">
+                <button onclick="closeModal()" class="flex-1 py-3 bg-graphite-800 hover:bg-graphite-700 text-slate-300 font-pixel text-xs rounded-xl border border-graphite-600 transition">
+                    BATAL
+                </button>
+                <button id="modalConfirmBtn" onclick="confirmPurchase()" class="flex-1 py-3 bg-lime-accent hover:bg-emerald-500 text-slate-950 font-pixel text-xs font-bold rounded-xl shadow-lime-glow border-2 border-lime-bright transition flex items-center justify-center space-x-2">
+                    <span>KONFIRMASI</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- REVEAL / VICTORY ITEM MODAL -->
+    <div id="victoryModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-graphite-950/90 backdrop-blur-lg hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-gradient-to-b from-graphite-900 to-emerald-950/80 border-2 border-lime-bright rounded-3xl max-w-sm w-full p-6 shadow-lime-glow text-center space-y-5 transform scale-95 transition-transform duration-300">
+            
+            <div class="w-16 h-16 mx-auto bg-emerald-900/60 rounded-2xl border-2 border-lime-bright flex items-center justify-center shadow-lime-glow">
+                <svg class="w-8 h-8 text-lime-bright animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+
+            <div>
+                <span class="text-[10px] font-pixel text-lime-bright uppercase tracking-wider block">PEMBELIAN BERHASIL!</span>
+                <h3 id="victoryTitle" class="font-pixel text-base text-white mt-1">NAMA ITEM</h3>
+                <p class="text-xs text-slate-300 mt-2">Item telah ditambahkan ke inventaris Anda dan siap digunakan.</p>
+            </div>
+
+            <button onclick="closeVictoryModal()" class="w-full py-3 bg-lime-bright hover:bg-lime-400 text-slate-950 font-pixel text-xs font-bold rounded-xl shadow-lime-glow border-2 border-lime-200">
+                MANTAP!
+            </button>
+        </div>
+    </div>
+
+
+    <!-- SCRIPT LOGIC & AUDIO SYNTHESIZER -->
+    <script>
+        // ==========================================
+        // 1. MARKETPLACE ITEMS DATABASE
+        // ==========================================
+        const MARKET_ITEMS = [
+            {
+                id: 'item_dragon_king',
+                title: 'Raja Naga Emas',
+                category: 'skins',
+                rarity: 'legendary',
+                price: 3500,
+                owned: false,
+                isFeatured: true,
+                colorMain: 0xf59e0b,
+                colorAccent: 0xfef08a,
+                description: 'Penguasa Puncak Voxel. Dilengkapi sisik emas murni.'
+            },
+            {
+                id: 'item_cyber_snake',
+                title: 'Ular Cyber Neon',
+                category: 'skins',
+                rarity: 'epic',
+                price: 1800,
+                owned: true,
+                isFeatured: false,
+                colorMain: 0xa855f7,
+                colorAccent: 0xc084fc,
+                description: 'Skin futuristik bersinar neon pirus.'
+            },
+            {
+                id: 'item_classic_green',
+                title: 'Ular Hijau Blok',
+                category: 'skins',
+                rarity: 'common',
+                price: 500,
+                owned: true,
+                isFeatured: false,
+                colorMain: 0x22c55e,
+                colorAccent: 0x86efac,
+                description: 'Skin klasik favorit para petualang.'
+            },
+            {
+                id: 'item_wizard_hat',
+                title: 'Topi Penyihir Runik',
+                category: 'aksesori',
+                rarity: 'rare',
+                price: 950,
+                owned: false,
+                isFeatured: false,
+                colorMain: 0x38bdf8,
+                colorAccent: 0x7dd3fc,
+                description: 'Aksesori kepala magis bintang berpendar.'
+            },
+            {
+                id: 'item_pirate_crown',
+                title: 'Mahkota Bajak Laut',
+                category: 'aksesori',
+                rarity: 'epic',
+                price: 1500,
+                owned: false,
+                isFeatured: false,
+                colorMain: 0xa855f7,
+                colorAccent: 0xfbcfe8,
+                description: 'Simbol kejayaan kapten samudera voxel.'
+            },
+            {
+                id: 'item_fire_trail',
+                title: 'Jejak Api Voxel',
+                category: 'efek',
+                rarity: 'rare',
+                price: 1100,
+                owned: false,
+                isFeatured: false,
+                colorMain: 0xef4444,
+                colorAccent: 0xf97316,
+                description: 'Meninggalkan jejak percikan api saat bergerak.'
+            },
+            {
+                id: 'item_rainbow_step',
+                title: 'Langkah Pelangi',
+                category: 'efek',
+                rarity: 'legendary',
+                price: 2800,
+                owned: false,
+                isFeatured: false,
+                colorMain: 0xf59e0b,
+                colorAccent: 0xec4899,
+                description: 'Langkah memancarkan spektrum pelangi piksel.'
+            },
+            {
+                id: 'item_emote_dance',
+                title: 'Joget Dadu Piksel',
+                category: 'emote',
+                rarity: 'common',
+                price: 400,
+                owned: false,
+                isFeatured: false,
+                colorMain: 0x94a3b8,
+                colorAccent: 0xcbd5e1,
+                description: 'Gaya selebrasi riang saat mendarat di tangga.'
+            },
+            {
+                id: 'item_emote_roar',
+                title: 'Raungan Naga',
+                category: 'emote',
+                rarity: 'rare',
+                price: 850,
+                owned: false,
+                isFeatured: false,
+                colorMain: 0x38bdf8,
+                colorAccent: 0x60a5fa,
+                description: 'Gertakan petir ke lawan saat berhasil menyalip.'
+            }
+        ];
+
+        let playerState = {
+            coins: 12500,
+            gems: 450
+        };
+
+        let currentCategory = 'unggulan';
+        let pendingPurchaseItem = null;
+        let sfxEnabled = true;
+
+        // ==========================================
+        // 2. WEB AUDIO API SYNTHESIZER
+        // ==========================================
+        const AudioFX = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) this.ctx = new AudioCtx();
+                }
+            },
+            playClick() {
+                if (!sfxEnabled) return;
+                this.init(); if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(500, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1000, this.ctx.currentTime + 0.04);
+                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.04);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.04);
+            },
+            playPurchaseSuccess() {
+                if (!sfxEnabled) return;
+                this.init(); if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                const notes = [261.63, 329.63, 392.00, 523.25, 659.25];
+                notes.forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                    gain.gain.setValueAtTime(0.18, now + idx * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.25);
+                    osc.connect(gain); gain.connect(this.ctx.destination);
+                    osc.start(now + idx * 0.08); osc.stop(now + idx * 0.08 + 0.25);
+                });
+            },
+            playError() {
+                if (!sfxEnabled) return;
+                this.init(); if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, this.ctx.currentTime);
+                osc.frequency.setValueAtTime(130, this.ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.25);
+            }
+        };
+
+        function toggleSFX() {
+            sfxEnabled = !sfxEnabled;
+            const icon = document.getElementById('sfxIcon');
+            const iconMobile = document.getElementById('sfxIconMobile');
+            
+            const pathActive = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.314M6.535 9H3v6h3.535l4.465 4.465V4.535L6.535 9z"></path>';
+            const pathMuted = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" stroke-dasharray="2 2"></path>';
+
+            if (icon) icon.innerHTML = sfxEnabled ? pathActive : pathMuted;
+            if (iconMobile) iconMobile.innerHTML = sfxEnabled ? pathActive : pathMuted;
+            AudioFX.playClick();
+        }
+
+        // ==========================================
+        // 3. THREE.JS HERO SHOWCASE CANVAS
+        // ==========================================
+        let heroScene, heroCamera, heroRenderer, heroDragonGroup;
+        let isDragging = false, prevMouseX = 0;
+
+        function initHeroThreeJS() {
+            const container = document.getElementById('heroCanvasContainer');
+            if (!container) return;
+
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+
+            heroScene = new THREE.Scene();
+            heroCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
+            heroCamera.position.set(0, 2.5, 6.5);
+            heroCamera.lookAt(0, 1.0, 0);
+
+            heroRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            heroRenderer.setSize(w, h);
+            heroRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            heroRenderer.shadowMap.enabled = true;
+
+            container.appendChild(heroRenderer.domElement);
+
+            // Lighting
+            const ambient = new THREE.AmbientLight(0xffffff, 0.7);
+            heroScene.add(ambient);
+
+            const goldSpot = new THREE.SpotLight(0xfbbf24, 2.0);
+            goldSpot.position.set(5, 8, 5);
+            goldSpot.castShadow = true;
+            heroScene.add(goldSpot);
+
+            const backLight = new THREE.DirectionalLight(0x10b981, 0.8);
+            backLight.position.set(-5, 4, -4);
+            heroScene.add(backLight);
+
+            // Rotating Voxel Pedestal
+            const pedestalGeo = new THREE.CylinderGeometry(1.8, 2.1, 0.6, 8);
+            const pedestalMat = new THREE.MeshStandardMaterial({ color: 0x161b22, roughness: 0.4, metalness: 0.8 });
+            const pedestal = new THREE.Mesh(pedestalGeo, pedestalMat);
+            pedestal.position.set(0, 0, 0);
+            heroScene.add(pedestal);
+
+            // Dragon Group
+            heroDragonGroup = new THREE.Group();
+            heroDragonGroup.position.set(0, 0.3, 0);
+
+            // Voxel Dragon Body (Golden Dragon King)
+            const boxGeo = new THREE.BoxGeometry(0.4, 0.4, 0.4);
+            const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.7, roughness: 0.2 });
+            const brightGoldMat = new THREE.MeshStandardMaterial({ color: 0xfef08a, metalness: 0.9, roughness: 0.1 });
+
+            // Coiled Body Blocks
+            for (let i = 0; i < 8; i++) {
+                const mesh = new THREE.Mesh(boxGeo, i % 2 === 0 ? goldMat : brightGoldMat);
+                mesh.position.set(Math.sin(i * 0.5) * 0.4, i * 0.25, Math.cos(i * 0.5) * 0.4);
+                heroDragonGroup.add(mesh);
+            }
+
+            // Head
+            const headGeo = new THREE.BoxGeometry(0.8, 0.6, 0.8);
+            const head = new THREE.Mesh(headGeo, goldMat);
+            head.position.set(0, 2.1, 0.1);
+            heroDragonGroup.add(head);
+
+            // Golden Horns
+            const hornGeo = new THREE.BoxGeometry(0.15, 0.5, 0.15);
+            const hornL = new THREE.Mesh(hornGeo, brightGoldMat);
+            hornL.position.set(-0.3, 2.5, -0.1);
+            hornL.rotation.z = -0.3;
+            const hornR = hornL.clone();
+            hornR.position.x = 0.3;
+            hornR.rotation.z = 0.3;
+            heroDragonGroup.add(hornL, hornR);
+
+            heroScene.add(heroDragonGroup);
+
+            // Orbit drag control
+            const dom = heroRenderer.domElement;
+            dom.addEventListener('mousedown', (e) => { isDragging = true; prevMouseX = e.clientX; });
+            window.addEventListener('mouseup', () => isDragging = false);
+            dom.addEventListener('mousemove', (e) => {
+                if (isDragging && heroDragonGroup) {
+                    const delta = e.clientX - prevMouseX;
+                    heroDragonGroup.rotation.y += delta * 0.01;
+                    prevMouseX = e.clientX;
+                }
+            });
+
+            // Resize listener
+            window.addEventListener('resize', () => {
+                const nw = container.clientWidth;
+                const nh = container.clientHeight;
+                heroCamera.aspect = nw / nh;
+                heroCamera.updateProjectionMatrix();
+                heroRenderer.setSize(nw, nh);
+            });
+
+            animateHero();
+        }
+
+        function animateHero() {
+            requestAnimationFrame(animateHero);
+            if (heroDragonGroup) {
+                if (!isDragging) {
+                    heroDragonGroup.rotation.y += 0.008;
+                }
+                heroDragonGroup.position.y = 0.3 + Math.sin(Date.now() * 0.002) * 0.06;
+            }
+            if (heroRenderer && heroScene && heroCamera) {
+                heroRenderer.render(heroScene, heroCamera);
+            }
+        }
+
+        // ==========================================
+        // 4. MARKETPLACE FILTER & CARDS UI LOGIC
+        // ==========================================
+        function setCategory(cat) {
+            AudioFX.playClick();
+            currentCategory = cat;
+
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.className = 'category-tab px-4 py-2 bg-graphite-850 hover:bg-graphite-800 border-2 border-graphite-700 text-slate-300 font-pixel text-xs rounded-xl whitespace-nowrap transition';
+            });
+
+            const active = document.getElementById(`tab-${cat}`);
+            if (active) {
+                active.className = 'category-tab px-4 py-2 bg-emerald-800 border-2 border-lime-bright text-lime-bright font-pixel text-xs rounded-xl whitespace-nowrap transition';
+            }
+
+            renderProducts();
+        }
+
+        function handleSearch() {
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('productGrid');
+            const emptyState = document.getElementById('emptyState');
+            grid.innerHTML = '';
+
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            const rarityVal = document.getElementById('rarityFilter').value;
+            const sortVal = document.getElementById('priceSort').value;
+
+            let filtered = MARKET_ITEMS.filter(item => {
+                // Category match
+                if (currentCategory !== 'unggulan' && item.category !== currentCategory) return false;
+                if (currentCategory === 'unggulan' && !item.isFeatured && item.rarity !== 'legendary' && item.rarity !== 'epic') return false;
+
+                // Search query match
+                if (searchQuery && !item.title.toLowerCase().includes(searchQuery)) return false;
+
+                // Rarity filter
+                if (rarityVal !== 'all' && item.rarity !== rarityVal) return false;
+
+                return true;
+            });
+
+            // Sorting
+            if (sortVal === 'low-high') {
+                filtered.sort((a, b) => a.price - b.price);
+            } else if (sortVal === 'high-low') {
+                filtered.sort((a, b) => b.price - a.price);
+            }
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                const borderClass = `border-rarity-${item.rarity}`;
+
+                card.className = `voxel-card p-4 rounded-2xl border-2 ${borderClass} flex flex-col justify-between space-y-3`;
+
+                card.innerHTML = `
+                    <!-- Top Rarity Tag -->
+                    <div class="flex items-center justify-between">
+                        <span class="text-[9px] font-pixel font-bold uppercase tracking-wider text-rarity-${item.rarity}">
+                            ${item.rarity}
+                        </span>
+                        <span class="text-[10px] text-slate-400 font-semibold px-2 py-0.5 bg-graphite-950 rounded-md border border-graphite-800">
+                            ${item.category.toUpperCase()}
+                        </span>
+                    </div>
+
+                    <!-- Voxel Preview Box -->
+                    <div class="w-full h-32 bg-graphite-950/90 rounded-xl border border-graphite-800/80 flex items-center justify-center relative overflow-hidden group">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center font-pixel text-sm font-bold text-white shadow-lg transition-transform duration-300 group-hover:scale-110" style="background-color: #${item.colorMain.toString(16)}">
+                            ${item.title.substring(0, 2).toUpperCase()}
+                        </div>
+                    </div>
+
+                    <!-- Item Details -->
+                    <div>
+                        <h3 class="font-pixel text-xs text-white truncate">${item.title}</h3>
+                        <p class="text-[11px] text-slate-400 line-clamp-2 mt-1 leading-relaxed">${item.description}</p>
+                    </div>
+
+                    <!-- Price & Action Button -->
+                    <div class="pt-2 border-t border-graphite-800 flex items-center justify-between">
+                        <div class="flex items-center space-x-1.5">
+                            <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 7h4a1 1 0 110 2H9v2h3a1 1 0 110 2H8a1 1 0 110-2h3V9H8a1 1 0 110-2z"></path>
+                            </svg>
+                            <span class="font-pixel text-xs text-amber-300">${item.price.toLocaleString()}</span>
+                        </div>
+
+                        ${item.owned ? `
+                            <span class="px-3 py-1.5 bg-slate-800 text-emerald-400 font-pixel text-[10px] font-bold rounded-lg border border-slate-700">
+                                DIMILIKI
+                            </span>
+                        ` : `
+                            <button onclick="initiatePurchase('${item.id}')" class="voxel-btn px-3.5 py-1.5 bg-lime-accent hover:bg-emerald-500 text-slate-950 font-pixel text-[10px] font-bold rounded-lg shadow-lime-glow border border-lime-bright transition">
+                                BELI
+                            </button>
+                        `}
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // ==========================================
+        // 5. PURCHASE CONFIRMATION & MODAL SYSTEM
+        // ==========================================
+        function initiatePurchase(itemId) {
+            AudioFX.playClick();
+            const item = MARKET_ITEMS.find(i => i.id === itemId);
+            if (!item || item.owned) return;
+
+            pendingPurchaseItem = item;
+
+            // Fill Modal Info
+            document.getElementById('modalItemTitle').textContent = item.title;
+            document.getElementById('modalItemCategory').textContent = item.category.toUpperCase();
+
+            const rarityLabel = document.getElementById('modalItemRarity');
+            rarityLabel.textContent = item.rarity;
+            rarityLabel.className = `text-[9px] font-pixel font-bold uppercase tracking-wider block text-rarity-${item.rarity}`;
+
+            const itemBox = document.getElementById('modalItemBox');
+            itemBox.className = `w-16 h-16 rounded-lg border-2 border-rarity-${item.rarity} flex items-center justify-center bg-graphite-950 flex-shrink-0`;
+            itemBox.innerHTML = `
+                <div class="w-8 h-8 rounded flex items-center justify-center font-pixel text-xs font-bold text-white" style="background-color: #${item.colorMain.toString(16)}">
+                    ${item.title.substring(0, 2).toUpperCase()}
+                </div>
+            `;
+
+            // Calculations
+            document.getElementById('modalPlayerCoins').textContent = playerState.coins.toLocaleString();
+            document.getElementById('modalItemPrice').textContent = `- ${item.price.toLocaleString()}`;
+
+            const remaining = playerState.coins - item.price;
+            const remainingLabel = document.getElementById('modalRemainingCoins');
+            const errorBox = document.getElementById('modalErrorBox');
+            const confirmBtn = document.getElementById('modalConfirmBtn');
+
+            if (remaining < 0) {
+                remainingLabel.textContent = remaining.toLocaleString();
+                remainingLabel.className = 'font-mono text-red-400 font-bold';
+                errorBox.classList.remove('hidden');
+                confirmBtn.disabled = true;
+                confirmBtn.className = 'flex-1 py-3 bg-graphite-800 text-slate-500 font-pixel text-xs rounded-xl border border-graphite-700 cursor-not-allowed';
+            } else {
+                remainingLabel.textContent = remaining.toLocaleString();
+                remainingLabel.className = 'font-mono text-emerald-400 font-bold';
+                errorBox.classList.add('hidden');
+                confirmBtn.disabled = false;
+                confirmBtn.className = 'flex-1 py-3 bg-lime-accent hover:bg-emerald-500 text-slate-950 font-pixel text-xs font-bold rounded-xl shadow-lime-glow border-2 border-lime-bright transition';
+            }
+
+            // Open Modal
+            const modal = document.getElementById('purchaseModal');
+            const container = document.getElementById('modalContainer');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                container.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeModal() {
+            AudioFX.playClick();
+            const modal = document.getElementById('purchaseModal');
+            const container = document.getElementById('modalContainer');
+            modal.classList.add('opacity-0');
+            container.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function confirmPurchase() {
+            if (!pendingPurchaseItem) return;
+
+            if (playerState.coins < pendingPurchaseItem.price) {
+                AudioFX.playError();
+                return;
+            }
+
+            // Deduct Coins
+            playerState.coins -= pendingPurchaseItem.price;
+            pendingPurchaseItem.owned = true;
+
+            // Update UI Balance
+            document.getElementById('playerCoinsText').textContent = playerState.coins.toLocaleString();
+
+            // Play Victory Sound & Open Reveal Modal
+            AudioFX.playPurchaseSuccess();
+            closeModal();
+            updateHeroButtonState();
+            renderProducts();
+
+            setTimeout(() => {
+                openVictoryModal(pendingPurchaseItem);
+            }, 350);
+        }
+
+        function openVictoryModal(item) {
+            document.getElementById('victoryTitle').textContent = item.title;
+            const modal = document.getElementById('victoryModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeVictoryModal() {
+            AudioFX.playClick();
+            const modal = document.getElementById('victoryModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function updateHeroButtonState() {
+            const heroItem = MARKET_ITEMS.find(i => i.id === 'item_dragon_king');
+            const btn = document.getElementById('heroBuyBtn');
+            const btnText = document.getElementById('heroBuyBtnText');
+
+            if (heroItem && heroItem.owned) {
+                btn.className = "voxel-btn px-6 py-3 bg-graphite-800 text-emerald-400 font-pixel text-xs sm:text-sm font-bold rounded-xl border-2 border-emerald-500/50 cursor-default";
+                btnText.textContent = "SUDAH DIMILIKI";
+                btn.onclick = null;
+            }
+        }
+
+        // Timer Countdown logic
+        function startTimer() {
+            let seconds = 52330;
+            setInterval(() => {
+                seconds--;
+                if (seconds <= 0) seconds = 86400;
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                document.getElementById('countdownTimer').textContent = `${h}j ${m}m ${s}d`;
+            }, 1000);
+        }
+
+        // Initializer
+        window.onload = function() {
+            initHeroThreeJS();
+            renderProducts();
+            updateHeroButtonState();
+            startTimer();
+        };
+    </script>
+</body>
+</html>

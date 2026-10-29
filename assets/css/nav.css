@@ -1,0 +1,15 @@
+:root{--nav-h:64px;--wood:#2a211b;--edge:#6b5440;--sun:#FFC21A;--ink:#1B2A3B;--font-display:'Silkscreen','Courier New',monospace}
+/* Navigasi bawah */
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;background:var(--wood);border-top:4px solid #0f0b08;box-shadow:inset 0 3px 0 var(--edge);
+  padding:0 max(0px,env(safe-area-inset-left,0px)) env(safe-area-inset-bottom,0px) max(0px,env(safe-area-inset-right,0px))}
+.bottom-nav a{flex:1;min-width:0;min-height:var(--nav-h);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#d8ccb6;text-decoration:none;position:relative;padding:6px 2px}
+.bottom-nav .nav-icon{width:24px;height:24px}
+.bottom-nav .nav-label{font-family:var(--font-display);font-size:10px;text-transform:uppercase;letter-spacing:.03em;font-weight:700}
+.bottom-nav a[aria-current=page]{color:var(--ink);background:var(--sun);box-shadow:inset 0 -4px 0 rgba(0,0,0,.25)}
+.bottom-nav a[aria-current=page]::before{content:"";position:absolute;top:-4px;left:0;right:0;height:4px;background:var(--sun)}
+.bottom-nav a:focus-visible{outline-offset:-4px;box-shadow:none}
+@media(min-width:900px){
+  .bottom-nav{left:50%;right:auto;transform:translateX(-50%);width:min(620px,100%);border:4px solid #0f0b08;border-bottom:0;border-radius:10px 10px 0 0}
+  .bottom-nav a{flex-direction:row;gap:8px}
+}
+

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2a211b">
+<title>Inventory — Ular Tangga Blok</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/nav.css">
+</head>
+<body class="app" data-page="inventory">
+<div class="page">
+  <header class="topbar">
+    <a class="brand" href="ular%20tangga.html" aria-label="Ular Tangga Blok — Beranda">
+      <span class="brand-cube" aria-hidden="true"></span>
+      <span class="brand-name">Ular Tangga<small>BLOCK WORLD ADVENTURE</small></span>
+    </a>
+    <a class="coin-chip" id="coinChip" href="shop.html" aria-label="Saldo koin"></a>
+  </header>
+
+  <main id="main">
+    <h1 class="page-title">Inventory</h1>
+    <p class="lede" id="total">Memuat koleksi…</p>
+
+    <div class="toolbar">
+      <div class="tabs" id="tabs" role="group" aria-label="Kategori"></div>
+      <div class="filters">
+        <div class="field"><label for="q">Cari nama item</label><input id="q" type="search" placeholder="mis. Steve" autocomplete="off"></div>
+        <div class="field"><label for="rar">Rarity</label>
+          <select id="rar"><option value="">Semua rarity</option><option value="common">Umum</option><option value="rare">Langka</option><option value="epic">Epik</option><option value="legendary">Legendaris</option></select></div>
+        <div class="field"><label for="sort">Urutkan</label>
+          <select id="sort"><option value="new">Terbaru diperoleh</option><option value="old">Terlama diperoleh</option><option value="name">Nama (A–Z)</option><option value="rar">Rarity (tertinggi)</option></select></div>
+        <div class="field"><label for="st">Status</label>
+          <select id="st"><option value="">Semua</option><option value="on">Sedang dipakai</option><option value="off">Belum dipakai</option></select></div>
+      </div>
+    </div>
+
+    <p class="result-count" id="count" aria-live="polite"></p>
+    <ul class="grid" id="grid"></ul>
+    <div id="empty" hidden></div>
+  </main>
+</div>
+
+<script src="assets/js/item-catalog.js"></script>
+<script src="assets/js/player-data.js"></script>
+<script src="assets/js/item-art.js"></script>
+<script src="assets/js/app-ui.js"></script>
+<script src="assets/js/navigation.js"></script>
+<script>
+(function(){
+  'use strict';
+  var C=ItemCatalog,PD=PlayerData,UI=window.UI,el=UI.el;
+  var state={cat:'all',q:'',rar:'',sort:'new',st:''};
+  var tabsBox=document.getElementById('tabs');
+
+  function norm(s){return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
+
+  function visible(owned){
+    var q=norm(state.q.trim());
+    var list=owned.filter(function(o){
+      var it=o.item;
+      if(state.cat!=='all'&&it.category!==state.cat) return false;
+      if(state.rar&&it.rarity!==state.rar) return false;
+      if(state.st==='on'&&!o.equipped) return false;
+      if(state.st==='off'&&o.equipped) return false;
+      if(q&&norm(it.name).indexOf(q)<0) return false;
+      return true;
+    });
+    list.sort(function(a,b){
+      if(state.sort==='name') return a.item.name.localeCompare(b.item.name,'id');
+      if(state.sort==='rar') return (C.RARITY[b.item.rarity].rank-C.RARITY[a.item.rarity].rank)||a.item.name.localeCompare(b.item.name,'id');
+      if(state.sort==='old') return (a.acquiredAt-b.acquiredAt)||(a.seq-b.seq);
+      return (b.acquiredAt-a.acquiredAt)||(b.seq-a.seq);
+    });
+    return list;
+  }
+
+  function renderTabs(owned){
+    tabsBox.textContent='';
+    var cats=[{key:'all',label:'Semua'}].concat(C.CATEGORIES);
+    cats.forEach(function(c){
+      var n=c.key==='all'?owned.length:owned.filter(function(o){return o.item.category===c.key;}).length;
+      tabsBox.appendChild(el('button',{class:'tab',type:'button','aria-pressed':String(state.cat===c.key),on:{click:function(){state.cat=c.key;render();}}},
+        [c.label,el('span',{class:'n',text:'('+n+')'})]));
+    });
+  }
+
+  function card(o){
+    var it=o.item;
+    var art=el('div',{class:'card-art'}); art.innerHTML=ItemArt.forItem(it.id);
+    if(it.stackable&&o.qty>1) art.appendChild(el('span',{class:'qty','aria-label':'Jumlah '+o.qty,text:'x'+o.qty}));
+    var meta=el('div',{class:'card-meta'},[UI.rarityBadge(it.rarity),el('span',{class:'badge own',text:C.KIND_META[it.kind].noun})]);
+    if(o.equipped) meta.appendChild(el('span',{class:'badge on'},['✓ Dipakai']));
+    var actions=el('div',{class:'card-actions'});
+    actions.appendChild(el('button',{class:'btn small'+(o.equipped?' light':''),type:'button',disabled:o.equipped,
+      'aria-label':(o.equipped?'Sedang dipakai: ':'Gunakan ')+it.name,
+      on:{click:function(){var r=PD.equip(it.id);
+        if(r.ok) UI.toast(it.name+' sekarang dipakai.','ok'); else UI.toast('Tidak bisa memakai '+it.name+'.','error');}}},
+      [o.equipped?'Sedang dipakai':'Gunakan']));
+    if(it.kind==='skin') actions.appendChild(el('a',{class:'btn small light',href:'skins.html?skin='+encodeURIComponent(it.id)},['Lihat di Skin']));
+    return el('li',{class:'card-item'+(o.equipped?' is-active':''),'data-rarity':it.rarity},[
+      art,el('div',{class:'card-name',text:it.name}),meta,
+      el('p',{class:'card-sub',text:'Diperoleh '+UI.fmtDate(o.acquiredAt)}),actions]);
+  }
+
+  function render(){
+    var owned=PD.ownedItems();
+    document.getElementById('total').textContent='Kamu memiliki '+owned.length+' dari '+C.items.length+' item di katalog.';
+    renderTabs(owned);
+    var list=visible(owned), grid=document.getElementById('grid'), empty=document.getElementById('empty');
+    grid.textContent='';
+    document.getElementById('count').textContent='Menampilkan '+list.length+' item';
+    list.forEach(function(o){grid.appendChild(card(o));});
+    empty.textContent=''; empty.hidden=list.length>0;
+    if(!list.length){
+      var filtered=state.q||state.rar||state.st;
+      var catEmpty=state.cat!=='all'&&!owned.some(function(o){return o.item.category===state.cat;});
+      var box=el('div',{class:'notice empty'});
+      if(owned.length===0){
+        box.appendChild(el('strong',{text:'Koleksi masih kosong'}));
+        box.appendChild(el('span',{text:'Beli item pertamamu di Toko.'}));
+      }else if(catEmpty&&!filtered){
+        box.appendChild(el('strong',{text:'Belum ada item '+C.categoryLabel(state.cat)}));
+        box.appendChild(el('span',{text:'Kamu belum memiliki item di kategori ini. Cek Toko untuk menemukan yang baru.'}));
+      }else{
+        box.appendChild(el('strong',{text:'Tidak ada item yang cocok'}));
+        box.appendChild(el('span',{text:'Coba ubah pencarian atau filter.'}));
+      }
+      box.appendChild(el('div',{style:'margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap'},[
+        filtered?el('button',{class:'btn small light',type:'button',on:{click:resetFilters}},['Reset filter']):null,
+        el('a',{class:'btn small',href:'shop.html'},['Cari item di Toko'])]));
+      empty.appendChild(box);
+    }
+  }
+  function resetFilters(){
+    state.q='';state.rar='';state.st='';state.sort='new';
+    document.getElementById('q').value='';document.getElementById('rar').value='';document.getElementById('st').value='';document.getElementById('sort').value='new';
+    render();
+  }
+
+  document.getElementById('q').addEventListener('input',function(e){state.q=e.target.value;render();});
+  document.getElementById('rar').addEventListener('change',function(e){state.rar=e.target.value;render();});
+  document.getElementById('sort').addEventListener('change',function(e){state.sort=e.target.value;render();});
+  document.getElementById('st').addEventListener('change',function(e){state.st=e.target.value;render();});
+  PD.subscribe(render);
+  render();
+})();
+</script>
+</body>
+</html>

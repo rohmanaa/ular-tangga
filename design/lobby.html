@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ular Tangga Blok - Game Lobby</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Retro Press Start 2P & Modern Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            950: '#060911',
+                            900: '#0b101d',
+                            850: '#111827',
+                            800: '#1f293d',
+                            700: '#334155'
+                        },
+                        forest: {
+                            dark: '#032117',
+                            panel: '#063023',
+                            accent: '#059669',
+                            glow: '#10b981'
+                        },
+                        lime: {
+                            neon: '#39ff14',
+                            bright: '#22c55e',
+                            glow: '#4ade80'
+                        },
+                        gold: {
+                            legend: '#f59e0b',
+                            bright: '#fbbf24',
+                            glow: '#d97706'
+                        }
+                    },
+                    fontFamily: {
+                        pixel: ['"Press Start 2P"', 'monospace'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'voxel-card': '0 10px 30px -5px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)',
+                        'lime-glow': '0 0 25px rgba(57, 255, 20, 0.4)',
+                        'emerald-glow': '0 0 20px rgba(16, 185, 129, 0.35)',
+                        'gold-glow': '0 0 25px rgba(245, 158, 11, 0.4)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #060911;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #f1f5f9;
+            user-select: none;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(rgba(16, 185, 129, 0.08) 1px, transparent 0),
+                radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+            background-size: 32px 32px;
+            background-position: 0 0, 16px 16px;
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b101d;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f293d;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+
+        /* Voxel Styled Panels & Buttons */
+        .voxel-panel {
+            background: rgba(11, 16, 29, 0.85);
+            backdrop-filter: blur(12px);
+            border: 2px solid #1f293d;
+            box-shadow: inset -3px -3px 0px 0px rgba(0, 0, 0, 0.6), inset 3px 3px 0px 0px rgba(255, 255, 255, 0.05);
+        }
+
+        .voxel-card-interactive {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .voxel-card-interactive:hover {
+            transform: translateY(-4px);
+            border-color: #22c55e;
+            box-shadow: 0 12px 25px -5px rgba(34, 197, 94, 0.25);
+        }
+
+        .voxel-btn {
+            position: relative;
+            transition: all 0.15s ease;
+            box-shadow: inset -3px -3px 0px 0px rgba(0, 0, 0, 0.4), inset 3px 3px 0px 0px rgba(255, 255, 255, 0.2);
+        }
+        .voxel-btn:active {
+            transform: translateY(2px);
+            box-shadow: inset 1px 1px 0px 0px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Animations */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(57, 255, 20, 0.5); transform: scale(1); }
+            50% { box-shadow: 0 0 35px rgba(57, 255, 20, 0.85); transform: scale(1.02); }
+        }
+        .animate-play-btn {
+            animation: pulse-glow 2.5s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative bg-dark-950 pb-20 lg:pb-0">
+
+    <!-- 1. TOP BAR NAVIGATION -->
+    <header class="sticky top-0 z-40 w-full bg-dark-900/90 border-b border-dark-800 backdrop-blur-md px-4 py-2.5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+            
+            <!-- Left: Profile Card -->
+            <div class="flex items-center space-x-3">
+                <div class="relative">
+                    <div class="w-11 h-11 bg-gradient-to-br from-forest-panel to-dark-800 border-2 border-lime-bright rounded-xl flex items-center justify-center font-pixel text-xs font-bold text-lime-neon shadow-emerald-glow">
+                        NB
+                    </div>
+                    <!-- Level Badge -->
+                    <span class="absolute -bottom-1 -right-1 bg-amber-500 border border-dark-950 text-dark-950 text-[9px] font-pixel px-1 rounded font-bold">
+                        LV.28
+                    </span>
+                </div>
+
+                <div class="hidden sm:block">
+                    <div class="flex items-center space-x-2">
+                        <span class="font-pixel text-xs text-white">NusaBlocker</span>
+                        <span class="px-1.5 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-800 rounded text-[9px] font-pixel">VIP</span>
+                    </div>
+                    <!-- XP Bar -->
+                    <div class="w-32 bg-dark-800 h-2 rounded-full overflow-hidden mt-1 border border-dark-700">
+                        <div class="bg-gradient-to-r from-emerald-500 to-lime-neon h-full w-[72%]"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center: Game Title Logo -->
+            <div class="hidden md:flex flex-col items-center">
+                <span class="text-[9px] font-pixel text-lime-bright uppercase tracking-widest">LOBBY UTAMA</span>
+                <h1 class="font-pixel text-sm text-white tracking-wider flex items-center gap-2">
+                    <span class="text-amber-400">ULAR</span> TANGGA <span class="text-emerald-400">BLOK</span>
+                </h1>
+            </div>
+
+            <!-- Right: Currencies & Settings -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                
+                <!-- Gold Coins -->
+                <div class="flex items-center space-x-1.5 bg-dark-850 border border-amber-500/40 px-2.5 py-1.5 rounded-xl">
+                    <div class="w-4 h-4 bg-amber-400 rounded-sm flex items-center justify-center font-pixel text-[9px] text-dark-950 font-bold shadow-gold-glow">
+                        K
+                    </div>
+                    <span class="font-pixel text-xs text-amber-300">42,850</span>
+                </div>
+
+                <!-- Emerald Gems -->
+                <div class="flex items-center space-x-1.5 bg-dark-850 border border-emerald-500/40 px-2.5 py-1.5 rounded-xl">
+                    <div class="w-4 h-4 bg-emerald-400 rotate-45 rounded-sm flex items-center justify-center font-pixel text-[8px] text-dark-950 font-bold shadow-emerald-glow">
+                        ♦
+                    </div>
+                    <span class="font-pixel text-xs text-emerald-300">1,240</span>
+                </div>
+
+                <!-- SFX / Audio Toggle -->
+                <button onclick="toggleSFX()" id="sfxBtn" class="p-2 bg-dark-850 border border-dark-700 hover:border-lime-bright rounded-xl text-slate-300 hover:text-lime-bright transition">
+                    <svg id="sfxIcon" class="w-4 h-4 text-lime-bright" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.314M6.535 9H3v6h3.535l4.465 4.465V4.535L6.535 9z"></path>
+                    </svg>
+                </button>
+
+            </div>
+
+        </div>
+    </header>
+
+
+    <!-- 2. MAIN LOBBY GRID CONTENT -->
+    <main class="max-w-7xl mx-auto w-full px-4 py-4 sm:py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 items-stretch">
+        
+        <!-- LEFT COLUMN: QUICK ACCESS CARDS (4 COLS) -->
+        <section class="lg:col-span-3 flex flex-col justify-between gap-3 order-2 lg:order-1">
+            
+            <div class="space-y-3">
+                <span class="text-[10px] font-pixel text-slate-400 uppercase tracking-widest block px-1">MENU UTAMA</span>
+
+                <!-- Quick Navigation Cards Grid -->
+                <div class="grid grid-cols-2 lg:grid-cols-1 gap-3">
+                    
+                    <!-- Inventaris Card -->
+                    <div onclick="playSFXClick(); triggerToast('Membuka Inventaris...')" class="voxel-panel voxel-card-interactive p-3.5 rounded-2xl cursor-pointer flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/40 flex items-center justify-center text-amber-400 font-pixel text-xs">
+                            🎒
+                        </div>
+                        <div>
+                            <h3 class="font-pixel text-xs text-white">INVENTARIS</h3>
+                            <span class="text-[10px] text-slate-400 block">48/60 Koleksi</span>
+                        </div>
+                    </div>
+
+                    <!-- Kustomisasi Skin Card -->
+                    <div onclick="playSFXClick(); triggerToast('Membuka Kustomisasi Skin...')" class="voxel-panel voxel-card-interactive p-3.5 rounded-2xl cursor-pointer flex items-center space-x-3 border-emerald-500/30">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-pixel text-xs">
+                            👕
+                        </div>
+                        <div>
+                            <h3 class="font-pixel text-xs text-white">KUSTOMISASI</h3>
+                            <span class="text-[10px] text-emerald-400 block">Skin Legendaris</span>
+                        </div>
+                    </div>
+
+                    <!-- Toko Blok Card -->
+                    <div onclick="playSFXClick(); triggerToast('Membuka Toko Blok...')" class="voxel-panel voxel-card-interactive p-3.5 rounded-2xl cursor-pointer flex items-center space-x-3 border-purple-500/30">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/40 flex items-center justify-center text-purple-400 font-pixel text-xs">
+                            🏪
+                        </div>
+                        <div>
+                            <h3 class="font-pixel text-xs text-white">TOKO BLOK</h3>
+                            <span class="text-[10px] text-purple-300 block">Diskon Musim</span>
+                        </div>
+                    </div>
+
+                    <!-- Leaderboard Card -->
+                    <div onclick="playSFXClick(); triggerToast('Membuka Papan Peringkat...')" class="voxel-panel voxel-card-interactive p-3.5 rounded-2xl cursor-pointer flex items-center space-x-3 border-sky-500/30">
+                        <div class="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/40 flex items-center justify-center text-sky-400 font-pixel text-xs">
+                            🏆
+                        </div>
+                        <div>
+                            <h3 class="font-pixel text-xs text-white">PERINGKAT</h3>
+                            <span class="text-[10px] text-sky-300 block">Peringkat #14</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- DAILY FEATURED COLLECTIBLE WIDGET -->
+            <div class="voxel-panel p-4 rounded-2xl border-amber-500/40 space-y-3 bg-gradient-to-b from-dark-900 to-amber-950/20">
+                <div class="flex items-center justify-between">
+                    <span class="px-2 py-0.5 bg-amber-500/20 border border-amber-400 text-amber-300 font-pixel text-[9px] rounded">
+                        PENAWARAN HARI INI
+                    </span>
+                    <span class="text-[10px] font-mono text-amber-400">⏳ 14:22:05</span>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-dark-950 border border-amber-400 rounded-xl flex items-center justify-center text-xl shadow-gold-glow">
+                        👑
+                    </div>
+                    <div>
+                        <h4 class="font-pixel text-xs text-amber-300">Mahkota Naga Emas</h4>
+                        <span class="text-[10px] text-slate-300 block">Aksesori Legendaris</span>
+                        <div class="flex items-center space-x-1.5 mt-1">
+                            <span class="text-[11px] font-pixel text-amber-400">2,500 Koin</span>
+                            <span class="text-[9px] text-slate-500 line-through">4,000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="playSFXClick(); triggerToast('Membeli Mahkota Naga Emas!')" class="w-full py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-pixel text-[10px] font-bold rounded-xl shadow-gold-glow transition">
+                    BELI SEKARANG
+                </button>
+            </div>
+
+        </section>
+
+
+        <!-- CENTER COLUMN: 3D VOXEL STAGE & CTA BUTTON (6 COLS) -->
+        <section class="lg:col-span-6 flex flex-col items-center justify-between relative order-1 lg:order-2 space-y-4">
+            
+            <!-- Skin Tag Badge Top Center -->
+            <div class="z-10 bg-dark-900/90 border border-amber-500/60 px-4 py-1.5 rounded-full backdrop-blur-md flex items-center space-x-2 shadow-gold-glow">
+                <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                <span class="font-pixel text-[10px] text-amber-300">SKIN AKTIF: KSATRIA EMAS (LEGENDARIS)</span>
+            </div>
+
+            <!-- 3D Three.js Viewport -->
+            <div class="w-full h-[320px] sm:h-[400px] lg:h-[420px] relative rounded-3xl voxel-panel border-2 border-dark-700 overflow-hidden cursor-grab active:cursor-grabbing">
+                <div id="lobbyCanvasContainer" class="w-full h-full"></div>
+
+                <!-- Drag Instruction Overlay -->
+                <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-dark-950/80 border border-dark-700 px-3 py-1 rounded-full text-[10px] text-slate-400 pointer-events-none whitespace-nowrap">
+                    Putar Karakter: Klik & Geser
+                </div>
+            </div>
+
+            <!-- Play Mode Selector & Main CTA Button -->
+            <div class="w-full space-y-3 z-10">
+                
+                <!-- Game Mode Selector -->
+                <div class="grid grid-cols-3 gap-2 bg-dark-900/90 p-1.5 rounded-2xl border border-dark-800">
+                    <button onclick="selectMode('1v1')" id="mode1v1" class="py-2 rounded-xl font-pixel text-[9px] text-dark-950 bg-lime-neon font-bold shadow-lime-glow transition">
+                        1 V 1 MATCH
+                    </button>
+                    <button onclick="selectMode('4p')" id="mode4p" class="py-2 rounded-xl font-pixel text-[9px] text-slate-400 hover:text-white transition">
+                        4 PLAYER BATTLE
+                    </button>
+                    <button onclick="selectMode('room')" id="modeRoom" class="py-2 rounded-xl font-pixel text-[9px] text-slate-400 hover:text-white transition">
+                        KAMAR TEMAN
+                    </button>
+                </div>
+
+                <!-- Prominent CTA Play Button -->
+                <button onclick="startMatchmaking()" class="voxel-btn animate-play-btn w-full py-4 bg-gradient-to-r from-lime-bright to-emerald-400 hover:from-lime-neon hover:to-emerald-300 text-dark-950 font-pixel text-sm sm:text-base font-extrabold rounded-2xl shadow-lime-glow border-2 border-lime-300 transition flex items-center justify-center space-x-3">
+                    <svg class="w-6 h-6 text-dark-950 fill-current" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    <span>MULAI BERMAIN</span>
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- RIGHT COLUMN: SOCIAL, NEWS & ACTIVITY (3 COLS) -->
+        <section class="lg:col-span-3 flex flex-col justify-between gap-3 order-3">
+            
+            <!-- Friends Online Panel -->
+            <div class="voxel-panel p-4 rounded-2xl space-y-3">
+                <div class="flex items-center justify-between border-b border-dark-800 pb-2">
+                    <h3 class="font-pixel text-xs text-white">TEMAN ONLINE</h3>
+                    <span class="px-2 py-0.5 bg-emerald-950 text-lime-bright font-pixel text-[9px] rounded">3/12</span>
+                </div>
+
+                <div class="space-y-2.5">
+                    <!-- Friend 1 -->
+                    <div class="flex items-center justify-between text-xs">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 rounded-full bg-lime-neon"></div>
+                            <span class="font-pixel text-[11px] text-slate-200">Cyber_Ninja</span>
+                        </div>
+                        <button onclick="playSFXClick(); triggerToast('Mengundang Cyber_Ninja...')" class="px-2 py-1 bg-dark-800 hover:bg-emerald-800 text-[9px] font-pixel text-emerald-300 rounded border border-dark-700">
+                            UNDANG
+                        </button>
+                    </div>
+
+                    <!-- Friend 2 -->
+                    <div class="flex items-center justify-between text-xs">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 rounded-full bg-lime-neon"></div>
+                            <span class="font-pixel text-[11px] text-slate-200">Penyihir_Hijau</span>
+                        </div>
+                        <button onclick="playSFXClick(); triggerToast('Mengundang Penyihir_Hijau...')" class="px-2 py-1 bg-dark-800 hover:bg-emerald-800 text-[9px] font-pixel text-emerald-300 rounded border border-dark-700">
+                            UNDANG
+                        </button>
+                    </div>
+
+                    <!-- Friend 3 -->
+                    <div class="flex items-center justify-between text-xs">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                            <span class="font-pixel text-[11px] text-slate-400">Raja_Dadu99</span>
+                        </div>
+                        <span class="text-[9px] text-slate-500 font-pixel">DALAM GAME</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Season Pass Progress Box -->
+            <div class="voxel-panel p-4 rounded-2xl space-y-3 bg-gradient-to-b from-dark-900 to-emerald-950/30 border-emerald-500/40">
+                <div class="flex items-center justify-between">
+                    <span class="font-pixel text-xs text-emerald-300">PASS MUSIM 4</span>
+                    <span class="text-[10px] font-pixel text-lime-bright">LV. 18</span>
+                </div>
+                
+                <div class="w-full bg-dark-950 h-3 rounded-lg border border-dark-700 overflow-hidden p-0.5">
+                    <div class="bg-gradient-to-r from-emerald-500 to-lime-neon h-full rounded w-[60%]"></div>
+                </div>
+
+                <div class="flex items-center justify-between text-[10px] text-slate-400">
+                    <span>Hadiah Berikutnya:</span>
+                    <span class="text-amber-300 font-bold">1,000 Koin</span>
+                </div>
+            </div>
+
+            <!-- Chat & Community Widget -->
+            <div class="voxel-panel p-3.5 rounded-2xl space-y-2">
+                <span class="text-[9px] font-pixel text-slate-400 block">OBROLAN GLOBAL</span>
+                <div class="h-20 bg-dark-950 p-2 rounded-xl border border-dark-800 overflow-y-auto text-[11px] space-y-1.5 font-sans">
+                    <p><span class="text-amber-400 font-bold">Bung_Tangga:</span> Ada yang mau mabar 4 player?</p>
+                    <p><span class="text-sky-400 font-bold">Garuda_Block:</span> Ksatria Emas gokil banget skinnya 🔥</p>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- MOBILE BOTTOM NAVIGATION BAR -->
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-dark-900/95 border-t border-dark-800 backdrop-blur-lg px-2 py-2">
+        <div class="grid grid-cols-5 gap-1 text-center">
+            <button onclick="playSFXClick()" class="p-2 text-lime-bright flex flex-col items-center">
+                <span class="text-base">🏰</span>
+                <span class="font-pixel text-[8px] mt-0.5">LOBBY</span>
+            </button>
+            <button onclick="playSFXClick(); triggerToast('Membuka Inventaris...')" class="p-2 text-slate-400 flex flex-col items-center">
+                <span class="text-base">🎒</span>
+                <span class="font-pixel text-[8px] mt-0.5">BARANG</span>
+            </button>
+            <button onclick="playSFXClick(); triggerToast('Membuka Kustomisasi...')" class="p-2 text-slate-400 flex flex-col items-center">
+                <span class="text-base">👕</span>
+                <span class="font-pixel text-[8px] mt-0.5">SKIN</span>
+            </button>
+            <button onclick="playSFXClick(); triggerToast('Membuka Toko...')" class="p-2 text-slate-400 flex flex-col items-center">
+                <span class="text-base">🏪</span>
+                <span class="font-pixel text-[8px] mt-0.5">TOKO</span>
+            </button>
+            <button onclick="playSFXClick(); triggerToast('Membuka Peringkat...')" class="p-2 text-slate-400 flex flex-col items-center">
+                <span class="text-base">🏆</span>
+                <span class="font-pixel text-[8px] mt-0.5">PERINGKAT</span>
+            </button>
+        </div>
+    </nav>
+
+
+    <!-- MATCHMAKING SEARCHING OVERLAY MODAL -->
+    <div id="matchmakingModal" class="hidden fixed inset-0 z-50 bg-dark-950/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="voxel-panel max-w-sm w-full p-6 rounded-3xl text-center space-y-6 border-2 border-lime-bright shadow-lime-glow">
+            
+            <div class="relative w-20 h-20 mx-auto">
+                <div class="absolute inset-0 rounded-full border-4 border-lime-bright border-t-transparent animate-spin"></div>
+                <div class="w-full h-full flex items-center justify-center text-3xl">
+                    🎲
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <span id="modalModeText" class="text-[10px] font-pixel text-lime-bright uppercase">MODAL: 1 V 1 QUICK MATCH</span>
+                <h3 class="font-pixel text-base text-white">MENCARI LAWAN...</h3>
+                <p class="text-xs text-slate-400">Menghubungkan ke server kompetitif voxel</p>
+            </div>
+
+            <div class="font-mono text-2xl text-lime-neon font-bold" id="matchTimer">
+                00:04
+            </div>
+
+            <button onclick="cancelMatchmaking()" class="voxel-btn w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-pixel text-xs rounded-xl transition">
+                BATALKAN PENCARIAN
+            </button>
+        </div>
+    </div>
+
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="fixed top-16 right-4 z-50 space-y-2 pointer-events-none"></div>
+
+
+    <!-- JAVASCRIPT LOGIC & 3D THREE.JS RENDERER -->
+    <script>
+        let selectedMode = '1v1';
+        let sfxEnabled = true;
+        let matchInterval = null;
+        let timerSeconds = 0;
+
+        // ==========================================
+        // 1. AUDIO SYNTHESIZER (WEB AUDIO API)
+        // ==========================================
+        const AudioFX = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) this.ctx = new AudioCtx();
+                }
+            },
+            playClick() {
+                if (!sfxEnabled) return;
+                this.init(); if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(520, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1040, this.ctx.currentTime + 0.05);
+                gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.05);
+            },
+            playMatchStart() {
+                if (!sfxEnabled) return;
+                this.init(); if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+                osc.frequency.setValueAtTime(660, this.ctx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(880, this.ctx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.35);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.35);
+            }
+        };
+
+        function playSFXClick() { AudioFX.playClick(); }
+
+        function toggleSFX() {
+            sfxEnabled = !sfxEnabled;
+            const icon = document.getElementById('sfxIcon');
+            const pathActive = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.314M6.535 9H3v6h3.535l4.465 4.465V4.535L6.535 9z"></path>';
+            const pathMuted = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" stroke-dasharray="2 2"></path>';
+            if (icon) icon.innerHTML = sfxEnabled ? pathActive : pathMuted;
+            playSFXClick();
+        }
+
+        // ==========================================
+        // 2. GAME MODE SELECTOR & MATCHMAKING
+        // ==========================================
+        function selectMode(mode) {
+            playSFXClick();
+            selectedMode = mode;
+
+            const btn1 = document.getElementById('mode1v1');
+            const btn2 = document.getElementById('mode4p');
+            const btn3 = document.getElementById('modeRoom');
+
+            [btn1, btn2, btn3].forEach(b => {
+                b.className = "py-2 rounded-xl font-pixel text-[9px] text-slate-400 hover:text-white transition";
+            });
+
+            if (mode === '1v1') btn1.className = "py-2 rounded-xl font-pixel text-[9px] text-dark-950 bg-lime-neon font-bold shadow-lime-glow transition";
+            if (mode === '4p') btn2.className = "py-2 rounded-xl font-pixel text-[9px] text-dark-950 bg-lime-neon font-bold shadow-lime-glow transition";
+            if (mode === 'room') btn3.className = "py-2 rounded-xl font-pixel text-[9px] text-dark-950 bg-lime-neon font-bold shadow-lime-glow transition";
+        }
+
+        function startMatchmaking() {
+            AudioFX.playMatchStart();
+            const modal = document.getElementById('matchmakingModal');
+            const modeText = document.getElementById('modalModeText');
+
+            if (selectedMode === '1v1') modeText.textContent = "MODE: 1 V 1 QUICK MATCH";
+            if (selectedMode === '4p') modeText.textContent = "MODE: 4 PLAYER BATTLE";
+            if (selectedMode === 'room') modeText.textContent = "MODE: KAMAR TEMAN PRIVAT";
+
+            modal.classList.remove('hidden');
+            timerSeconds = 0;
+            document.getElementById('matchTimer').textContent = "00:00";
+
+            matchInterval = setInterval(() => {
+                timerSeconds++;
+                const mins = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+                const secs = String(timerSeconds % 60).padStart(2, '0');
+                document.getElementById('matchTimer').textContent = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function cancelMatchmaking() {
+            playSFXClick();
+            clearInterval(matchInterval);
+            document.getElementById('matchmakingModal').classList.add('hidden');
+        }
+
+        function triggerToast(msg) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = "bg-dark-900 border border-lime-bright text-lime-bright px-4 py-2 rounded-xl font-pixel text-xs shadow-lime-glow transition-all duration-300 transform translate-y-2 opacity-0";
+            toast.textContent = msg;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        // ==========================================
+        // 3. THREE.JS 3D VOXEL HERO STAGE
+        // ==========================================
+        let scene, camera, renderer, heroGroup, islandGroup;
+        let isDragging = false, previousMouseX = 0;
+
+        function initLobby3D() {
+            const container = document.getElementById('lobbyCanvasContainer');
+            if (!container) return;
+
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
+            camera.position.set(0, 2.5, 7.5);
+            camera.lookAt(0, 0.8, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(w, h);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            container.appendChild(renderer.domElement);
+
+            // Dynamic Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+            scene.add(ambientLight);
+
+            const goldSpot = new THREE.SpotLight(0xfbbf24, 2);
+            goldSpot.position.set(4, 8, 5);
+            scene.add(goldSpot);
+
+            const emeraldRim = new THREE.DirectionalLight(0x10b981, 0.8);
+            emeraldRim.position.set(-5, 3, -4);
+            scene.add(emeraldRim);
+
+            // Root Group
+            islandGroup = new THREE.Group();
+            scene.add(islandGroup);
+
+            // 1. Build Floating Grass Voxel Island
+            buildVoxelIsland();
+
+            // 2. Build 3D Golden Knight Character
+            heroGroup = buildGoldenKnight();
+            heroGroup.position.set(0, 0.9, 0);
+            islandGroup.add(heroGroup);
+
+            // Mouse Drag Controls
+            const dom = renderer.domElement;
+            dom.addEventListener('mousedown', (e) => { isDragging = true; previousMouseX = e.clientX; });
+            window.addEventListener('mouseup', () => isDragging = false);
+            dom.addEventListener('mousemove', (e) => {
+                if (isDragging && heroGroup) {
+                    const delta = e.clientX - previousMouseX;
+                    heroGroup.rotation.y += delta * 0.01;
+                    previousMouseX = e.clientX;
+                }
+            });
+
+            window.addEventListener('resize', () => {
+                const nw = container.clientWidth;
+                const nh = container.clientHeight;
+                camera.aspect = nw / nh;
+                camera.updateProjectionMatrix();
+                renderer.setSize(nw, nh);
+            });
+
+            animateLobby();
+        }
+
+        function buildVoxelIsland() {
+            const grassMat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.6 });
+            const dirtMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.9 });
+            const boxGeo = new THREE.BoxGeometry(0.4, 0.4, 0.4);
+
+            // Circular Island Base
+            for (let x = -4; x <= 4; x++) {
+                for (let z = -4; z <= 4; z++) {
+                    if (x*x + z*z <= 16) {
+                        // Grass Top
+                        const grass = new THREE.Mesh(boxGeo, grassMat);
+                        grass.position.set(x * 0.4, 0, z * 0.4);
+                        islandGroup.add(grass);
+
+                        // Dirt Bottom
+                        const dirt = new THREE.Mesh(boxGeo, dirtMat);
+                        dirt.position.set(x * 0.4, -0.4, z * 0.4);
+                        islandGroup.add(dirt);
+                    }
+                }
+            }
+        }
+
+        function buildGoldenKnight() {
+            const group = new THREE.Group();
+            const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.8, roughness: 0.2 });
+            const darkArmorMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.5 });
+            const skinMat = new THREE.MeshStandardMaterial({ color: 0xffedd5, roughness: 0.8 });
+            const redCapeMat = new THREE.MeshStandardMaterial({ color: 0xd97706 });
+
+            const boxGeo = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+
+            // Legs
+            for (let y = 0; y < 3; y++) {
+                const legL = new THREE.Mesh(boxGeo, darkArmorMat); legL.position.set(-0.18, y * 0.2, 0); group.add(legL);
+                const legR = new THREE.Mesh(boxGeo, darkArmorMat); legR.position.set(0.18, y * 0.2, 0); group.add(legR);
+            }
+
+            // Body
+            for (let x = -1; x <= 1; x++) {
+                for (let y = 3; y < 6; y++) {
+                    const body = new THREE.Mesh(boxGeo, goldMat);
+                    body.position.set(x * 0.2, y * 0.2, 0);
+                    group.add(body);
+                }
+            }
+
+            // Head
+            const head = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.55, 0.55), skinMat);
+            head.position.set(0, 1.45, 0);
+            group.add(head);
+
+            // Crown
+            const crownMat = new THREE.MeshStandardMaterial({ color: 0xfbfb24, metalness: 0.9 });
+            const crown = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.18, 0.65), crownMat);
+            crown.position.set(0, 1.8, 0);
+            group.add(crown);
+
+            // Sword (Right Hand)
+            const swordMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.9 });
+            const sword = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.9, 0.08), swordMat);
+            sword.position.set(0.45, 1.1, 0.2);
+            group.add(sword);
+
+            // Cape
+            const cape = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.7, 0.05), redCapeMat);
+            cape.position.set(0, 0.9, -0.15);
+            group.add(cape);
+
+            return group;
+        }
+
+        let clock = 0;
+        function animateLobby() {
+            requestAnimationFrame(animateLobby);
+            clock += 0.02;
+
+            if (heroGroup && !isDragging) {
+                heroGroup.position.y = 0.9 + Math.sin(clock) * 0.05; // Idle Bobbing
+                heroGroup.rotation.y += 0.003;
+            }
+
+            if (islandGroup) {
+                islandGroup.position.y = Math.sin(clock * 0.5) * 0.08;
+            }
+
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
+        }
+
+        // Initialize Window
+        window.onload = function() {
+            initLobby3D();
+        };
+    </script>
+</body>
+</html>

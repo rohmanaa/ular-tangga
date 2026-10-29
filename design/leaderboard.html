@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ular Tangga Blok - Papan Peringkat Kompetitif</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Retro Press Start 2P & Modern Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <!-- Three.js for 3D Voxel Podium Showcase -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            950: '#060a12',
+                            900: '#0a0f1d',
+                            850: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                            600: '#475569'
+                        },
+                        emerald: {
+                            bright: '#10b981',
+                            glow: '#059669',
+                            dark: '#022c22'
+                        },
+                        lime: {
+                            bright: '#84cc16',
+                            neon: '#39ff14'
+                        },
+                        gold: {
+                            podium: '#f59e0b',
+                            bright: '#fbbf24',
+                            glow: '#d97706'
+                        },
+                        silver: {
+                            podium: '#94a3b8',
+                            bright: '#cbd5e1'
+                        },
+                        bronze: {
+                            podium: '#b45309',
+                            bright: '#d97706'
+                        }
+                    },
+                    fontFamily: {
+                        pixel: ['"Press Start 2P"', 'monospace'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'voxel-card': '0 10px 30px -5px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)',
+                        'gold-glow': '0 0 25px rgba(245, 158, 11, 0.4)',
+                        'emerald-glow': '0 0 20px rgba(16, 185, 129, 0.35)',
+                        'silver-glow': '0 0 20px rgba(148, 163, 184, 0.3)',
+                        'bronze-glow': '0 0 20px rgba(180, 83, 9, 0.3)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #060a12;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #f1f5f9;
+            user-select: none;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(rgba(16, 185, 129, 0.08) 1px, transparent 0),
+                radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+            background-size: 32px 32px;
+            background-position: 0 0, 16px 16px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0f1d;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+
+        /* Voxel card borders */
+        .voxel-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 2px solid #1e293b;
+            box-shadow: inset -3px -3px 0px 0px rgba(0, 0, 0, 0.6), inset 3px 3px 0px 0px rgba(255, 255, 255, 0.05);
+        }
+
+        .voxel-btn {
+            position: relative;
+            transition: all 0.15s ease;
+            box-shadow: inset -2px -2px 0px 0px rgba(0, 0, 0, 0.4), inset 2px 2px 0px 0px rgba(255, 255, 255, 0.15);
+        }
+        .voxel-btn:active {
+            transform: translateY(2px);
+            box-shadow: inset 1px 1px 0px 0px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Pulse Animations */
+        @keyframes glow-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.02); }
+        }
+        .animate-glow {
+            animation: glow-pulse 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-navy-950 pb-24">
+
+    <!-- HEADER BAR -->
+    <header class="sticky top-0 z-40 w-full bg-navy-900/90 border-b border-navy-800 backdrop-blur-md px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+            
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-emerald-dark border-2 border-emerald-bright rounded-xl flex items-center justify-center shadow-emerald-glow">
+                        <svg class="w-6 h-6 text-emerald-bright" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-bold text-emerald-bright uppercase tracking-wider block">Ular Tangga Blok</span>
+                        <h1 class="font-pixel text-xs sm:text-sm text-white tracking-wide">PAPAN PERINGKAT KOMPETITIF</h1>
+                    </div>
+                </div>
+
+                <!-- SFX Toggle (Mobile) -->
+                <button onclick="toggleSFX()" id="sfxBtnMobile" class="md:hidden p-2 bg-navy-850 border border-navy-700 rounded-lg text-slate-300">
+                    <svg id="sfxIconMobile" class="w-5 h-5 text-emerald-bright" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.314M6.535 9H3v6h3.535l4.465 4.465V4.535L6.535 9z"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Global / Weekly Tabs & Refresh Status -->
+            <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-end">
+                
+                <!-- Main Mode Selector -->
+                <div class="flex bg-navy-950 p-1 rounded-xl border border-navy-800">
+                    <button onclick="switchTab('global')" id="tabGlobal" class="px-4 py-1.5 rounded-lg font-pixel text-[10px] text-white bg-emerald-bright font-bold shadow-emerald-glow transition">
+                        GLOBAL
+                    </button>
+                    <button onclick="switchTab('weekly')" id="tabWeekly" class="px-4 py-1.5 rounded-lg font-pixel text-[10px] text-slate-400 hover:text-white transition">
+                        MINGGUAN
+                    </button>
+                </div>
+
+                <!-- Refresh & Status -->
+                <div class="flex items-center space-x-2">
+                    <span id="lastUpdatedText" class="hidden sm:inline text-[11px] text-slate-400">Diperbarui 2 mnt lalu</span>
+                    <button onclick="refreshData()" title="Perbarui Data" class="p-2 bg-navy-850 hover:bg-navy-800 border border-navy-700 rounded-xl text-emerald-bright transition">
+                        <svg id="refreshIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                    </button>
+                    <button onclick="toggleSFX()" id="sfxBtn" class="hidden md:flex p-2 bg-navy-850 hover:bg-navy-800 border border-navy-700 rounded-xl text-slate-300 hover:text-emerald-bright transition">
+                        <svg id="sfxIcon" class="w-4 h-4 text-emerald-bright" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.314M6.535 9H3v6h3.535l4.465 4.465V4.535L6.535 9z"></path>
+                        </svg>
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-7xl mx-auto w-full px-4 pt-6 space-y-8 flex-1">
+
+        <!-- 1. 3D VOXEL PODIUM SECTION (TOP 3 PLAYERS) -->
+        <section class="w-full relative rounded-3xl voxel-panel p-4 sm:p-6 overflow-hidden border-2 border-navy-700">
+            
+            <div class="text-center space-y-1 mb-2">
+                <span id="podiumSubtitle" class="text-[10px] font-pixel text-emerald-bright tracking-widest uppercase block">3 PEMAIN TERATAS SAAAT INI</span>
+                <h2 class="font-pixel text-sm sm:text-lg text-white">PODIUM JUARA VOXEL</h2>
+            </div>
+
+            <!-- 3D Canvas Viewport -->
+            <div class="w-full h-[320px] sm:h-[380px] relative cursor-grab active:cursor-grabbing">
+                <div id="podiumCanvasContainer" class="w-full h-full"></div>
+
+                <!-- Drag Helper Overlay -->
+                <div class="absolute bottom-2 left-1/2 -translate-x-1/2 bg-navy-950/80 border border-navy-700 px-3 py-1 rounded-full text-[10px] text-slate-400 pointer-events-none">
+                    Putar Podium: Klik & Geser Horizontal
+                </div>
+            </div>
+
+            <!-- Podium Player Cards Info Grid (2nd, 1st, 3rd) -->
+            <div class="grid grid-cols-3 gap-2 sm:gap-4 mt-2 max-w-4xl mx-auto">
+                
+                <!-- Rank 2 (Silver - Left) -->
+                <div id="podiumCard2" onclick="highlightPlayerInList(2)" class="cursor-pointer bg-navy-900/90 border border-silver-podium/60 rounded-2xl p-3 text-center space-y-1.5 transition hover:scale-105 shadow-silver-glow">
+                    <span class="px-2 py-0.5 bg-slate-800 border border-slate-600 text-slate-300 font-pixel text-[9px] rounded-md inline-block">#2 PERAK</span>
+                    <h3 id="p2Name" class="font-pixel text-xs text-white truncate">Cyber_Ninja</h3>
+                    <div id="p2Title" class="text-[10px] text-slate-400 font-semibold truncate">Master Dadu</div>
+                    <div class="pt-1 border-t border-navy-800">
+                        <span id="p2Score" class="font-pixel text-xs sm:text-sm text-silver-bright block">18,920</span>
+                        <span id="p2Wins" class="text-[10px] text-slate-400 block">312 Kemenangan</span>
+                    </div>
+                </div>
+
+                <!-- Rank 1 (Gold - Center Hero) -->
+                <div id="podiumCard1" onclick="highlightPlayerInList(1)" class="cursor-pointer bg-navy-900/90 border-2 border-gold-podium rounded-2xl p-3 sm:p-4 text-center space-y-2 transition hover:scale-105 shadow-gold-glow -translate-y-2 sm:-translate-y-3">
+                    <span class="px-2.5 py-0.5 bg-amber-500/20 border border-amber-400 text-gold-bright font-pixel text-[10px] rounded-md inline-block">#1 EMAS</span>
+                    <h3 id="p1Name" class="font-pixel text-sm sm:text-base text-gold-bright truncate">Ksatria_Emas</h3>
+                    <div id="p1Title" class="text-[11px] text-amber-200 font-bold truncate">Legenda Utama</div>
+                    <div class="pt-1.5 border-t border-amber-500/30">
+                        <span id="p1Score" class="font-pixel text-sm sm:text-lg text-gold-bright block">24,850</span>
+                        <span id="p1Wins" class="text-[10px] text-slate-300 block">428 Kemenangan</span>
+                    </div>
+                </div>
+
+                <!-- Rank 3 (Bronze - Right) -->
+                <div id="podiumCard3" onclick="highlightPlayerInList(3)" class="cursor-pointer bg-navy-900/90 border border-bronze-podium/60 rounded-2xl p-3 text-center space-y-1.5 transition hover:scale-105 shadow-bronze-glow">
+                    <span class="px-2 py-0.5 bg-amber-950 border border-amber-800 text-amber-500 font-pixel text-[9px] rounded-md inline-block">#3 PERUNGGU</span>
+                    <h3 id="p3Name" class="font-pixel text-xs text-white truncate">Penyihir_Hijau</h3>
+                    <div id="p3Title" class="text-[10px] text-slate-400 font-semibold truncate">Penyihir Trik</div>
+                    <div class="pt-1 border-t border-navy-800">
+                        <span id="p3Score" class="font-pixel text-xs sm:text-sm text-amber-500 block">16,400</span>
+                        <span id="p3Wins" class="text-[10px] text-slate-400 block">275 Kemenangan</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- 2. SEARCH & TIER FILTER CONTROLS -->
+        <section class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                
+                <!-- Search Box -->
+                <div class="sm:col-span-7 relative">
+                    <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input type="text" id="searchInput" oninput="handleFilter()" placeholder="Cari nama pemain atau tag..." class="w-full pl-10 pr-4 py-2.5 bg-navy-900 border border-navy-700 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-bright">
+                </div>
+
+                <!-- Tier Filter Dropdown -->
+                <div class="sm:col-span-5">
+                    <select id="tierFilter" onchange="handleFilter()" class="w-full py-2.5 px-3 bg-navy-900 border border-navy-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-emerald-bright">
+                        <option value="all">Semua Tier / Tingkatan</option>
+                        <option value="Legenda">Tier: Legenda</option>
+                        <option value="Master">Tier: Master</option>
+                        <option value="Permata">Tier: Permata (Diamond)</option>
+                        <option value="Emas">Tier: Emas (Gold)</option>
+                    </select>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- 3. RANKED PLAYER LIST (RANKS 4 - 50) -->
+        <section class="space-y-3">
+            
+            <div class="flex items-center justify-between px-2">
+                <h3 class="font-pixel text-xs text-slate-300">DAFTAR PERINGKAT</h3>
+                <span id="playerCountBadge" class="text-xs text-slate-400 font-semibold">Menampilkan 50 Pemain</span>
+            </div>
+
+            <!-- Table Header for Desktop -->
+            <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-2.5 bg-navy-900/60 rounded-xl border border-navy-800 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                <div class="col-span-1">Peringkat</div>
+                <div class="col-span-5">Pemain</div>
+                <div class="col-span-2 text-center">Tier</div>
+                <div class="col-span-2 text-right">Menang / W.R</div>
+                <div class="col-span-2 text-right">Total Skor</div>
+            </div>
+
+            <!-- List Item Cards Container -->
+            <div id="playerListContainer" class="space-y-2.5">
+                <!-- Dynamically populated rows -->
+            </div>
+
+            <!-- Empty Search Results State -->
+            <div id="emptyListState" class="hidden py-12 text-center space-y-2 voxel-panel rounded-2xl">
+                <svg class="w-10 h-10 text-slate-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <p class="font-pixel text-xs text-slate-400">PEMAIN TIDAK DITEMUKAN</p>
+                <p class="text-xs text-slate-500">Coba gunakan nama lain atau atur ulang filter tier.</p>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- PINNED USER RANK BOTTOM FLOATING BAR -->
+    <div class="fixed bottom-0 left-0 right-0 z-40 bg-navy-900/95 border-t-2 border-emerald-bright backdrop-blur-lg px-4 py-3 shadow-2xl">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+            
+            <!-- User Rank Details -->
+            <div class="flex items-center space-x-3 sm:space-x-4 min-w-0">
+                <div class="w-10 h-10 rounded-xl bg-emerald-bright/20 border border-emerald-bright flex items-center justify-center font-pixel text-xs font-bold text-emerald-bright flex-shrink-0">
+                    #14
+                </div>
+                
+                <div class="min-w-0">
+                    <div class="flex items-center space-x-2">
+                        <span class="font-pixel text-xs sm:text-sm text-white truncate">NusaBlocker</span>
+                        <span class="px-2 py-0.5 bg-emerald-950 text-emerald-bright text-[9px] font-pixel rounded border border-emerald-800 hidden sm:inline-block">ANDA</span>
+                    </div>
+                    <span class="text-[11px] text-slate-400 block truncate">Tier Master • 182 Kemenangan (68% WR)</span>
+                </div>
+            </div>
+
+            <!-- User Score & Jump Button -->
+            <div class="flex items-center space-x-3">
+                <div class="text-right">
+                    <span class="text-[9px] text-slate-400 uppercase font-bold block leading-none">SKOR ANDA</span>
+                    <span class="font-pixel text-xs sm:text-base text-emerald-bright">14,250</span>
+                </div>
+
+                <button onclick="jumpToUserRank()" class="voxel-btn px-3 py-2 bg-emerald-bright hover:bg-emerald-400 text-navy-950 font-pixel text-[10px] font-bold rounded-xl shadow-emerald-glow border border-emerald-200 transition flex items-center space-x-1 whitespace-nowrap">
+                    <span>KE POSISI SAYA</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- SCRIPT LOGIC & AUDIO SYNTHESIZER -->
+    <script>
+        // ==========================================
+        // 1. LEADERBOARD MOCK DATA
+        // ==========================================
+        const GLOBAL_PLAYERS = [
+            { rank: 1, name: "Ksatria_Emas", title: "Legenda Utama", tier: "Legenda", wins: 428, winrate: "82%", score: 24850, change: "same", avatarColor: "#f59e0b" },
+            { rank: 2, name: "Cyber_Ninja", title: "Master Dadu", tier: "Legenda", wins: 312, winrate: "78%", score: 18920, change: "up", avatarColor: "#a855f7" },
+            { rank: 3, name: "Penyihir_Hijau", title: "Penyihir Trik", tier: "Master", wins: 275, winrate: "74%", score: 16400, change: "down", avatarColor: "#10b981" },
+            { rank: 4, name: "Naga_Sakti", title: "Pencegat Tangga", tier: "Master", wins: 240, winrate: "71%", score: 15800, change: "up", avatarColor: "#ef4444" },
+            { rank: 5, name: "Raja_Dadu99", title: "Pengocok Dadu", tier: "Master", wins: 225, winrate: "69%", score: 15200, change: "same", avatarColor: "#38bdf8" },
+            { rank: 6, name: "VoxelKing_ID", title: "Master Blok", tier: "Master", wins: 210, winrate: "67%", score: 14900, change: "down", avatarColor: "#f97316" },
+            { rank: 7, name: "Bung_Tangga", title: "Penyelamat Ular", tier: "Permata", wins: 198, winrate: "65%", score: 14650, change: "up", avatarColor: "#eab308" },
+            { rank: 8, name: "Pahlawan_Blok", title: "Penjelajah", tier: "Permata", wins: 190, winrate: "64%", score: 14500, change: "up", avatarColor: "#06b6d4" },
+            { rank: 9, name: "Sultan_Voxel", title: "Kolektor Rare", tier: "Permata", wins: 185, winrate: "63%", score: 14380, change: "down", avatarColor: "#ec4899" },
+            { rank: 10, name: "Pemburu_Tangga", title: "Taktisi Dadu", tier: "Permata", wins: 184, winrate: "62%", score: 14300, change: "same", avatarColor: "#8b5cf6" },
+            { rank: 11, name: "Garuda_Block", title: "Penembak Voxel", tier: "Master", wins: 183, winrate: "61%", score: 14280, change: "up", avatarColor: "#f43f5e" },
+            { rank: 12, name: "PixelMaster_X", title: "Arsitek Papan", tier: "Permata", wins: 182, winrate: "60%", score: 14260, change: "down", avatarColor: "#14b8a6" },
+            { rank: 13, name: "Dadu_Keberuntungan", title: "Hoki Maksimal", tier: "Master", wins: 182, winrate: "70%", score: 14255, change: "up", avatarColor: "#84cc16" },
+            { rank: 14, name: "NusaBlocker", title: "Petualang Tangga", tier: "Master", wins: 182, winrate: "68%", score: 14250, isUser: true, change: "same", avatarColor: "#10b981" },
+            { rank: 15, name: "Kapten_Nusantara", title: "Penjelajah Peta", tier: "Emas", wins: 170, winrate: "58%", score: 13900, change: "down", avatarColor: "#64748b" }
+        ];
+
+        const WEEKLY_PLAYERS = [
+            { rank: 1, name: "Cyber_Ninja", title: "Master Dadu", tier: "Legenda", wins: 88, winrate: "89%", score: 7850, change: "up", avatarColor: "#a855f7" },
+            { rank: 2, name: "Penyihir_Hijau", title: "Penyihir Trik", tier: "Master", wins: 76, winrate: "81%", score: 6920, change: "up", avatarColor: "#10b981" },
+            { rank: 3, name: "Ksatria_Emas", title: "Legenda Utama", tier: "Legenda", wins: 71, winrate: "79%", score: 6400, change: "down", avatarColor: "#f59e0b" },
+            { rank: 4, name: "NusaBlocker", title: "Petualang Tangga", tier: "Master", wins: 68, winrate: "76%", score: 6150, isUser: true, change: "up", avatarColor: "#10b981" },
+            { rank: 5, name: "Raja_Dadu99", title: "Pengocok Dadu", tier: "Master", wins: 59, winrate: "70%", score: 5800, change: "down", avatarColor: "#38bdf8" },
+            { rank: 6, name: "Naga_Sakti", title: "Pencegat Tangga", tier: "Master", wins: 54, winrate: "68%", score: 5400, change: "same", avatarColor: "#ef4444" },
+            { rank: 7, name: "Garuda_Block", title: "Penembak Voxel", tier: "Master", wins: 50, winrate: "65%", score: 5100, change: "up", avatarColor: "#f43f5e" }
+        ];
+
+        let currentTab = 'global';
+        let sfxEnabled = true;
+
+        // ==========================================
+        // 2. AUDIO SYNTHESIZER (WEB AUDIO API)
+        // ==========================================
+        const AudioFX = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) this.ctx = new AudioCtx();
+                }
+            },
+            playClick() {
+                if (!sfxEnabled) return;
+                this.init(); if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1200, this.ctx.currentTime + 0.04);
+                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.04);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.04);
+            },
+            playRefresh() {
+                if (!sfxEnabled) return;
+                this.init(); if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.15);
+            }
+        };
+
+        function toggleSFX() {
+            sfxEnabled = !sfxEnabled;
+            const icon = document.getElementById('sfxIcon');
+            const iconMobile = document.getElementById('sfxIconMobile');
+            
+            const pathActive = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.314M6.535 9H3v6h3.535l4.465 4.465V4.535L6.535 9z"></path>';
+            const pathMuted = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" stroke-dasharray="2 2"></path>';
+
+            if (icon) icon.innerHTML = sfxEnabled ? pathActive : pathMuted;
+            if (iconMobile) iconMobile.innerHTML = sfxEnabled ? pathActive : pathMuted;
+            AudioFX.playClick();
+        }
+
+        // ==========================================
+        // 3. THREE.JS 3D VOXEL PODIUM RENDERING
+        // ==========================================
+        let scene, camera, renderer, podiumGroup;
+        let isDragging = false, previousMouseX = 0;
+
+        function initPodiumThreeJS() {
+            const container = document.getElementById('podiumCanvasContainer');
+            if (!container) return;
+
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
+            camera.position.set(0, 3.2, 8.5);
+            camera.lookAt(0, 1.2, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(w, h);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            container.appendChild(renderer.domElement);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(ambientLight);
+
+            const goldSpot = new THREE.SpotLight(0xfbbf24, 1.8);
+            goldSpot.position.set(0, 8, 4);
+            scene.add(goldSpot);
+
+            const rimLight = new THREE.DirectionalLight(0x10b981, 0.6);
+            rimLight.position.set(-5, 4, -4);
+            scene.add(rimLight);
+
+            podiumGroup = new THREE.Group();
+
+            // Build Podium Blocks (Gold #1 Center, Silver #2 Left, Bronze #3 Right)
+            buildPodium();
+
+            scene.add(podiumGroup);
+
+            // Drag Controls
+            const dom = renderer.domElement;
+            dom.addEventListener('mousedown', (e) => { isDragging = true; previousMouseX = e.clientX; });
+            window.addEventListener('mouseup', () => isDragging = false);
+            dom.addEventListener('mousemove', (e) => {
+                if (isDragging && podiumGroup) {
+                    const delta = e.clientX - previousMouseX;
+                    podiumGroup.rotation.y += delta * 0.008;
+                    previousMouseX = e.clientX;
+                }
+            });
+
+            window.addEventListener('resize', () => {
+                const nw = container.clientWidth;
+                const nh = container.clientHeight;
+                camera.aspect = nw / nh;
+                camera.updateProjectionMatrix();
+                renderer.setSize(nw, nh);
+            });
+
+            animatePodium();
+        }
+
+        function buildPodium() {
+            // Clear existing
+            while (podiumGroup.children.length > 0) {
+                podiumGroup.remove(podiumGroup.children[0]);
+            }
+
+            const boxGeo = new THREE.BoxGeometry(1.4, 0.2, 1.4);
+
+            // 1st Place Block (Gold Center - Height 1.8)
+            const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.3, metalness: 0.7 });
+            for (let y = 0; y < 9; y++) {
+                const block = new THREE.Mesh(boxGeo, goldMat);
+                block.position.set(0, y * 0.2, 0);
+                podiumGroup.add(block);
+            }
+            // Avatar #1
+            const avatar1 = createVoxelAvatar(0xfbbf24, true);
+            avatar1.position.set(0, 1.9, 0);
+            podiumGroup.add(avatar1);
+
+            // 2nd Place Block (Silver Left - Height 1.2)
+            const silverMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.4, metalness: 0.6 });
+            for (let y = 0; y < 6; y++) {
+                const block = new THREE.Mesh(boxGeo, silverMat);
+                block.position.set(-1.8, y * 0.2, 0);
+                podiumGroup.add(block);
+            }
+            // Avatar #2
+            const avatar2 = createVoxelAvatar(0xa855f7, false);
+            avatar2.position.set(-1.8, 1.3, 0);
+            podiumGroup.add(avatar2);
+
+            // 3rd Place Block (Bronze Right - Height 0.8)
+            const bronzeMat = new THREE.MeshStandardMaterial({ color: 0xb45309, roughness: 0.5, metalness: 0.5 });
+            for (let y = 0; y < 4; y++) {
+                const block = new THREE.Mesh(boxGeo, bronzeMat);
+                block.position.set(1.8, y * 0.2, 0);
+                podiumGroup.add(block);
+            }
+            // Avatar #3
+            const avatar3 = createVoxelAvatar(0x10b981, false);
+            avatar3.position.set(1.8, 0.9, 0);
+            podiumGroup.add(avatar3);
+        }
+
+        function createVoxelAvatar(mainColorHex, isCrown) {
+            const group = new THREE.Group();
+            const boxGeo = new THREE.BoxGeometry(0.25, 0.25, 0.25);
+            const bodyMat = new THREE.MeshStandardMaterial({ color: mainColorHex, metalness: 0.4 });
+            const headMat = new THREE.MeshStandardMaterial({ color: 0xffedd5, roughness: 0.8 });
+
+            // Body
+            for (let x = -1; x <= 1; x++) {
+                for (let y = 0; y < 3; y++) {
+                    const block = new THREE.Mesh(boxGeo, bodyMat);
+                    block.position.set(x * 0.22, y * 0.22, 0);
+                    group.add(block);
+                }
+            }
+
+            // Head
+            const head = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 0.6), headMat);
+            head.position.set(0, 0.95, 0);
+            group.add(head);
+
+            // Crown for #1
+            if (isCrown) {
+                const crownMat = new THREE.MeshStandardMaterial({ color: 0xfef08a, metalness: 0.9 });
+                const crown = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.2, 0.7), crownMat);
+                crown.position.set(0, 1.35, 0);
+                group.add(crown);
+            }
+
+            return group;
+        }
+
+        function animatePodium() {
+            requestAnimationFrame(animatePodium);
+            if (podiumGroup && !isDragging) {
+                podiumGroup.rotation.y += 0.005;
+            }
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
+        }
+
+        // ==========================================
+        // 4. UI TAB & FILTER LOGIC
+        // ==========================================
+        function switchTab(mode) {
+            AudioFX.playClick();
+            currentTab = mode;
+
+            const btnGlobal = document.getElementById('tabGlobal');
+            const btnWeekly = document.getElementById('tabWeekly');
+            const subtitle = document.getElementById('podiumSubtitle');
+
+            if (mode === 'global') {
+                btnGlobal.className = "px-4 py-1.5 rounded-lg font-pixel text-[10px] text-white bg-emerald-bright font-bold shadow-emerald-glow transition";
+                btnWeekly.className = "px-4 py-1.5 rounded-lg font-pixel text-[10px] text-slate-400 hover:text-white transition";
+                subtitle.textContent = "3 PEMAIN TERATAS SAAAT INI (SEPANJANG MASA)";
+            } else {
+                btnWeekly.className = "px-4 py-1.5 rounded-lg font-pixel text-[10px] text-white bg-emerald-bright font-bold shadow-emerald-glow transition";
+                btnGlobal.className = "px-4 py-1.5 rounded-lg font-pixel text-[10px] text-slate-400 hover:text-white transition";
+                subtitle.textContent = "3 PEMAIN TERATAS MINGGU INI";
+            }
+
+            updatePodiumInfo();
+            renderPlayerList();
+        }
+
+        function updatePodiumInfo() {
+            const data = currentTab === 'global' ? GLOBAL_PLAYERS : WEEKLY_PLAYERS;
+            
+            document.getElementById('p1Name').textContent = data[0].name;
+            document.getElementById('p1Title').textContent = data[0].title;
+            document.getElementById('p1Score').textContent = data[0].score.toLocaleString();
+            document.getElementById('p1Wins').textContent = `${data[0].wins} Kemenangan`;
+
+            document.getElementById('p2Name').textContent = data[1].name;
+            document.getElementById('p2Title').textContent = data[1].title;
+            document.getElementById('p2Score').textContent = data[1].score.toLocaleString();
+            document.getElementById('p2Wins').textContent = `${data[1].wins} Kemenangan`;
+
+            document.getElementById('p3Name').textContent = data[2].name;
+            document.getElementById('p3Title').textContent = data[2].title;
+            document.getElementById('p3Score').textContent = data[2].score.toLocaleString();
+            document.getElementById('p3Wins').textContent = `${data[2].wins} Kemenangan`;
+        }
+
+        function handleFilter() {
+            renderPlayerList();
+        }
+
+        function renderPlayerList() {
+            const container = document.getElementById('playerListContainer');
+            const emptyState = document.getElementById('emptyListState');
+            container.innerHTML = '';
+
+            const data = currentTab === 'global' ? GLOBAL_PLAYERS : WEEKLY_PLAYERS;
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const tierVal = document.getElementById('tierFilter').value;
+
+            const filtered = data.filter(p => {
+                if (query && !p.name.toLowerCase().includes(query) && !p.title.toLowerCase().includes(query)) return false;
+                if (tierVal !== 'all' && p.tier !== tierVal) return false;
+                return true;
+            });
+
+            document.getElementById('playerCountBadge').textContent = `Menampilkan ${filtered.length} Pemain`;
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            filtered.forEach(p => {
+                const card = document.createElement('div');
+                card.id = `player-row-${p.rank}`;
+
+                const isUser = p.isUser;
+                const bgClass = isUser 
+                    ? 'bg-emerald-950/80 border-2 border-emerald-bright shadow-emerald-glow' 
+                    : 'bg-navy-900/80 border border-navy-800 hover:border-navy-700';
+
+                let changeIcon = '<span class="text-slate-500 font-bold">-</span>';
+                if (p.change === 'up') changeIcon = '<span class="text-emerald-bright font-bold">▲</span>';
+                if (p.change === 'down') changeIcon = '<span class="text-red-400 font-bold">▼</span>';
+
+                card.className = `p-3 sm:p-4 rounded-2xl ${bgClass} transition flex flex-col md:grid md:grid-cols-12 gap-3 items-center`;
+
+                card.innerHTML = `
+                    <!-- Rank & Trend -->
+                    <div class="flex items-center space-x-3 w-full md:col-span-1 justify-between md:justify-start">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-pixel text-xs sm:text-sm text-slate-300 w-6">#${p.rank}</span>
+                            <div class="text-xs">${changeIcon}</div>
+                        </div>
+                        <div class="md:hidden">
+                            <span class="px-2 py-0.5 bg-navy-800 border border-navy-700 text-slate-300 font-pixel text-[9px] rounded">
+                                ${p.tier}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Player Info -->
+                    <div class="flex items-center space-x-3 w-full md:col-span-5">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center font-pixel text-xs text-white font-bold flex-shrink-0" style="background-color: ${p.avatarColor}">
+                            ${p.name.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center space-x-2">
+                                <h4 class="font-pixel text-xs sm:text-sm text-white truncate">${p.name}</h4>
+                                ${isUser ? '<span class="px-1.5 py-0.5 bg-emerald-800 text-emerald-200 text-[8px] font-pixel rounded">ANDA</span>' : ''}
+                            </div>
+                            <span class="text-[11px] text-slate-400 block truncate">${p.title}</span>
+                        </div>
+                    </div>
+
+                    <!-- Tier (Desktop) -->
+                    <div class="hidden md:flex md:col-span-2 justify-center">
+                        <span class="px-2.5 py-1 bg-navy-850 border border-navy-700 text-slate-300 font-pixel text-[10px] rounded-lg">
+                            ${p.tier}
+                        </span>
+                    </div>
+
+                    <!-- Wins & Winrate -->
+                    <div class="flex items-center justify-between md:justify-end w-full md:col-span-2 text-right">
+                        <span class="md:hidden text-xs text-slate-400">Menang / WR:</span>
+                        <div>
+                            <span class="text-xs font-bold text-slate-200 block">${p.wins} Menang</span>
+                            <span class="text-[10px] text-emerald-bright font-mono block">${p.winrate} WR</span>
+                        </div>
+                    </div>
+
+                    <!-- Score -->
+                    <div class="flex items-center justify-between md:justify-end w-full md:col-span-2 text-right pt-2 md:pt-0 border-t border-navy-800 md:border-none">
+                        <span class="md:hidden text-xs text-slate-400 font-pixel">TOTAL SKOR:</span>
+                        <span class="font-pixel text-xs sm:text-sm text-emerald-bright">${p.score.toLocaleString()}</span>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function highlightPlayerInList(rank) {
+            AudioFX.playClick();
+            const el = document.getElementById(`player-row-${rank}`);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                el.classList.add('ring-2', 'ring-emerald-bright');
+                setTimeout(() => el.classList.remove('ring-2', 'ring-emerald-bright'), 1500);
+            }
+        }
+
+        function jumpToUserRank() {
+            AudioFX.playClick();
+            const data = currentTab === 'global' ? GLOBAL_PLAYERS : WEEKLY_PLAYERS;
+            const user = data.find(p => p.isUser);
+            if (user) {
+                highlightPlayerInList(user.rank);
+            }
+        }
+
+        function refreshData() {
+            AudioFX.playRefresh();
+            const icon = document.getElementById('refreshIcon');
+            icon.classList.add('animate-spin');
+            setTimeout(() => {
+                icon.classList.remove('animate-spin');
+                document.getElementById('lastUpdatedText').textContent = 'Diperbarui baru saja';
+            }, 600);
+        }
+
+        // Initialize Window
+        window.onload = function() {
+            initPodiumThreeJS();
+            updatePodiumInfo();
+            renderPlayerList();
+        };
+    </script>
+</body>
+</html>

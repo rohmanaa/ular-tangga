@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ular Tangga Blok - Kustomisasi Karakter Voxel</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Retro Press Start 2P & Modern Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <!-- Three.js for 3D Voxel World & Character Rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#131c2e',
+                            950: '#080c14',
+                        },
+                        forest: {
+                            900: '#064e3b',
+                            800: '#065f46',
+                            700: '#047857',
+                            card: 'rgba(6, 78, 59, 0.45)'
+                        },
+                        lime: {
+                            accent: '#84cc16',
+                            glow: '#a3e635',
+                        },
+                        rarity: {
+                            common: '#94a3b8',
+                            rare: '#38bdf8',
+                            epic: '#a855f7',
+                            legendary: '#f59e0b',
+                            adventure: '#10b981',
+                            fantasy: '#ec4899'
+                        }
+                    },
+                    fontFamily: {
+                        pixel: ['"Press Start 2P"', 'monospace'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'voxel-panel': '0 10px 30px -5px rgba(0, 0, 0, 0.8), inset 0 2px 0 0 rgba(255, 255, 255, 0.1)',
+                        'lime-glow': '0 0 20px rgba(132, 204, 22, 0.4)',
+                        'legendary-glow': '0 0 25px rgba(245, 158, 11, 0.45)',
+                        'epic-glow': '0 0 25px rgba(168, 85, 247, 0.45)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Pixelated aesthetic, scrollbar customization, and overlay styling */
+        body {
+            background-color: #080c14;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #f8fafc;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        /* Blocky pixel border utilities */
+        .voxel-border {
+            border: 2px solid #1e293b;
+            box-shadow: inset -3px -3px 0px 0px rgba(0, 0, 0, 0.5), inset 3px 3px 0px 0px rgba(255, 255, 255, 0.08);
+        }
+
+        .voxel-border-active {
+            border: 2px solid #84cc16;
+            box-shadow: 0 0 15px rgba(132, 204, 22, 0.35), inset -3px -3px 0px 0px rgba(0, 0, 0, 0.6), inset 3px 3px 0px 0px rgba(255, 255, 255, 0.2);
+        }
+
+        .voxel-btn {
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .voxel-btn:active {
+            transform: translateY(2px);
+        }
+
+        /* Rarity Text & Border classes */
+        .border-rarity-common { border-color: #64748b; }
+        .border-rarity-rare { border-color: #38bdf8; }
+        .border-rarity-epic { border-color: #a855f7; }
+        .border-rarity-legendary { border-color: #f59e0b; }
+
+        .text-rarity-common { color: #cbd5e1; }
+        .text-rarity-rare { color: #38bdf8; }
+        .text-rarity-epic { color: #c084fc; }
+        .text-rarity-legendary { color: #fbbf24; }
+
+        .bg-rarity-common { background-color: rgba(100, 116, 139, 0.12); }
+        .bg-rarity-rare { background-color: rgba(56, 189, 248, 0.12); }
+        .bg-rarity-epic { background-color: rgba(168, 85, 247, 0.12); }
+        .bg-rarity-legendary { background-color: rgba(245, 158, 11, 0.12); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #047857;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #84cc16;
+        }
+
+        /* Glassmorphism Forest Panel */
+        .forest-glass {
+            background: rgba(6, 44, 34, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col justify-between relative">
+
+    <!-- 3D WEBGL CANVAS (FULLSCREEN BACKGROUND SCENE) -->
+    <div id="threejs-canvas-container" class="absolute inset-0 z-0 cursor-grab active:cursor-grabbing"></div>
+
+    <!-- UI OVERLAY LAYER -->
+    <div class="relative z-10 h-full w-full flex flex-col justify-between p-3 sm:p-5 pointer-events-none">
+
+        <!-- HEADER BAR -->
+        <header class="w-full max-w-7xl mx-auto flex items-center justify-between pointer-events-auto bg-slate-950/80 p-3 sm:p-4 rounded-2xl border border-emerald-900/40 shadow-voxel-panel backdrop-blur-md">
+            <!-- Game Title & Section Header -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-800 rounded-xl flex items-center justify-center border-2 border-lime-400 shadow-lime-glow">
+                    <!-- Vector Voxel Snake Icon -->
+                    <svg class="w-6 h-6 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2m-4 4h8m-4-4l2 1m-2-1l-2 1m2-1v2M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </div>
+                <div>
+                    <span class="text-[10px] sm:text-xs font-bold text-lime-400 tracking-wider uppercase block">Ular Tangga Blok</span>
+                    <h1 class="font-pixel text-xs sm:text-base text-white tracking-tight">KUSTOMISASI KARAKTER</h1>
+                </div>
+            </div>
+
+            <!-- Currency & Sound Controls -->
+            <div class="flex items-center space-x-3">
+                <!-- Voxel Coins Indicator -->
+                <div class="flex items-center space-x-2 bg-slate-900/90 border border-emerald-800/60 px-3 py-1.5 rounded-xl">
+                    <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 7h4a1 1 0 110 2H9v2h3a1 1 0 110 2H8a1 1 0 110-2h3V9H8a1 1 0 110-2z"></path>
+                    </svg>
+                    <span class="font-pixel text-xs sm:text-sm text-amber-300">18,250</span>
+                </div>
+
+                <!-- SFX Switch -->
+                <button id="sfxToggleBtn" onclick="toggleSFX()" class="voxel-btn p-2.5 bg-emerald-900/80 hover:bg-emerald-800 border border-emerald-700/60 rounded-xl text-slate-200 hover:text-lime-400 transition" title="Efek Suara">
+                    <svg id="sfxIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.314M6.535 9H3v6h3.535l4.465 4.465V4.535L6.535 9z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- MIDDLE CONTAINER: 3D HELPER OVERLAY & RIGHT DETAIL PANEL -->
+        <div class="flex-1 max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4 my-3 min-h-0 pointer-events-none">
+
+            <!-- LEFT 3D CAMERA CONTROLS / HINT -->
+            <div class="hidden lg:flex lg:col-span-7 flex-col justify-between p-2 pointer-events-none">
+                <!-- Top Status Badge -->
+                <div class="flex items-center space-x-2 self-start pointer-events-auto">
+                    <span class="px-3 py-1 bg-slate-950/80 border border-emerald-800/80 text-lime-400 text-xs font-semibold rounded-lg backdrop-blur-md flex items-center space-x-2">
+                        <span class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
+                        <span>Pratinjau Voxel 3D Langsung</span>
+                    </span>
+                </div>
+
+                <!-- Bottom Camera Rotate Controls Hint -->
+                <div class="self-start pointer-events-auto bg-slate-950/80 border border-emerald-900/50 p-3 rounded-xl backdrop-blur-md flex items-center space-x-3 text-slate-300 text-xs">
+                    <div class="p-2 bg-emerald-900/50 rounded-lg text-lime-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-bold text-slate-200">Inspeksi 360° Karakter</p>
+                        <p class="text-[11px] text-slate-400">Klik & Geser pada area panggung untuk memutar sudut pandang.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT CHARACTER STATS & DETAIL PANEL -->
+            <aside class="lg:col-span-5 flex flex-col justify-between forest-glass rounded-2xl p-4 sm:p-5 shadow-voxel-panel pointer-events-auto overflow-y-auto">
+                <div class="space-y-4">
+                    <!-- Skin Category Tag & Title -->
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span id="detailRarityTag" class="text-[10px] font-pixel px-2 py-0.5 rounded uppercase font-bold tracking-wider border">
+                                LEGENDARIS
+                            </span>
+                            <h2 id="detailSkinTitle" class="font-pixel text-base sm:text-lg text-white mt-2 leading-snug">Ular Ksatria Emas</h2>
+                        </div>
+                        <span id="detailCategoryBadge" class="text-xs font-semibold px-2.5 py-1 bg-emerald-950/80 border border-emerald-800 text-emerald-300 rounded-lg">
+                            Fantasi
+                        </span>
+                    </div>
+
+                    <!-- Skin Lore Description -->
+                    <p id="detailDescription" class="text-xs sm:text-sm text-slate-300 leading-relaxed bg-slate-950/40 p-3 rounded-xl border border-emerald-900/30">
+                        Pelindung legendaris bersenjatakan pedang voxel dan helm emas murni. Memberikan pertahanan penuh saat menghadapi jebakan tangga.
+                    </p>
+
+                    <!-- Attributes & Stats -->
+                    <div class="space-y-2">
+                        <span class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider block">Atribut Karakter</span>
+                        
+                        <!-- Stat Item 1: Speed -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-400">Kelajuan Langkah</span>
+                                <span id="statSpeedVal" class="font-pixel text-xs text-lime-400">+25%</span>
+                            </div>
+                            <div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-emerald-900/40">
+                                <div id="statSpeedBar" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-2 rounded-full transition-all duration-500" style="width: 85%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Stat Item 2: Dice Luck -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-400">Keberuntungan Dadu</span>
+                                <span id="statLuckVal" class="font-pixel text-xs text-amber-400">+15%</span>
+                            </div>
+                            <div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-emerald-900/40">
+                                <div id="statLuckBar" class="bg-gradient-to-r from-amber-600 to-amber-400 h-2 rounded-full transition-all duration-500" style="width: 70%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Stat Item 3: Coin Bonus -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-400">Bonus Koin Kemenangan</span>
+                                <span id="statCoinVal" class="font-pixel text-xs text-sky-400">+30%</span>
+                            </div>
+                            <div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-emerald-900/40">
+                                <div id="statCoinBar" class="bg-gradient-to-r from-sky-600 to-sky-400 h-2 rounded-full transition-all duration-500" style="width: 90%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACTION BUTTON AREA -->
+                <div class="pt-4 border-t border-emerald-900/50 mt-4">
+                    <button id="mainActionBtn" onclick="handleMainAction()" class="w-full voxel-btn py-3.5 px-4 bg-lime-500 hover:bg-lime-400 text-slate-950 font-bold font-pixel text-xs sm:text-sm tracking-wider rounded-xl shadow-lime-glow border-2 border-lime-300 flex items-center justify-center space-x-2 transition-all">
+                        <svg class="w-5 h-5 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span id="mainActionBtnText">TERAPKAN SKIN</span>
+                    </button>
+                </div>
+            </aside>
+        </div>
+
+        <!-- BOTTOM CAROUSEL & CATEGORY TABS -->
+        <footer class="w-full max-w-7xl mx-auto pointer-events-auto flex flex-col space-y-2">
+            
+            <!-- Category Filter Tabs -->
+            <div class="flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-none">
+                <button onclick="setFilter('all')" id="tab-all" class="tab-btn active px-3.5 py-1.5 bg-emerald-800 border-2 border-lime-400 text-lime-400 text-xs font-bold rounded-xl whitespace-nowrap transition">
+                    Semua
+                </button>
+                <button onclick="setFilter('biasa')" id="tab-biasa" class="tab-btn px-3.5 py-1.5 bg-slate-900/80 hover:bg-slate-800 border-2 border-slate-700 text-slate-300 text-xs font-bold rounded-xl whitespace-nowrap transition">
+                    Biasa
+                </button>
+                <button onclick="setFilter('petualang')" id="tab-petualang" class="tab-btn px-3.5 py-1.5 bg-slate-900/80 hover:bg-slate-800 border-2 border-slate-700 text-slate-300 text-xs font-bold rounded-xl whitespace-nowrap transition">
+                    Petualang
+                </button>
+                <button onclick="setFilter('fantasi')" id="tab-fantasi" class="tab-btn px-3.5 py-1.5 bg-slate-900/80 hover:bg-slate-800 border-2 border-slate-700 text-slate-300 text-xs font-bold rounded-xl whitespace-nowrap transition">
+                    Fantasi
+                </button>
+                <button onclick="setFilter('langka')" id="tab-langka" class="tab-btn px-3.5 py-1.5 bg-slate-900/80 hover:bg-slate-800 border-2 border-slate-700 text-slate-300 text-xs font-bold rounded-xl whitespace-nowrap transition">
+                    Langka
+                </button>
+                <button onclick="setFilter('epik')" id="tab-epik" class="tab-btn px-3.5 py-1.5 bg-slate-900/80 hover:bg-slate-800 border-2 border-slate-700 text-slate-300 text-xs font-bold rounded-xl whitespace-nowrap transition">
+                    Epik
+                </button>
+                <button onclick="setFilter('legendaris')" id="tab-legendaris" class="tab-btn px-3.5 py-1.5 bg-slate-900/80 hover:bg-slate-800 border-2 border-slate-700 text-slate-300 text-xs font-bold rounded-xl whitespace-nowrap transition">
+                    Legendaris
+                </button>
+            </div>
+
+            <!-- Skin Carousel Cards Grid / Slider -->
+            <div id="skinCarousel" class="flex items-center space-x-3 overflow-x-auto p-2 bg-slate-950/85 border border-emerald-900/40 rounded-2xl backdrop-blur-md">
+                <!-- Dynamically populated skin cards -->
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center space-y-2 pointer-events-none"></div>
+
+    <script>
+        // ==========================================
+        // 1. CHARACTER & SKINS DATABASE
+        // ==========================================
+        const SKINS_DATA = [
+            {
+                id: 'skin_knight',
+                name: 'Ular Ksatria Emas',
+                category: 'fantasi',
+                rarity: 'legendaris',
+                owned: true,
+                equipped: true,
+                description: 'Pelindung legendaris bersenjatakan pedang voxel dan helm emas murni. Memberikan pertahanan penuh saat menghadapi jebakan tangga.',
+                stats: { speed: 85, luck: 70, coin: 90 },
+                colorBody: 0xf59e0b,
+                colorAccent: 0xfef08a,
+                modelType: 'knight'
+            },
+            {
+                id: 'skin_classic',
+                name: 'Ular Hijau Klasik',
+                category: 'biasa',
+                rarity: 'common',
+                owned: true,
+                equipped: false,
+                description: 'Karakter utama ikonik Ular Tangga Blok. Tahan banting, lincah, dan selalu siap berpetualang.',
+                stats: { speed: 40, luck: 30, coin: 20 },
+                colorBody: 0x22c55e,
+                colorAccent: 0x86efac,
+                modelType: 'classic'
+            },
+            {
+                id: 'skin_dragon',
+                name: 'Ular Naga Api',
+                category: 'fantasi',
+                rarity: 'legendaris',
+                owned: true,
+                equipped: false,
+                description: 'Lahir dari lahar gunung voxel. Mengeluarkan tanduk api membara saat berhasil mencapai tangga teratas.',
+                stats: { speed: 95, luck: 85, coin: 75 },
+                colorBody: 0xef4444,
+                colorAccent: 0xf97316,
+                modelType: 'dragon'
+            },
+            {
+                id: 'skin_cyber',
+                name: 'Ular Robot Cyber',
+                category: 'langka',
+                rarity: 'rare',
+                owned: true,
+                equipped: false,
+                description: 'Diperkuat mikroprosesor neon piksel dari tahun 2077. Menyala terang dalam petak malam.',
+                stats: { speed: 65, luck: 50, coin: 60 },
+                colorBody: 0x38bdf8,
+                colorAccent: 0x06b6d4,
+                modelType: 'cyber'
+            },
+            {
+                id: 'skin_wizard',
+                name: 'Ular Penyihir Runik',
+                category: 'epik',
+                rarity: 'epic',
+                owned: false,
+                equipped: false,
+                description: 'Penguasa sihir runik voxel. Memiliki topi tinggi berbintang yang mampu memprediksi lemparan dadu.',
+                stats: { speed: 70, luck: 90, coin: 65 },
+                colorBody: 0xa855f7,
+                colorAccent: 0xc084fc,
+                modelType: 'wizard'
+            },
+            {
+                id: 'skin_pirate',
+                name: 'Ular Bajak Laut',
+                category: 'petualang',
+                rarity: 'rare',
+                owned: false,
+                equipped: false,
+                description: 'Penjelajah tujuh lautan piksel dengan penutup mata legendaris dan topi kapten yang gagah.',
+                stats: { speed: 60, luck: 60, coin: 85 },
+                colorBody: 0x334155,
+                colorAccent: 0x94a3b8,
+                modelType: 'pirate'
+            },
+            {
+                id: 'skin_ice',
+                name: 'Ular Kristal Es',
+                category: 'fantasi',
+                rarity: 'epik',
+                owned: false,
+                equipped: false,
+                description: 'Terbentuk dari es abadi puncak gunung voxel. Meninggalkan jejak salju berkilauan.',
+                stats: { speed: 75, luck: 75, coin: 70 },
+                colorBody: 0x06b6d4,
+                colorAccent: 0xe0f2fe,
+                modelType: 'ice'
+            }
+        ];
+
+        let currentSkin = SKINS_DATA[0];
+        let activeFilter = 'all';
+        let sfxEnabled = true;
+
+        // ==========================================
+        // 2. AUDIO SYNTHESIZER (WEB AUDIO API)
+        // ==========================================
+        const AudioEngine = {
+            ctx: null,
+
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) this.ctx = new AudioCtx();
+                }
+            },
+
+            playClick() {
+                if (!sfxEnabled) return;
+                this.init();
+                if (!this.ctx) return;
+
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(450, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(900, this.ctx.currentTime + 0.04);
+
+                gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.04);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.04);
+            },
+
+            playEquip() {
+                if (!sfxEnabled) return;
+                this.init();
+                if (!this.ctx) return;
+
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(261.63, now); // C4
+                osc.frequency.setValueAtTime(329.63, now + 0.06); // E4
+                osc.frequency.setValueAtTime(392.00, now + 0.12); // G4
+                osc.frequency.setValueAtTime(523.25, now + 0.18); // C5
+
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start();
+                osc.stop(now + 0.35);
+            }
+        };
+
+        function toggleSFX() {
+            sfxEnabled = !sfxEnabled;
+            const icon = document.getElementById('sfxIcon');
+            if (sfxEnabled) {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.314M6.535 9H3v6h3.535l4.465 4.465V4.535L6.535 9z"></path>';
+                showToast('Efek Suara Aktif', 'info');
+                AudioEngine.playClick();
+            } else {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" stroke-dasharray="2 2"></path>';
+                showToast('Efek Suara Dimatikan', 'info');
+            }
+        }
+
+        // ==========================================
+        // 3. THREE.JS 3D SCENE & CHARACTER RENDERER
+        // ==========================================
+        let scene, camera, renderer, characterGroup, islandGroup;
+        let isMouseDown = false, prevMousePos = { x: 0, y: 0 };
+
+        function initThreeJS() {
+            const container = document.getElementById('threejs-canvas-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x080c14, 0.04);
+
+            camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+            camera.position.set(0, 3.5, 7.5);
+            camera.lookAt(0, 1.2, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+            container.appendChild(renderer.domElement);
+
+            // LIGHTING
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xfff7ed, 1.2);
+            dirLight.position.set(6, 12, 8);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 1024;
+            dirLight.shadow.mapSize.height = 1024;
+            dirLight.shadow.bias = -0.001;
+            scene.add(dirLight);
+
+            // Rim / Accent Light (Lime)
+            const rimLight = new THREE.DirectionalLight(0x84cc16, 0.8);
+            rimLight.position.set(-8, 4, -6);
+            scene.add(rimLight);
+
+            // CREATE SCENIC VOXEL FLOATING ISLAND
+            createFloatingIsland();
+
+            // CHARACTER CONTAINER GROUP
+            characterGroup = new THREE.Group();
+            characterGroup.position.set(0, 0.8, 0);
+            scene.add(characterGroup);
+
+            // Build initial character
+            buildVoxelCharacter(currentSkin);
+
+            // MOUSE / TOUCH ORBIT CONTROLS
+            const dom = renderer.domElement;
+            const onStart = (e) => {
+                isMouseDown = true;
+                prevMousePos = {
+                    x: e.clientX || (e.touches && e.touches[0].clientX),
+                    y: e.clientY || (e.touches && e.touches[0].clientY)
+                };
+            };
+
+            const onMove = (e) => {
+                if (!isMouseDown || !characterGroup) return;
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+                const deltaX = clientX - prevMousePos.x;
+                characterGroup.rotation.y += deltaX * 0.01;
+
+                prevMousePos = { x: clientX, y: clientY };
+            };
+
+            const onEnd = () => { isMouseDown = false; };
+
+            dom.addEventListener('mousedown', onStart);
+            dom.addEventListener('mousemove', onMove);
+            window.addEventListener('mouseup', onEnd);
+
+            dom.addEventListener('touchstart', onStart);
+            dom.addEventListener('touchmove', onMove);
+            window.addEventListener('touchend', onEnd);
+
+            // Window Resize listener
+            window.addEventListener('resize', () => {
+                const w = container.clientWidth;
+                const h = container.clientHeight;
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+                renderer.setSize(w, h);
+            });
+
+            animateLoop();
+        }
+
+        // Construct Scenic Voxel Terrain Island
+        function createFloatingIsland() {
+            islandGroup = new THREE.Group();
+
+            const grassMat = new THREE.MeshStandardMaterial({ color: 0x059669, roughness: 0.8 });
+            const dirtMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.9 });
+            const stoneMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.6 });
+            const boxGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+
+            // Floating Grass & Dirt Platform (radius ~ 3.5)
+            for (let x = -6; x <= 6; x++) {
+                for (let z = -6; z <= 6; z++) {
+                    const dist = Math.sqrt(x * x + z * z);
+                    if (dist < 5.8) {
+                        // Grass Top Block
+                        const grassBlock = new THREE.Mesh(boxGeo, grassMat);
+                        grassBlock.position.set(x * 0.5, 0, z * 0.5);
+                        grassBlock.receiveShadow = true;
+                        grassBlock.castShadow = true;
+                        islandGroup.add(grassBlock);
+
+                        // Dirt Layer below
+                        const dirtBlock = new THREE.Mesh(boxGeo, dirtMat);
+                        dirtBlock.position.set(x * 0.5, -0.5, z * 0.5);
+                        dirtBlock.receiveShadow = true;
+                        islandGroup.add(dirtBlock);
+
+                        if (dist < 4.2) {
+                            const deepDirt = new THREE.Mesh(boxGeo, dirtMat);
+                            deepDirt.position.set(x * 0.5, -1.0, z * 0.5);
+                            islandGroup.add(deepDirt);
+                        }
+                    }
+                }
+            }
+
+            // Decorative Mini Voxel Tree
+            const leafMat = new THREE.MeshStandardMaterial({ color: 0x10b981 });
+            const logMat = new THREE.MeshStandardMaterial({ color: 0x451a03 });
+
+            // Tree Trunk
+            for (let y = 1; y <= 4; y++) {
+                const log = new THREE.Mesh(boxGeo, logMat);
+                log.position.set(-1.8, y * 0.5, -1.8);
+                log.castShadow = true;
+                islandGroup.add(log);
+            }
+            // Tree Foliage
+            for (let tx = -1; tx <= 1; tx++) {
+                for (let tz = -1; tz <= 1; tz++) {
+                    for (let ty = 3; ty <= 5; ty++) {
+                        const leaf = new THREE.Mesh(boxGeo, leafMat);
+                        leaf.position.set(-1.8 + tx * 0.5, ty * 0.5, -1.8 + tz * 0.5);
+                        leaf.castShadow = true;
+                        islandGroup.add(leaf);
+                    }
+                }
+            }
+
+            // Stone Voxel Accent
+            const rock1 = new THREE.Mesh(boxGeo, stoneMat);
+            rock1.position.set(1.8, 0.3, 1.2);
+            rock1.castShadow = true;
+            islandGroup.add(rock1);
+
+            scene.add(islandGroup);
+        }
+
+        // Build Full-Body Voxel Snake Character with Outfits
+        function buildVoxelCharacter(skin) {
+            if (!characterGroup) return;
+
+            // Clear previous meshes
+            while (characterGroup.children.length > 0) {
+                characterGroup.remove(characterGroup.children[0]);
+            }
+
+            const boxGeo = new THREE.BoxGeometry(0.35, 0.35, 0.35);
+            const mainMat = new THREE.MeshStandardMaterial({ 
+                color: skin.colorBody, 
+                roughness: 0.3, 
+                metalness: 0.2 
+            });
+            const accentMat = new THREE.MeshStandardMaterial({ 
+                color: skin.colorAccent, 
+                roughness: 0.2 
+            });
+            const eyeMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+            const whiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+            // 1. SNAKE VOXEL BODY COILS
+            const bodyPositions = [
+                { x: 0, y: 0.2, z: 0 },
+                { x: 0.35, y: 0.2, z: 0.2 },
+                { x: 0.35, y: 0.2, z: 0.55 },
+                { x: 0, y: 0.2, z: 0.75 },
+                { x: -0.35, y: 0.2, z: 0.55 },
+                { x: -0.35, y: 0.55, z: 0.2 },
+                { x: 0, y: 0.9, z: 0 }, // Neck base
+                { x: 0, y: 1.25, z: 0 }  // Head base
+            ];
+
+            bodyPositions.forEach((pos, idx) => {
+                const mat = (idx % 2 === 0) ? mainMat : accentMat;
+                const block = new THREE.Mesh(boxGeo, mat);
+                block.position.set(pos.x, pos.y, pos.z);
+                block.castShadow = true;
+                characterGroup.add(block);
+            });
+
+            // 2. HEAD BLOCK
+            const headGeo = new THREE.BoxGeometry(0.65, 0.55, 0.65);
+            const headMesh = new THREE.Mesh(headGeo, mainMat);
+            headMesh.position.set(0, 1.6, 0.05);
+            headMesh.castShadow = true;
+            characterGroup.add(headMesh);
+
+            // Eyes
+            const eyeGeo = new THREE.BoxGeometry(0.12, 0.12, 0.12);
+            const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+            eyeL.position.set(-0.2, 1.65, 0.38);
+            const eyeR = eyeL.clone();
+            eyeR.position.x = 0.2;
+            characterGroup.add(eyeL, eyeR);
+
+            // 3. OUTFIT / ACCESSORIES ACCESS BASED ON MODEL TYPE
+            if (skin.modelType === 'knight') {
+                // Gold Helmet & Horns
+                const helmMat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.8, roughness: 0.2 });
+                const helm = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.25, 0.72), helmMat);
+                helm.position.set(0, 1.85, 0.05);
+                characterGroup.add(helm);
+
+                // Voxel Sword in hand/side
+                const swordMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.9 });
+                const sword = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.9, 0.1), swordMat);
+                sword.position.set(0.5, 0.9, 0.2);
+                sword.rotation.z = -0.3;
+                characterGroup.add(sword);
+
+            } else if (skin.modelType === 'dragon') {
+                // Flame Horns
+                const hornMat = new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xeab308, emissiveIntensity: 0.5 });
+                const hornL = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.4, 0.12), hornMat);
+                hornL.position.set(-0.25, 2.0, -0.1);
+                hornL.rotation.z = -0.3;
+                const hornR = hornL.clone();
+                hornR.position.x = 0.25;
+                hornR.rotation.z = 0.3;
+                characterGroup.add(hornL, hornR);
+
+            } else if (skin.modelType === 'cyber') {
+                // Neon Visor
+                const visorMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4 });
+                const visor = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.15, 0.2), visorMat);
+                visor.position.set(0, 1.65, 0.32);
+                characterGroup.add(visor);
+
+            } else if (skin.modelType === 'wizard') {
+                // Wizard Hat
+                const hatMat = new THREE.MeshStandardMaterial({ color: 0x6b21a8 });
+                const brim = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.1, 0.9), hatMat);
+                brim.position.set(0, 1.9, 0.05);
+                const cone = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.6, 0.45), hatMat);
+                cone.position.set(0, 2.25, 0.05);
+                characterGroup.add(brim, cone);
+
+            } else if (skin.modelType === 'pirate') {
+                // Pirate Hat
+                const hatMat = new THREE.MeshStandardMaterial({ color: 0x0f172a });
+                const hat = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.2, 0.65), hatMat);
+                hat.position.set(0, 1.9, 0.05);
+                characterGroup.add(hat);
+
+            } else if (skin.modelType === 'ice') {
+                // Ice Crystals
+                const iceMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.85 });
+                const crystal = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.4, 0.2), iceMat);
+                crystal.position.set(0, 2.0, 0);
+                crystal.rotation.x = 0.4;
+                characterGroup.add(crystal);
+            }
+        }
+
+        function animateLoop() {
+            requestAnimationFrame(animateLoop);
+
+            // Subtle Idle Hovering / Breathing Effect
+            if (characterGroup) {
+                const time = Date.now() * 0.0025;
+                characterGroup.position.y = 0.8 + Math.sin(time) * 0.08;
+
+                if (!isMouseDown) {
+                    characterGroup.rotation.y += 0.005; // Idle slow spin
+                }
+            }
+
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
+        }
+
+        // ==========================================
+        // 4. UI INTERACTIONS & CAROUSEL MANAGEMENT
+        // ==========================================
+
+        function setFilter(category) {
+            AudioEngine.playClick();
+            activeFilter = category;
+
+            // Update Tab UI States
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-3.5 py-1.5 bg-slate-900/80 hover:bg-slate-800 border-2 border-slate-700 text-slate-300 text-xs font-bold rounded-xl whitespace-nowrap transition";
+            });
+
+            const activeTab = document.getElementById(`tab-${category}`);
+            if (activeTab) {
+                activeTab.className = "tab-btn active px-3.5 py-1.5 bg-emerald-800 border-2 border-lime-400 text-lime-400 text-xs font-bold rounded-xl whitespace-nowrap transition";
+            }
+
+            renderCarousel();
+        }
+
+        function renderCarousel() {
+            const carousel = document.getElementById('skinCarousel');
+            carousel.innerHTML = '';
+
+            const filtered = SKINS_DATA.filter(skin => {
+                if (activeFilter === 'all') return true;
+                return skin.category === activeFilter || skin.rarity === activeFilter;
+            });
+
+            filtered.forEach(skin => {
+                const isSelected = skin.id === currentSkin.id;
+                const card = document.createElement('div');
+
+                const borderRarity = `border-rarity-${skin.rarity}`;
+                const bgRarity = `bg-rarity-${skin.rarity}`;
+
+                card.className = `flex-shrink-0 w-32 sm:w-36 p-2.5 rounded-xl border-2 ${borderRarity} ${bgRarity} cursor-pointer voxel-btn flex flex-col justify-between transition-all ${isSelected ? 'ring-2 ring-lime-400 scale-105 shadow-lime-glow' : 'hover:border-slate-400 opacity-90'}`;
+
+                card.onclick = () => selectSkin(skin);
+
+                card.innerHTML = `
+                    <!-- Header Badges -->
+                    <div class="flex justify-between items-center w-full mb-1">
+                        <span class="text-[9px] font-pixel uppercase font-bold text-rarity-${skin.rarity}">
+                            ${skin.rarity}
+                        </span>
+                        ${skin.equipped ? `
+                            <span class="w-2 h-2 rounded-full bg-lime-400 shadow-lime-glow"></span>
+                        ` : ''}
+                    </div>
+
+                    <!-- Skin Preview Box -->
+                    <div class="w-full h-16 sm:h-20 bg-slate-950/80 rounded-lg border border-slate-800/80 flex items-center justify-center relative overflow-hidden my-1">
+                        <!-- Icon Representation -->
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center font-pixel text-xs text-white" style="background-color: #${skin.colorBody.toString(16)}">
+                            ${skin.name.substring(5, 7).toUpperCase()}
+                        </div>
+
+                        ${!skin.owned ? `
+                            <div class="absolute inset-0 bg-slate-950/85 backdrop-blur-[1px] flex items-center justify-center">
+                                <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Skin Title & Ownership -->
+                    <div class="mt-1">
+                        <h4 class="font-pixel text-[10px] sm:text-xs text-slate-100 truncate">${skin.name}</h4>
+                        <p class="text-[10px] font-semibold ${skin.owned ? 'text-emerald-400' : 'text-slate-500'} truncate">
+                            ${skin.owned ? (skin.equipped ? 'Dipakai' : 'Dimiliki') : 'Terkunci'}
+                        </p>
+                    </div>
+                `;
+
+                carousel.appendChild(card);
+            });
+        }
+
+        function selectSkin(skin) {
+            AudioEngine.playClick();
+            currentSkin = skin;
+
+            // Update Detail Side Panel
+            document.getElementById('detailSkinTitle').textContent = skin.name;
+            document.getElementById('detailCategoryBadge').textContent = skin.category.toUpperCase();
+            document.getElementById('detailDescription').textContent = skin.description;
+
+            // Rarity Tag
+            const rarityTag = document.getElementById('detailRarityTag');
+            rarityTag.textContent = skin.rarity.toUpperCase();
+            rarityTag.className = `text-[10px] font-pixel px-2 py-0.5 rounded uppercase font-bold tracking-wider border text-rarity-${skin.rarity} border-rarity-${skin.rarity} bg-slate-950/80`;
+
+            // Stats Update
+            document.getElementById('statSpeedVal').textContent = `+${skin.stats.speed}%`;
+            document.getElementById('statSpeedBar').style.width = `${skin.stats.speed}%`;
+
+            document.getElementById('statLuckVal').textContent = `+${skin.stats.luck}%`;
+            document.getElementById('statLuckBar').style.width = `${skin.stats.luck}%`;
+
+            document.getElementById('statCoinVal').textContent = `+${skin.stats.coin}%`;
+            document.getElementById('statCoinBar').style.width = `${skin.stats.coin}%`;
+
+            // Button state
+            const actionBtn = document.getElementById('mainActionBtn');
+            const actionBtnText = document.getElementById('mainActionBtnText');
+
+            if (!skin.owned) {
+                actionBtn.className = "w-full voxel-btn py-3.5 px-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold font-pixel text-xs sm:text-sm tracking-wider rounded-xl shadow-lg border-2 border-amber-300 flex items-center justify-center space-x-2 transition-all";
+                actionBtnText.textContent = "LIHAT DI TOKO";
+            } else if (skin.equipped) {
+                actionBtn.className = "w-full voxel-btn py-3.5 px-4 bg-slate-800 text-slate-400 font-bold font-pixel text-xs sm:text-sm tracking-wider rounded-xl border-2 border-slate-700 cursor-not-allowed flex items-center justify-center space-x-2";
+                actionBtnText.textContent = "SEDANG DIPAKAI";
+            } else {
+                actionBtn.className = "w-full voxel-btn py-3.5 px-4 bg-lime-500 hover:bg-lime-400 text-slate-950 font-bold font-pixel text-xs sm:text-sm tracking-wider rounded-xl shadow-lime-glow border-2 border-lime-300 flex items-center justify-center space-x-2 transition-all";
+                actionBtnText.textContent = "TERAPKAN SKIN";
+            }
+
+            // Update 3D Character Rendering
+            buildVoxelCharacter(skin);
+            renderCarousel();
+        }
+
+        function handleMainAction() {
+            if (!currentSkin) return;
+
+            if (!currentSkin.owned) {
+                AudioEngine.playClick();
+                showToast(`Mengarahkan ke Toko untuk "${currentSkin.name}"...`, 'warning');
+            } else if (!currentSkin.equipped) {
+                SKINS_DATA.forEach(s => s.equipped = false);
+                currentSkin.equipped = true;
+                AudioEngine.playEquip();
+                showToast(`Skin "${currentSkin.name}" Berhasil Diterapkan!`, 'success');
+                selectSkin(currentSkin);
+            }
+        }
+
+        // ==========================================
+        // 5. TOAST NOTIFICATION SYSTEM
+        // ==========================================
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+
+            let borderClass = 'border-lime-500 text-lime-300';
+            if (type === 'warning') borderClass = 'border-amber-500 text-amber-300';
+            if (type === 'info') borderClass = 'border-sky-500 text-sky-300';
+
+            toast.className = `px-4 py-2.5 bg-slate-950/95 border-2 ${borderClass} rounded-xl shadow-2xl backdrop-blur-md transform transition-all duration-300 translate-y-4 opacity-0 text-xs font-bold font-pixel pointer-events-auto`;
+            toast.textContent = msg;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        // Initialize on Window Load
+        window.onload = function() {
+            initThreeJS();
+            renderCarousel();
+            selectSkin(SKINS_DATA[0]);
+        };
+    </script>
+</body>
+</html>

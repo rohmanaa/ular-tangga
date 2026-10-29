@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2a211b">
+<title>Beranda — Ular Tangga Blok</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/nav.css">
+<style>
+.hero{display:grid;grid-template-columns:1fr;gap:16px;align-items:stretch}
+@media(min-width:760px){.hero{grid-template-columns:minmax(260px,5fr) 7fr}}
+.hero .stage{min-height:280px}
+.hero-info{display:flex;flex-direction:column;gap:12px;justify-content:center}
+.hero-info h1{font-size:clamp(26px,6vw,40px);text-shadow:3px 3px 0 var(--sun)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:#fff;border:3px solid var(--ink);border-radius:6px;padding:8px 6px;text-align:center;min-width:0}
+.stat b{display:block;font-family:var(--font-display);font-size:20px;line-height:1.1}
+.stat span{font-size:11.5px;font-weight:800}
+.strip{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+.chip-skin{flex:none;width:86px;display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;background:var(--paper);border:3px solid var(--ink);border-radius:6px;box-shadow:0 3px 0 var(--ink);padding:6px 4px;min-height:44px}
+.chip-skin svg{width:44px;height:44px;image-rendering:pixelated;border:2px solid var(--ink)}
+.chip-skin span{font-family:var(--font-display);font-size:10px;text-transform:uppercase;text-align:center;line-height:1.1;overflow-wrap:anywhere}
+.chip-skin[aria-current=true]{background:var(--sun)}
+.shortcuts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.shortcut{display:flex;flex-direction:column;gap:6px;text-decoration:none;min-height:96px}
+.shortcut h3{font-size:15px}.shortcut p{margin:0;font-size:13px}
+.shortcut:active{transform:translateY(3px)}
+.feat-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px;list-style:none;margin:0;padding:0}
+.how ul{margin:8px 0 0;padding-left:18px;display:grid;gap:6px;font-size:14px}
+.how summary{cursor:pointer;font-family:var(--font-display);text-transform:uppercase;font-size:14px;min-height:44px;display:flex;align-items:center}
+</style>
+</head>
+<body class="app" data-page="home">
+<div class="page">
+  <header class="topbar">
+    <a class="brand" href="ular%20tangga.html" aria-label="Ular Tangga Blok — Beranda">
+      <span class="brand-cube" aria-hidden="true"></span>
+      <span class="brand-name">Ular Tangga<small>BLOCK WORLD ADVENTURE</small></span>
+    </a>
+    <a class="coin-chip" id="coinChip" href="shop.html" aria-label="Saldo koin"></a>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-label="Profil pemain">
+      <div class="stage" id="heroStage"></div>
+      <div class="panel hero-info">
+        <p class="eyebrow">Pemain lokal</p>
+        <h1 id="heroTitle">Siap bertualang?</h1>
+        <p style="margin:0">Skin aktif: <strong id="heroSkin"></strong>. Pilih mode, skin lawan, tema papan, dan dadu di lobi sebelum permainan dimulai.</p>
+        <div class="stats" id="stats" aria-label="Ringkasan koleksi"></div>
+        <a class="btn green big block" href="lobby.html" id="btnPlay">Mulai Bermain</a>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="h-skins">
+      <div class="section-head"><h2 id="h-skins">Skin yang kamu miliki</h2><a class="link-more" href="skins.html">Kelola skin →</a></div>
+      <div class="strip" id="skinStrip"></div>
+    </section>
+
+    <section class="section" aria-labelledby="h-feat">
+      <div class="section-head"><h2 id="h-feat">Item unggulan di Toko</h2><a class="link-more" href="shop.html">Buka Toko →</a></div>
+      <ul class="feat-row" id="featRow"></ul>
+    </section>
+
+    <section class="section" aria-labelledby="h-go">
+      <div class="section-head"><h2 id="h-go">Pintasan</h2></div>
+      <div class="shortcuts">
+        <a class="panel shortcut" href="inventory.html"><h3>Inventory</h3><p id="scInv"></p></a>
+        <a class="panel shortcut" href="skins.html"><h3>Skin</h3><p>Pratinjau dan terapkan karakter blokmu.</p></a>
+        <a class="panel shortcut" href="shop.html"><h3>Toko</h3><p>Tukar koin dengan skin, dadu, dan tema papan.</p></a>
+      </div>
+    </section>
+
+    <section class="section">
+      <details class="panel how">
+        <summary>Cara bermain singkat</summary>
+        <ul>
+          <li>Lempar dadu dan maju sesuai angka. Capai petak 100 dengan angka pas untuk menang.</li>
+          <li>Petak kuning membawamu naik tangga, petak merah muda membuatmu turun lewat ular.</li>
+          <li>Peti memberi power-up acak, dan mob di papan bisa membantu atau menghambatmu.</li>
+          <li>Mainkan sendiri melawan komputer, atau 2–4 pemain di satu perangkat.</li>
+        </ul>
+      </details>
+    </section>
+  </main>
+</div>
+
+<script src="assets/js/item-catalog.js"></script>
+<script src="assets/js/player-data.js"></script>
+<script src="assets/js/item-art.js"></script>
+<script src="assets/js/app-ui.js"></script>
+<script src="assets/js/navigation.js"></script>
+<script>
+(function(){
+  'use strict';
+  var C=ItemCatalog,PD=PlayerData,UI=window.UI,el=UI.el;
+  var stage=document.getElementById('heroStage');
+
+  function render(){
+    var owned=PD.ownedItems(), ownedIds={};
+    owned.forEach(function(o){ownedIds[o.item.id]=1;});
+    var skinId=PD.equippedId('skin'), skinItem=C.byId(skinId);
+
+    /* Preview karakter aktif */
+    stage.textContent='';
+    var holder=el('div',{class:'char-idle'}); holder.innerHTML=ItemArt.character(skinId);
+    stage.appendChild(holder);
+    document.getElementById('heroSkin').textContent=skinItem?skinItem.name:'-';
+
+    /* Ringkasan: angka nyata dari data pemain */
+    var skinOwned=owned.filter(function(o){return o.item.kind==='skin';}).length;
+    var skinTotal=C.items.filter(function(i){return i.kind==='skin';}).length;
+    var st=document.getElementById('stats'); st.textContent='';
+    [[owned.length+'/'+C.items.length,'Item dimiliki'],[skinOwned+'/'+skinTotal,'Skin'],[UI.fmt(PD.coins()),'Koin']].forEach(function(p){
+      st.appendChild(el('div',{class:'stat'},[el('b',{text:p[0]}),el('span',{text:p[1]})]));
+    });
+    document.getElementById('scInv').textContent=owned.length+' item di koleksimu.';
+
+    /* Strip skin yang dimiliki */
+    var strip=document.getElementById('skinStrip'); strip.textContent='';
+    owned.filter(function(o){return o.item.kind==='skin';}).sort(function(a,b){return a.seq-b.seq;}).forEach(function(o){
+      var a=el('a',{class:'chip-skin',href:'skins.html?skin='+encodeURIComponent(o.item.id),'aria-current':o.equipped?'true':null,
+        'aria-label':o.item.name+(o.equipped?' (aktif)':'')});
+      a.innerHTML=ItemArt.face(o.item.id);
+      a.appendChild(el('span',{text:o.item.name+(o.equipped?' • Aktif':'')}));
+      strip.appendChild(a);
+    });
+
+    /* Item unggulan toko */
+    var fr=document.getElementById('featRow'); fr.textContent='';
+    C.items.filter(function(i){return i.featured;}).forEach(function(it){
+      var has=!!ownedIds[it.id];
+      var art=el('div',{class:'card-art'}); art.innerHTML=ItemArt.forItem(it.id);
+      var li=el('li',{class:'card-item','data-rarity':it.rarity},[
+        art, el('div',{class:'card-name',text:it.name}),
+        el('div',{class:'card-meta'},[UI.rarityBadge(it.rarity),has?el('span',{class:'badge own',text:'Sudah dimiliki'}):null]),
+        el('div',{class:'card-actions'},[
+          has?el('span',{class:'card-sub',text:'Ada di Inventory'}):el('span',{class:'price'},[UI.coinSpan(it.price)]),
+          el('a',{class:'btn small light',href:'shop.html?item='+encodeURIComponent(it.id)},[has?'Lihat':'Lihat di Toko'])
+        ])]);
+      fr.appendChild(li);
+    });
+  }
+  render(); PD.subscribe(render);
+})();
+</script>
+</body>
+</html>

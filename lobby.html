@@ -1,7 +1,8 @@
-<!doctype html><html lang="id"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Ular Tangga Blok</title></head><body>
+<!doctype html><html lang="id"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Ular Tangga Blok</title></head><body data-page="play">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/nav.css">
 <style>
 /* Lobby mandiri: latar gradien langit mengikuti tema & waktu, kartu menu di tengah. */
 :root{
@@ -127,9 +128,46 @@ button{font:inherit;color:inherit}
 .dbtn[aria-pressed=true]{background:var(--sun);color:#1b2a3b}
 .dbtn span{width:34px;height:34px;border:2px solid #0f0b08}
 .lobby .how{background:#1f1813;border-color:#0f0b08;color:#f1e8d6}
-@media(max-width:760px),(max-aspect-ratio:1/1){.lobby{width:100%!important;aspect-ratio:auto;max-height:none}.lbody{grid-template-columns:1fr;overflow:visible}.lhead p{display:none}}
+.overlay{padding-bottom:calc(16px + var(--nav-h) + env(safe-area-inset-bottom,0px))!important}
+.lobby{width:min(940px,96vw,calc((100vh - 24px - var(--nav-h))*4/3))!important;max-height:calc(100vh - 24px - var(--nav-h))!important}
+.lfoot{justify-content:space-between;align-items:center;gap:10px}
+.lfoot .btn.light{text-decoration:none;display:inline-flex;align-items:center}
+.lk{display:block;font:9px var(--font-display);letter-spacing:.03em;color:#ffb4a8;margin-top:1px}
+.tbtn:disabled,.dbtn:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(1)}
+.skin:disabled .lk,.tbtn:disabled .lk,.dbtn:disabled .lk{color:#ffd9d3}
+@media(max-width:760px),(max-aspect-ratio:1/1){.lobby{width:100%!important;aspect-ratio:auto;max-height:none!important}.lbody{grid-template-columns:1fr;overflow:visible}.lhead p{display:none}}
 </style>
 
+<style>
+/* Palet lobi disamaraskan dengan index.html: hijau gelap, aksen hijau lime dan emas. */
+:root{--bg:#101810;--panel:#18251b;--panel2:#223426;--green:#9be34b;--green2:#61bd37;--gold:#ffc64a;--text:#f4f8ed;--muted:#bdc9b9;--line:#ffffff18;--sun:#ffc64a}
+body{background:radial-gradient(ellipse 80% 55% at 50% 0%,#2f5a2a 0,transparent 70%),linear-gradient(180deg,#101810 0,#142016 70%,#21351e 100%) fixed!important;color:var(--text)}
+#menu{background:transparent}
+.lobby{background:var(--panel)!important;color:var(--text)!important;border:1px solid #9be34b45!important;border-radius:18px!important;box-shadow:0 24px 60px #000a,inset 0 0 0 1px #ffffff08!important}
+.lhead{background:radial-gradient(ellipse at 50% 0%,#47753265,transparent 65%),linear-gradient(135deg,#1d3020,#152018)!important;border-bottom:1px solid #9be34b45!important;box-shadow:none!important}
+.lobby .lhead h1{color:var(--text)!important;text-shadow:3px 3px 0 #2d5524!important}
+.lobby .lhead h1 em{color:var(--green)!important}
+.lobby .lhead p{background:#9be34b12!important;border:1px solid #9be34b65!important;box-shadow:none!important;color:var(--green)!important;border-radius:9px}
+.lobby .lbl{color:var(--text)}
+.lbl i{background:var(--gold)!important;color:#30220a!important;border:0!important;border-radius:5px}
+.lobby .btn.light,.lobby .skin,.lobby .tbtn,.dbtn{background:var(--panel2)!important;color:var(--text)!important;border:1px solid #ffffff24!important;box-shadow:0 4px 0 #0a100b!important}
+.lobby .btn.light[aria-pressed=true],.lobby .skin[aria-pressed=true],.lobby .tbtn[aria-pressed=true],.dbtn[aria-pressed=true]{background:var(--gold)!important;color:#30220a!important;border-color:#9b6820!important}
+.lobby .btn.light:hover:not(:disabled),.lobby .skin:hover:not(:disabled),.lobby .tbtn:hover:not(:disabled),.dbtn:hover:not(:disabled){border-color:#9be34b99!important}
+.lobby .btn.big{background:var(--gold)!important;color:#30220a!important;border:0!important;border-radius:9px;box-shadow:0 5px 0 #9b6820,0 12px 28px #0005!important}
+.lobby .btn.big:disabled{background:#2c3a2e!important;color:#7f8f7c!important;box-shadow:none!important}
+.lobby .skin img,.tbtn .tsw,.dbtn span{border-color:#0a100b}
+.lobby .how{background:#101810!important;border:1px solid var(--line)!important;color:var(--muted)!important;border-radius:10px}
+.lobby .rules .sw{border-color:#0a100b}
+.lobby .rules li::before{background:var(--green)}
+.lk{color:#ffb4a8}
+.skins,.themes,.dsk{scrollbar-color:#3d6b2f #101810!important}
+:focus-visible{outline-color:var(--green)}
+.bottom-nav{background:var(--panel)!important;border-top:1px solid #9be34b45!important;box-shadow:none!important}
+.bottom-nav a{color:var(--muted)!important}
+.bottom-nav a[aria-current=page]{background:#9be34b18!important;color:var(--green)!important;box-shadow:inset 0 -3px 0 var(--green)!important}
+.bottom-nav a[aria-current=page]::before{display:none}
+@media(min-width:900px){.bottom-nav{border:1px solid #9be34b45!important;border-bottom:0!important}}
+</style>
 <section class="overlay" id="menu" role="dialog" aria-labelledby="menuTitle">
   <div class="card lobby">
     <div class="lhead"><h1 id="menuTitle">Ular Tangga <em>Minecraft</em></h1><p>Capai 100 &amp; jadi juara!</p></div>
@@ -163,14 +201,18 @@ button{font:inherit;color:inherit}
     </ul></details>
       </div>
     </div>
-    <div class="lfoot"><button class="btn big" id="btnStart" type="button" disabled>Mulai main</button></div>
+    <div class="lfoot"><a class="btn light small" href="shop.html">Buka item di Toko</a><button class="btn big" id="btnStart" type="button" disabled>Mulai main</button></div>
   </div>
 </section>
 
+<script src="assets/js/item-catalog.js"></script>
+<script src="assets/js/player-data.js"></script>
+<script src="assets/js/navigation.js"></script>
 <script>
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
+const PD=window.PlayerData,IC=window.ItemCatalog;
 
 /* ---------- Data bersama dengan gameplay.html ---------- */
 const PLAYER_DEFS=[
@@ -221,7 +263,8 @@ function mixHex(a,b,k){
 }
 let night=load('ut-malam')==='1';
 function themeByKey(k){ return THEMES.find(t=>t.key===k)||THEMES[0]; }
-let themeKey=themeByKey(load('ut-tema2')).key;
+const eqKey=(slot,fb)=>{ const it=IC.byId(PD.equippedId(slot)); return it?it.gameKey:fb; };
+let themeKey=themeByKey(eqKey('theme','minecraft')).key;
 function applySky(){
   const th=themeByKey(themeKey),rs=document.documentElement.style;
   rs.setProperty('--sky-top',night?mixHex(th.skyTop,'#060a22',0.9):th.skyTop);
@@ -230,30 +273,44 @@ function applySky(){
 
 /* ---------- Tema papan ---------- */
 function chooseTheme(key){
-  themeKey=themeByKey(key).key; store('ut-tema2',themeKey);
+  themeKey=themeByKey(key).key; if(PD.owns('theme.'+themeKey)) PD.equip('theme.'+themeKey);
   document.querySelectorAll('.tbtn').forEach(b=>b.setAttribute('aria-pressed',String(b.getAttribute('data-theme')===themeKey)));
   applySky();
 }
 const themesBox=$('themes');
-THEMES.forEach(t=>{
-  const b=document.createElement('button'); b.type='button'; b.className='tbtn'; b.setAttribute('data-theme',t.key); b.setAttribute('aria-pressed','false');
-  const sw=document.createElement('span'); sw.className='tsw'; sw.style.background='linear-gradient(90deg,'+t.sw[0]+' 50%,'+t.sw[1]+' 50%)';
-  const nm=document.createElement('span'); nm.textContent=t.name;
-  b.appendChild(sw); b.appendChild(nm);
-  b.addEventListener('click',()=>chooseTheme(t.key));
-  themesBox.appendChild(b);
-});
+function renderThemes(){
+  themesBox.textContent='';
+  THEMES.forEach(t=>{
+    const own=PD.owns('theme.'+t.key);
+    const b=document.createElement('button'); b.type='button'; b.className='tbtn'; b.setAttribute('data-theme',t.key); b.setAttribute('aria-pressed',String(own&&t.key===themeKey));
+    b.disabled=!own; if(!own) b.title='Belum dimiliki. Beli di Toko.';
+    const sw=document.createElement('span'); sw.className='tsw'; sw.style.background='linear-gradient(90deg,'+t.sw[0]+' 50%,'+t.sw[1]+' 50%)';
+    const nm=document.createElement('span'); nm.textContent=t.name;
+    b.appendChild(sw); b.appendChild(nm);
+    if(!own){ const lk=document.createElement('span'); lk.className='lk'; lk.textContent='Terkunci'; b.appendChild(lk); }
+    b.addEventListener('click',()=>chooseTheme(t.key));
+    themesBox.appendChild(b);
+  });
+}
+renderThemes();
 
 /* ---------- Skin dadu ---------- */
 function dicePrev(d){ const c=(x,y)=>'radial-gradient(circle at '+x+'% '+y+'%,'+d.pip+' 0 11%,transparent 12%)'; return [c(25,25),c(75,25),c(50,50),c(25,75),c(75,75)].join(',')+','+d.bg; }
-let diceKey=load('ut-dadu')||'klasik';
+let diceKey=eqKey('dice','klasik');
 function applyDice(k){
-  const d=DICE.find(x=>x.key===k)||DICE[0]; diceKey=d.key; store('ut-dadu',d.key);
+  const d=DICE.find(x=>x.key===k)||DICE[0]; diceKey=d.key; if(PD.owns('dice.'+d.key)) PD.equip('dice.'+d.key);
   document.querySelectorAll('.dbtn').forEach(b=>b.setAttribute('aria-pressed',String(b.getAttribute('data-d')===d.key)));
 }
-DICE.forEach(d=>{ const b=document.createElement('button'); b.type='button'; b.className='dbtn'; b.setAttribute('data-d',d.key); b.setAttribute('aria-pressed','false');
-  const sw=document.createElement('span'); sw.style.background=dicePrev(d); sw.style.borderColor=d.edge; const nm=document.createElement('small'); nm.textContent=d.name; b.appendChild(sw); b.appendChild(nm);
-  b.addEventListener('click',()=>applyDice(d.key)); $('diceSk').appendChild(b); });
+function renderDice(){
+  $('diceSk').textContent='';
+  DICE.forEach(d=>{ const own=PD.owns('dice.'+d.key);
+    const b=document.createElement('button'); b.type='button'; b.className='dbtn'; b.setAttribute('data-d',d.key); b.setAttribute('aria-pressed',String(own&&d.key===diceKey));
+    b.disabled=!own; if(!own) b.title='Belum dimiliki. Beli di Toko.';
+    const sw=document.createElement('span'); sw.style.background=dicePrev(d); sw.style.borderColor=d.edge; const nm=document.createElement('small'); nm.textContent=d.name; b.appendChild(sw); b.appendChild(nm);
+    if(!own){ const lk=document.createElement('span'); lk.className='lk'; lk.textContent='Terkunci'; lk.style.cssText='width:auto;height:auto;border:0'; b.appendChild(lk); }
+    b.addEventListener('click',()=>applyDice(d.key)); $('diceSk').appendChild(b); });
+}
+renderDice();
 
 /* ---------- Siang / malam ---------- */
 function setNight(v){
@@ -268,6 +325,7 @@ $('nNight').addEventListener('click',()=>setNight(true));
 let selMode=null,picks=[];
 function selectMode(m){
   selMode=m; picks=(m==='cpu')?[null]:Array(+m).fill(null);
+  { const eq=IC.byId(PD.equippedId('skin')); if(eq&&PLAYER_DEFS.some(d=>d.key===eq.gameKey)) picks[0]=eq.gameKey; }
   document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.getAttribute('data-mode')===m)));
   $('setup').hidden=false; renderSlots();
 }
@@ -279,9 +337,11 @@ function renderSlots(){
     const g=document.createElement('div'); g.className='skins';
     PLAYER_DEFS.forEach(d=>{
       const b=document.createElement('button'); b.type='button'; b.className='skin'; b.setAttribute('aria-pressed',String(sel===d.key));
-      b.disabled=picks.some((q,j)=>j!==i&&q===d.key);
+      const own=PD.owns('skin.'+d.key);
+      b.disabled=!own||picks.some((q,j)=>j!==i&&q===d.key); if(!own) b.title='Belum dimiliki. Beli di Toko.';
       const im=document.createElement('img'); im.alt=''; im.src=faceURL(d.key); const nm=document.createElement('span'); nm.textContent=d.name;
       b.appendChild(im); b.appendChild(nm);
+      if(!own){ const lk=document.createElement('span'); lk.className='lk'; lk.textContent='Terkunci'; b.appendChild(lk); }
       b.addEventListener('click',()=>{ picks[i]=(picks[i]===d.key)?null:d.key; renderSlots(); });
       g.appendChild(b);
     });
@@ -303,6 +363,13 @@ $('btnStart').addEventListener('click',()=>{
   location.href='gameplay.html?'+q.toString();
 });
 
+/* ---------- Segarkan kunci item saat data pemain berubah ---------- */
+PD.subscribe(()=>{
+  const t=IC.byId(PD.equippedId('theme')), d=IC.byId(PD.equippedId('dice'));
+  if(!PD.owns('theme.'+themeKey)&&t) themeKey=t.gameKey;
+  if(!PD.owns('dice.'+diceKey)&&d) diceKey=d.gameKey;
+  renderThemes(); renderDice(); if(selMode) renderSlots();
+});
 /* ---------- Inisialisasi ---------- */
 chooseTheme(themeKey);
 applyDice(diceKey);
