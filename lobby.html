@@ -1,0 +1,313 @@
+<!doctype html><html lang="id"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Ular Tangga Blok</title></head><body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Lobby mandiri: latar gradien langit mengikuti tema & waktu, kartu menu di tengah. */
+:root{
+  --sky-top:#5EC1FF;
+  --sky-bot:#DDF4FF;
+  --ink:#1B2A3B;
+  --paper:#FFFDF2;
+  --sun:#FFC21A;
+  --ladder-tile:#FFE27A;
+  --snake-tile:#FF8F7A;
+  --font-display:'Silkscreen','Courier New',monospace;
+  --font-body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:light;
+}
+html{height:100%;overflow:hidden;box-sizing:border-box}
+body{
+  height:100%;margin:0;overflow:hidden;box-sizing:border-box;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  background:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-bot) 78%);
+  color:var(--ink);font-family:var(--font-body);font-weight:600;
+  -webkit-tap-highlight-color:transparent;
+}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+
+.btn{
+  font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+  font-size:14px;line-height:1.1;color:var(--ink);background:var(--sun);
+  border:3px solid var(--ink);border-radius:6px;padding:12px 16px;cursor:pointer;
+  box-shadow:0 5px 0 var(--ink);transition:transform .08s,box-shadow .08s;
+  -webkit-user-select:none;user-select:none;
+}
+.btn:active:not(:disabled){transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.btn:disabled{background:#D7DCE2;color:#6B7886;cursor:default;box-shadow:0 2px 0 var(--ink);transform:translateY(3px)}
+.btn.light{background:var(--paper)}
+.btn.small{font-size:11px;padding:8px 10px;box-shadow:0 3px 0 var(--ink)}
+.btn.small:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.btn.big{font-size:16px;padding:14px 20px}
+
+/* Overlay menu */
+.overlay{
+  position:fixed;inset:0;z-index:20;display:flex;overflow:auto;background:rgba(27,42,59,.42);
+  padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+}
+#menu{background:rgba(10,14,30,.55)}
+.card{
+  width:min(480px,100%);margin:auto;background:var(--paper);border:4px solid var(--ink);border-radius:8px;
+  box-shadow:0 8px 0 var(--ink);padding:20px 20px 22px;display:flex;flex-direction:column;gap:14px;box-sizing:border-box;
+}
+.card h1,.card h2{
+  margin:0;font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:.02em;
+  font-size:clamp(26px,8vw,38px);line-height:1.05;text-shadow:3px 3px 0 var(--sun);text-wrap:balance;
+}
+.card p{margin:0;font-size:15px;line-height:1.45}
+.rules{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px;font-size:14px;line-height:1.4}
+.rules li{display:flex;gap:10px;align-items:flex-start}
+.rules li::before{content:"";flex:none;width:8px;height:8px;margin-top:6px;background:var(--ink)}
+.rules li.tile::before{display:none}
+.rules .sw{flex:none;width:16px;height:16px;margin-top:2px;border:2px solid var(--ink)}
+.sw.ladder{background:var(--ladder-tile)}
+.sw.snake{background:var(--snake-tile)}
+.themes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding-bottom:3px}
+.tbtn{
+  display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:7px 6px 8px;min-width:0;
+  font-family:var(--font-display);font-weight:700;font-size:11px;letter-spacing:.03em;text-transform:uppercase;text-align:center;
+  background:var(--paper);border:3px solid var(--ink);border-radius:6px;box-shadow:0 3px 0 var(--ink);cursor:pointer;
+}
+.tbtn .tsw{display:block;height:20px;border:2px solid var(--ink)}
+.tbtn[aria-pressed="true"]{background:var(--sun)}
+.tbtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.lbl{margin:0;font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:11px}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;padding-bottom:5px}
+.err{color:#9B1C1C;font-weight:800}
+.how{border:3px solid var(--ink);border-radius:6px;padding:10px 12px;background:#fff}
+.how summary{cursor:pointer}.how .rules{margin-top:10px}
+@media (max-width:420px){
+  .btn.big{font-size:14px;padding:13px 14px}
+  .themes{grid-template-columns:repeat(2,1fr)}
+}
+@media (prefers-reduced-motion:reduce){
+  .btn{transition:none}
+}
+</style>
+
+<style>
+:root{--hud-bg:#2a211b;--hud-edge:#6b5440;--ttl:#5FAE3E}
+.btn.light[aria-pressed=true]{background:var(--sun)}
+.slot{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.slbl{font-family:var(--font-display);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.skins{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.skin{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 2px;font-family:var(--font-display);font-size:10px;text-transform:uppercase;background:var(--paper);border:3px solid var(--ink);border-radius:6px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+.skin img{width:34px;height:34px;image-rendering:pixelated;border:2px solid var(--ink)}
+.skin[aria-pressed=true]{background:var(--sun)}
+.skin:disabled{opacity:.35;cursor:not-allowed;box-shadow:none;filter:grayscale(1)}
+.hint{font-size:13px!important;margin:0}
+.nrow{display:flex;gap:8px}.nrow .btn{flex:1}
+.lobby{width:min(940px,96vw,calc((100vh - 24px)*4/3))!important;aspect-ratio:4/3;max-height:calc(100vh - 24px);padding:0!important;gap:0!important;overflow:hidden;background:#2a211b;border-color:#0f0b08;box-shadow:inset 0 0 0 3px #6b5440,0 8px 0 #0f0b08;color:#f1e8d6}
+.lhead{flex:none;padding:14px 22px;background:linear-gradient(180deg,#5EC1FF,#BFE8FF);border-bottom:6px solid #4F9A34;box-shadow:0 6px 0 #8A5B33;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.lobby .lhead h1{font-size:clamp(20px,3.2vw,38px);color:#fff;text-shadow:3px 3px 0 #111,-1px -1px 0 #111;line-height:1}
+.lobby .lhead h1 em{display:block;color:#5FAE3E;font-style:normal}
+.lobby .lhead p{padding:9px 14px;background:#7a4f2b;border:3px solid #0f0b08;box-shadow:inset 0 0 0 2px #a8773f;color:#fff3d6;font:12px var(--font-display);text-transform:uppercase;text-align:center}
+.lbody{flex:1;min-height:0;display:grid;grid-template-columns:1.1fr 1fr;gap:20px;padding:20px 22px 8px;overflow:auto}
+.lcol{display:flex;flex-direction:column;gap:10px;min-width:0}
+.lobby .lbl{color:#efe4cf;display:flex;align-items:center;gap:8px}
+.lbl i{width:20px;height:20px;background:var(--sun);color:#1b2a3b;display:grid;place-items:center;font-style:normal;font-size:11px;border:2px solid #0f0b08}
+.lfoot{flex:none;padding:12px 22px 18px;display:flex;justify-content:flex-end}
+.lobby .modes{display:flex;gap:8px;padding:0}
+.lobby .modes .btn{flex:1;font-size:11px;padding:11px 4px;white-space:nowrap}
+.lobby .btn.light{background:#4a3d32;color:#f1e8d6;box-shadow:inset 0 0 0 2px #6b5440,0 4px 0 #0f0b08}
+.lobby .btn.light[aria-pressed=true]{background:var(--sun);color:#1b2a3b}
+.lobby .btn.big{background:#4FA83D;color:#fff;box-shadow:inset 0 3px 0 rgba(255,255,255,.3),inset 0 -4px 0 rgba(0,0,0,.3),0 5px 0 #0f0b08}
+.lobby .btn.big:disabled{background:#4b5563;color:#9aa3ad}
+.skins,.themes,.dsk{scrollbar-width:thin;scrollbar-color:#8a5b33 #1b1510}
+.lobby .skins{display:flex;overflow-x:auto;scroll-snap-type:x proximity;padding:0 0 8px}
+.lobby .skin{flex:0 0 calc((100% - 18px)/4);scroll-snap-align:start;background:#4a3d32;color:#f1e8d6;border-color:#0f0b08;box-shadow:inset 0 0 0 2px #6b5440,0 3px 0 #0f0b08}
+.lobby .skin[aria-pressed=true]{background:var(--sun);color:#1b2a3b}
+.lobby .themes{display:flex;overflow-x:auto;gap:8px;padding-bottom:8px;scroll-snap-type:x proximity}
+.lobby .tbtn{flex:0 0 96px;background:#4a3d32;color:#f1e8d6;border-color:#0f0b08;scroll-snap-align:start}
+.lobby .tbtn[aria-pressed=true]{background:var(--sun);color:#1b2a3b}
+.dsk{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px}
+.dbtn{flex:0 0 auto;width:64px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px;font:10px var(--font-display);text-transform:uppercase;background:#4a3d32;color:#f1e8d6;border:3px solid #0f0b08;border-radius:6px;cursor:pointer}
+.dbtn[aria-pressed=true]{background:var(--sun);color:#1b2a3b}
+.dbtn span{width:34px;height:34px;border:2px solid #0f0b08}
+.lobby .how{background:#1f1813;border-color:#0f0b08;color:#f1e8d6}
+@media(max-width:760px),(max-aspect-ratio:1/1){.lobby{width:100%!important;aspect-ratio:auto;max-height:none}.lbody{grid-template-columns:1fr;overflow:visible}.lhead p{display:none}}
+</style>
+
+<section class="overlay" id="menu" role="dialog" aria-labelledby="menuTitle">
+  <div class="card lobby">
+    <div class="lhead"><h1 id="menuTitle">Ular Tangga <em>Minecraft</em></h1><p>Capai 100 &amp; jadi juara!</p></div>
+    <div class="lbody">
+      <div class="lcol">
+        <p class="lbl"><i>1</i>Mode permainan</p>
+        <div class="modes" id="modes">
+          <button class="btn light" type="button" data-mode="cpu" aria-pressed="false">VS Komputer</button>
+          <button class="btn light" type="button" data-mode="2" aria-pressed="false">2 Pemain</button>
+          <button class="btn light" type="button" data-mode="3" aria-pressed="false">3 Pemain</button>
+          <button class="btn light" type="button" data-mode="4" aria-pressed="false">4 Pemain</button>
+        </div>
+        <div id="setup" hidden><p class="lbl"><i>2</i>Pilih skin</p><div id="slots"></div></div>
+      </div>
+      <div class="lcol">
+        <p class="lbl" id="themeLbl"><i>3</i>Tema papan</p>
+        <div class="themes" role="group" aria-labelledby="themeLbl" id="themes"></div>
+        <p class="lbl"><i>4</i>Skin dadu</p>
+        <div class="dsk" id="diceSk"></div>
+        <p class="lbl"><i>5</i>Waktu</p>
+        <div class="nrow"><button class="btn light small" id="nDay" type="button" aria-pressed="true">Siang</button><button class="btn light small" id="nNight" type="button" aria-pressed="false">Malam</button></div>
+        <details class="how"><summary class="lbl">Cara bermain</summary><ul class="rules">
+      <li class="tile"><span class="sw ladder"></span><span>Petak kuning adalah dasar tangga. Berhenti di sini dan pionmu naik.</span></li>
+      <li class="tile"><span class="sw snake"></span><span>Petak merah muda adalah kepala ular. Berhenti di sini dan pionmu dicaplok, ditelan, lalu keluar di ekornya.</span></li>
+      <li>Peti di petak tertentu memberi power-up acak: Pedang (+3 langkah), Bulu (giliran tambahan), TNT (pemain terdepan mundur 6), Apel Emas (kebal dari 1 ular atau mob jahat), Ramuan (dadu 4 sampai 6), Blok Rumput (tukar posisi dengan pemain terdepan).</li>
+      <li>Angka 6 memberi lemparan tambahan. Tiga kali 6 berturut-turut membuat giliranmu hangus.</li>
+      <li>Petak 100 harus dicapai dengan angka pas. Kelebihan angka membuat pionmu memantul mundur.</li>
+      <li>Mob di papan (tiap jenis hanya 1): Creeper meledak, mundur 2 blok. Zombie dan Skeleton menghantam mundur 1 blok. Warden menghantam mundur 10 blok. Enderman memindahkan pionmu maju atau mundur secara acak. Villager membantumu maju 5 blok. Di tema Nether ada Blaze yang membuatmu mundur 3 blok. Mob menoleh dan bereaksi saat pionmu mendekat.</li>
+      <li>Peti memberi power-up acak setiap kali pionmu mendarat di petaknya. Di petak 100 (The End) kamu melawan Ender Dragon: nyawa 100 per pemain, tiap lemparan dadu memberi damage angka dadu x 5. Menang jika nyawanya habis.</li>
+      <li>Geser papan ke mana saja dengan satu jari atau tarik mouse. Cubit atau gulir untuk zoom. Dua jari memutar dan memiringkan papan; di komputer, klik kanan atau tahan Shift lalu tarik untuk memutar.</li>
+    </ul></details>
+      </div>
+    </div>
+    <div class="lfoot"><button class="btn big" id="btnStart" type="button" disabled>Mulai main</button></div>
+  </div>
+</section>
+
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+
+/* ---------- Data bersama dengan gameplay.html ---------- */
+const PLAYER_DEFS=[
+  {name:'Steve',key:'steve',hex:0x2F80FF,css:'#2a78d6'},
+  {name:'Alex',key:'alex',hex:0xFF8A1A,css:'#d9791c'},
+  {name:'Creeper',key:'creeper',hex:0x4DB84A,css:'#3f9f2a'},
+  {name:'Enderman',key:'ender',hex:0xA855F7,css:'#3a2a52'},
+  {name:'Zombie',key:'zombie',hex:0x2DB5A6,css:'#2b8f87'},
+  {name:'Skeleton',key:'skeleton',hex:0xD0D0D0,css:'#6f7378'}
+];
+const FC={
+ steve:{p:{h:'#4a2e13',H:'#3a2410',s:'#c58c62',w:'#fff',b:'#3b4fd8',n:'#a56a45',m:'#5a3820'},f:['hhhhhhhh','hHhhhhHh','hssssssh','swbssbws','sssnnsss','ssmmmmss','smmmmmms','ssmmmmss']},
+ alex:{p:{o:'#d4701c',O:'#b85a10',s:'#e8b48a',w:'#fff',g:'#2f8f3f',n:'#c98b66',m:'#b0563a'},f:['oooooooo','oOooooOo','osssssso','swgssgws','sssnnsss','sssmmsss','ssssssss','ssssssss']},
+ creeper:{p:{g:'#5fb34a',G:'#3f8a35',k:'#0b0b0b'},f:['gGggGggg','gkkggkkg','gkkggkkg','gggkkggg','ggkkkkgg','ggkkkkgg','ggkggkgg','gGggggGg']},
+ ender:{p:{b:'#141414',B:'#222',p:'#e879f9',q:'#a21caf'},f:['bbbbbbbb','bBbbbbBb','bbbbbbbb','bbbbbbbb','pqpbbpqp','bbbbbbbb','bBbbbbBb','bbbbbbbb']}};
+FC.zombie={p:{h:'#2f5f2a',s:'#5e9e4a',S:'#4c8a3b',w:'#fff',b:'#2a2a8a',m:'#1d3d18'},f:['hhhhhhhh','hsssssSh','ssssssss','swbssbws','sssSsSss','ssmmmmss','smmmmmms','ssmsmsss']};
+FC.skeleton={p:{k:'#e8e8e8',K:'#c4c4c4',d:'#222',m:'#8a8a8a'},f:['kkkkkkkk','kKkkkkKk','kkkkkkkk','kddkkddk','kddkkddk','kkkddkkk','kmdmdmkk','kkkkkkkk']};
+const FURL={};
+function faceURL(k){
+  if(FURL[k]) return FURL[k];
+  const c=FC[k],cv=document.createElement('canvas'); cv.width=cv.height=16; const x=cv.getContext('2d');
+  c.f.forEach((r,j)=>[...r].forEach((l,i)=>{ x.fillStyle=c.p[l]; x.fillRect(i*2,j*2,2,2); }));
+  for(let i=0;i<16;i++)for(let j=0;j<16;j++){ x.fillStyle='rgba(0,0,0,'+(Math.random()*0.14).toFixed(2)+')'; x.fillRect(i,j,1,1); }
+  x.fillStyle='rgba(255,255,255,.22)'; x.fillRect(0,0,16,1); x.fillRect(0,0,1,16);
+  return FURL[k]=cv.toDataURL();
+}
+const THEMES=[
+  {key:'minecraft',name:'Minecraft',skyTop:'#6EC6FF',skyBot:'#E6F7FF',sw:['#5FAE3E','#8A5B33']},
+  {key:'rumput',name:'Rumput',skyTop:'#5EC1FF',skyBot:'#DDF4FF',sw:['#78D957','#9A6A3B']},
+  {key:'gurun',name:'Gurun',skyTop:'#FFD27A',skyBot:'#FFF4D8',sw:['#FFD98C','#D9763C']},
+  {key:'salju',name:'Salju',skyTop:'#46AEEF',skyBot:'#E4F6FF',sw:['#F4FCFF','#54AEDB']},
+  {key:'hutan',name:'Hutan',skyTop:'#27B2B8',skyBot:'#C9F5E4',sw:['#46C46E','#1F5F4D']},
+  {key:'nether',name:'Nether',skyTop:'#2a0606',skyBot:'#8a2410',sw:['#8A2B2B','#3A0D0D']}
+];
+const DICE=[{key:'klasik',name:'Klasik',bg:'#ffffff',pip:'#1b2a3b',edge:'#1b2a3b'},{key:'tnt',name:'TNT',bg:'#d63a2a',pip:'#ffffff',edge:'#4a0d07'},{key:'rumput',name:'Rumput',bg:'#5fae3e',pip:'#1f4a12',edge:'#2c5a1c'},{key:'diamond',name:'Diamond',bg:'#4aedd9',pip:'#0b4f4a',edge:'#0b4f4a'},{key:'emas',name:'Emas',bg:'#ffd23f',pip:'#6b4a00',edge:'#6b4a00'},{key:'obsidian',name:'Obsidian',bg:'#2a1747',pip:'#d3b4ff',edge:'#0d0618'}];
+
+/* ---------- Penyimpanan ---------- */
+function store(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+function load(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+
+/* ---------- Latar langit mengikuti tema & waktu ---------- */
+function mixHex(a,b,k){
+  const pa=parseInt(a.slice(1),16),pb=parseInt(b.slice(1),16);
+  const r=Math.round(((pa>>16)&255)+((((pb>>16)&255)-((pa>>16)&255))*k));
+  const g=Math.round(((pa>>8)&255)+((((pb>>8)&255)-((pa>>8)&255))*k));
+  const bl=Math.round((pa&255)+(((pb&255)-(pa&255))*k));
+  return '#'+((1<<24)+(r<<16)+(g<<8)+bl).toString(16).slice(1);
+}
+let night=load('ut-malam')==='1';
+function themeByKey(k){ return THEMES.find(t=>t.key===k)||THEMES[0]; }
+let themeKey=themeByKey(load('ut-tema2')).key;
+function applySky(){
+  const th=themeByKey(themeKey),rs=document.documentElement.style;
+  rs.setProperty('--sky-top',night?mixHex(th.skyTop,'#060a22',0.9):th.skyTop);
+  rs.setProperty('--sky-bot',night?mixHex(th.skyBot,'#1c2a5e',0.82):th.skyBot);
+}
+
+/* ---------- Tema papan ---------- */
+function chooseTheme(key){
+  themeKey=themeByKey(key).key; store('ut-tema2',themeKey);
+  document.querySelectorAll('.tbtn').forEach(b=>b.setAttribute('aria-pressed',String(b.getAttribute('data-theme')===themeKey)));
+  applySky();
+}
+const themesBox=$('themes');
+THEMES.forEach(t=>{
+  const b=document.createElement('button'); b.type='button'; b.className='tbtn'; b.setAttribute('data-theme',t.key); b.setAttribute('aria-pressed','false');
+  const sw=document.createElement('span'); sw.className='tsw'; sw.style.background='linear-gradient(90deg,'+t.sw[0]+' 50%,'+t.sw[1]+' 50%)';
+  const nm=document.createElement('span'); nm.textContent=t.name;
+  b.appendChild(sw); b.appendChild(nm);
+  b.addEventListener('click',()=>chooseTheme(t.key));
+  themesBox.appendChild(b);
+});
+
+/* ---------- Skin dadu ---------- */
+function dicePrev(d){ const c=(x,y)=>'radial-gradient(circle at '+x+'% '+y+'%,'+d.pip+' 0 11%,transparent 12%)'; return [c(25,25),c(75,25),c(50,50),c(25,75),c(75,75)].join(',')+','+d.bg; }
+let diceKey=load('ut-dadu')||'klasik';
+function applyDice(k){
+  const d=DICE.find(x=>x.key===k)||DICE[0]; diceKey=d.key; store('ut-dadu',d.key);
+  document.querySelectorAll('.dbtn').forEach(b=>b.setAttribute('aria-pressed',String(b.getAttribute('data-d')===d.key)));
+}
+DICE.forEach(d=>{ const b=document.createElement('button'); b.type='button'; b.className='dbtn'; b.setAttribute('data-d',d.key); b.setAttribute('aria-pressed','false');
+  const sw=document.createElement('span'); sw.style.background=dicePrev(d); sw.style.borderColor=d.edge; const nm=document.createElement('small'); nm.textContent=d.name; b.appendChild(sw); b.appendChild(nm);
+  b.addEventListener('click',()=>applyDice(d.key)); $('diceSk').appendChild(b); });
+
+/* ---------- Siang / malam ---------- */
+function setNight(v){
+  night=v; store('ut-malam',v?'1':'0');
+  $('nDay').setAttribute('aria-pressed',String(!v)); $('nNight').setAttribute('aria-pressed',String(v));
+  applySky();
+}
+$('nDay').addEventListener('click',()=>setNight(false));
+$('nNight').addEventListener('click',()=>setNight(true));
+
+/* ---------- Mode & skin ---------- */
+let selMode=null,picks=[];
+function selectMode(m){
+  selMode=m; picks=(m==='cpu')?[null]:Array(+m).fill(null);
+  document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.getAttribute('data-mode')===m)));
+  $('setup').hidden=false; renderSlots();
+}
+function renderSlots(){
+  const box=$('slots'); box.textContent='';
+  picks.forEach((sel,i)=>{
+    const row=document.createElement('div'); row.className='slot';
+    const lb=document.createElement('span'); lb.className='slbl'; lb.textContent=selMode==='cpu'?'Skin kamu':'Pemain '+(i+1)+(sel?': '+PLAYER_DEFS.find(d=>d.key===sel).name:''); row.appendChild(lb);
+    const g=document.createElement('div'); g.className='skins';
+    PLAYER_DEFS.forEach(d=>{
+      const b=document.createElement('button'); b.type='button'; b.className='skin'; b.setAttribute('aria-pressed',String(sel===d.key));
+      b.disabled=picks.some((q,j)=>j!==i&&q===d.key);
+      const im=document.createElement('img'); im.alt=''; im.src=faceURL(d.key); const nm=document.createElement('span'); nm.textContent=d.name;
+      b.appendChild(im); b.appendChild(nm);
+      b.addEventListener('click',()=>{ picks[i]=(picks[i]===d.key)?null:d.key; renderSlots(); });
+      g.appendChild(b);
+    });
+    row.appendChild(g); box.appendChild(row);
+  });
+  if(selMode==='cpu'){ const n=document.createElement('p'); n.className='hint'; n.textContent='Skin komputer diacak dari sisa skin.'; box.appendChild(n); }
+  $('btnStart').disabled=picks.some(x=>!x);
+}
+document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>selectMode(b.getAttribute('data-mode'))));
+
+/* ---------- Mulai: simpan konfigurasi lalu pindah ke gameplay ---------- */
+$('btnStart').addEventListener('click',()=>{
+  if(!selMode||picks.some(x=>!x)) return;
+  const keys=picks.slice();
+  if(selMode==='cpu'){ const rest=PLAYER_DEFS.filter(d=>d.key!==keys[0]); keys.push(rest[Math.floor(Math.random()*rest.length)].key); }
+  const cfg={mode:selMode,skins:keys,theme:themeKey,dice:diceKey,night:night?'1':'0'};
+  try{ sessionStorage.setItem('ut-config',JSON.stringify(cfg)); }catch(e){}
+  const q=new URLSearchParams({mode:cfg.mode,skins:keys.join(','),theme:cfg.theme,dice:cfg.dice,night:cfg.night});
+  location.href='gameplay.html?'+q.toString();
+});
+
+/* ---------- Inisialisasi ---------- */
+chooseTheme(themeKey);
+applyDice(diceKey);
+setNight(night);
+})();
+</script>
+
+</body></html>
