@@ -1379,6 +1379,7 @@ const sfx={
   hundred(){ try{ const a=new Audio('assets/sfx/100.mp3'); a.volume=0.7; a.play().catch(()=>beep(523,0.2,'square',0.05)); }catch(e){ beep(523,0.2,'square',0.05); } },
   caplokular(){ try{ const a=new Audio('assets/sfx/caplokular.mp3'); a.volume=0.7; a.play().catch(()=>beep(200,0.12,'square',0.09,0,60)); }catch(e){ beep(200,0.12,'square',0.09,0,60); } },
   chest(){ try{ const a=new Audio('assets/sfx/game_assets_sfx_chest.mp3'); a.volume=0.6; a.play().catch(()=>beep(300,0.12,'triangle',0.08,0,900)); }catch(e){ beep(300,0.12,'triangle',0.08,0,900); } },
+  rewardpower(){ try{ const a=new Audio('assets/sfx/rewardpower.mp3'); a.volume=0.6; a.play().catch(()=>beep(523,0.12,'square',0.05,0,784)); }catch(e){ beep(523,0.12,'square',0.05,0,784); } },
   naiktangga(){ try{ const a=new Audio('assets/sfx/naiktangga.mp3'); a.volume=0.7; a.play().catch(()=>[392,494,587,784].forEach((f,i)=>beep(f,0.14,'square',0.05,i*0.11))); }catch(e){ [392,494,587,784].forEach((f,i)=>beep(f,0.14,'square',0.05,i*0.11)); } },
   roll(){ for(let i=0;i<7;i++) beep(180+Math.random()*320,0.05,'square',0.035,i*0.13); },
   ladder(){ [392,494,587,784].forEach((f,i)=>beep(f,0.14,'square',0.05,i*0.11)); },
@@ -1580,6 +1581,7 @@ async function showPUCard(p,k){
    $('pcWho').textContent=p.name+' membuka peti'; $('pcName').textContent='...'; $('pcDesc').textContent='';
    c.classList.remove('pop'); c.hidden=false;
    if(!reduce) for(let i=0;i<9;i++){ em.textContent=PUN[keys[i%keys.length]][0]; await sleep(75); }
+   sfx.rewardpower();
    em.textContent=PUN[k][0]; $('pcName').textContent=PUN[k][1]; $('pcDesc').textContent=PUN[k][2]; c.classList.add('pop'); sfx.pop();
    await sleep(reduce?900:1500); c.hidden=true;
 }
