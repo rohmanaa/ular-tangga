@@ -376,6 +376,7 @@ if (typeof THREE === 'undefined') {
 <script src="assets/js/app.js"></script>
 <script>UT.App.init({page:'gameplay'});</script>
 <script src="gameplay/module-bridge.js"></script>
+<script src="gameplay/config.js"></script>
 <script src="gameplay/hud.js"></script>
 <script>
     if (window.__NO_THREE) { throw new Error('Three.js tidak dimuat'); }
@@ -411,15 +412,17 @@ function setMusicOn(v){ musicOn=!!v; try{ localStorage.setItem('ut-musicon',musi
 
 /* ---------- Aturan papan ---------- */
 const ROW_H=0.8;
-const LADDERS={3:22,8:26,20:41,36:55,51:72,71:91};
-const SNAKES={17:7,32:10,48:27,62:44,79:57,94:73,98:77};
-const CREEPERS=new Set([29]),ENDERS=new Set([53]),DMG=5;
-const MOBT={};[['creeper',[29]],['ender',[53]],['skeleton',[38]],['zombie',[18]],['warden',[85]],['villager',[45]],['blaze',[66]]].forEach(m=>m[1].forEach(n=>MOBT[n]=m[0]));
-const MOBCOL={creeper:0x3E8E3A,ender:0x3A1F5C,skeleton:0xB8B8B8,zombie:0x4F8F3F,warden:0x0E3A44,villager:0xC9A24A,blaze:0xE0561A};
-const MOBNAME={creeper:'Creeper',ender:'Enderman',skeleton:'Skeleton',zombie:'Zombie',warden:'Warden',villager:'Villager',blaze:'Blaze'};
-const MOBBACK={skeleton:1,zombie:1,warden:10,blaze:3};
-function mobOn(n){ const k=MOBT[n]; return (k&&(k!=='blaze'||(typeof theme!=='undefined'&&theme.key==='nether')))?k:null; }
-const CHESTS=new Set([6,15,34,46,59,64,82,89]);
+/* Data statis papan/mob/power dari gameplay/config.js (single source: UT.Gameplay.Config). */
+const LADDERS=UT.Gameplay.Config.LADDERS;
+const SNAKES=UT.Gameplay.Config.SNAKES;
+const DMG=UT.Gameplay.Config.DMG;
+const MOBT={};UT.Gameplay.Config.MOB_POSITIONS.forEach(m=>m[1].forEach(n=>MOBT[n]=m[0]));
+const MOBCOL=UT.Gameplay.Config.MOB_COLOR;
+const MOBNAME=UT.Gameplay.Config.MOB_NAME;
+const MOBBACK=UT.Gameplay.Config.MOB_BACK;
+const MOBTHEME=UT.Gameplay.Config.MOB_THEME_ONLY;
+function mobOn(n){ const k=MOBT[n]; return (k&&(!MOBTHEME[k]||(typeof theme!=='undefined'&&theme.key===MOBTHEME[k])))?k:null; }
+const CHESTS=UT.Gameplay.Config.CHESTS;
 const PLAYER_DEFS=[
   {name:'Steve',key:'steve',hex:0x2F80FF,css:'#2a78d6'},
   {name:'Alex',key:'alex',hex:0xFF8A1A,css:'#d9791c'},
@@ -1600,7 +1603,7 @@ function faceURL(k){
   x.fillStyle='rgba(255,255,255,.22)'; x.fillRect(0,0,16,1); x.fillRect(0,0,1,16);
   return FURL[k]=cv.toDataURL();
 }
-const PUN={sword:['🗡️','Pedang','langkah berikutnya +3'],feather:['🪶','Bulu','giliran tambahan'],tnt:['🧨','TNT','pemain terdepan mundur 6'],apple:['🍎','Apel Emas','kebal dari 1 ular atau mob jahat'],potion:['🧪','Ramuan','dadu berikutnya 4 sampai 6'],grass:['🟩','Blok Rumput','tukar posisi dengan pemain terdepan']};
+const PUN=UT.Gameplay.Config.PUN;
 function startPU(){ const o={sword:0,feather:0,tnt:0,apple:0,potion:0,grass:0},ks=Object.keys(o).sort(()=>Math.random()-0.5); o[ks[0]]=1; o[ks[1]]=1; return o; }
 async function giveChest(p){
    openChest(p.pos);
