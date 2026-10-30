@@ -1,599 +1,310 @@
 <!DOCTYPE html>
-<html lang="id"><head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Lobi Ular Tangga Blok</title>
-<script src="assets/js/vendor/react.production.min.js"></script>
-<script src="assets/js/vendor/react-dom.production.min.js"></script>
-<script src="assets/js/vendor/dc-runtime.js"></script>
-</head>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lobby</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/base.css"><style>
+:root{--bd:#12337f;--g:#3cc23c}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html{font-size:min(1vw,1.78vh)}
+html,body{margin:0;height:100%;overflow:hidden;font-family:'Baloo 2','Fredoka','Nunito',system-ui,sans-serif;font-weight:800;color:#fff;background:linear-gradient(#4aa6f0,#9fd6fa 55%,#d5f0ff)}
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#ui{position:fixed;left:50%;top:50%;width:100rem;height:56.25rem;translate:-50% -50%;pointer-events:none}
+#ui>*{pointer-events:auto}
+.ab{position:absolute}
+svg{display:block}
+button{font:inherit;color:inherit;border:0;cursor:pointer;padding:0;transition:transform .15s cubic-bezier(.3,1.6,.5,1),filter .15s}
+button:hover{transform:scale(1.05);filter:brightness(1.08)}button:active{transform:scale(.94)}button:focus-visible{outline:.3rem solid #fff}
+.pn{background:linear-gradient(#45a9ff,#1d66dc);box-shadow:0 .4rem 0 var(--bd),0 .9rem 1.3rem rgba(18,51,127,.35),inset 0 .2rem .2rem rgba(255,255,255,.65),inset 0 0 0 .22rem rgba(150,215,255,.45)}
+.tx{text-shadow:0 .18rem 0 var(--bd),0 0 .5rem rgba(18,51,127,.5)}
+.dot{position:absolute;right:-.3rem;top:-.4rem;width:1.6rem;height:1.6rem;border-radius:50%;background:radial-gradient(#ff7a6a,#e8261c);border:.2rem solid #fff;box-shadow:0 .1rem .3rem rgba(0,0,0,.4);pointer-events:none}
+/* profile */
+#prof{left:1.8rem;top:1.3rem;width:25.3rem;height:7.3rem;border-radius:3.7rem;cursor:pointer}
+#ava{position:absolute;left:.7rem;top:.55rem;width:6.2rem;height:6.2rem;border-radius:50%;border:.3rem solid #fff;overflow:hidden;background:linear-gradient(#8fd8ff,#3a9ae8);box-shadow:0 .2rem .4rem rgba(0,0,0,.3)}
+#ava svg{width:100%;height:100%}
+#pname{position:absolute;left:8.9rem;top:.5rem;font-size:2.7rem;line-height:3rem}
+#flag{position:absolute;right:2rem;top:1.1rem;width:2.5rem;height:1.9rem;border-radius:.4rem;overflow:hidden;border:.12rem solid #fff;box-shadow:0 .1rem .3rem rgba(0,0,0,.3)}
+#crown{position:absolute;left:8.7rem;top:3.5rem;width:2.5rem;height:2.5rem}
+#lv{position:absolute;left:11.8rem;top:3.15rem;font-size:2rem;line-height:2rem}
+#xp{position:absolute;left:11.8rem;top:5.15rem;width:12.2rem;height:1.55rem;border-radius:1rem;background:#12337f;box-shadow:inset 0 .15rem .25rem rgba(0,0,0,.4);overflow:hidden}
+#xp i{display:block;height:100%;border-radius:1rem;background:linear-gradient(#7af0ff,#25bfe8);box-shadow:inset 0 .15rem .15rem rgba(255,255,255,.6)}
+#xp span{position:absolute;inset:0;display:grid;place-items:center;font-size:1.15rem;line-height:1}
+/* currency */
+.cur{top:1.7rem;height:3.8rem;display:flex;align-items:center;justify-content:space-between;padding:0 .5rem 0 4.6rem;border-radius:2rem;background:linear-gradient(#2d62c8,#173c94);box-shadow:0 .35rem 0 #0b2160,0 .9rem 1.2rem rgba(18,51,127,.4),inset 0 .2rem .2rem rgba(255,255,255,.35),inset 0 0 0 .2rem rgba(80,170,255,.7);font-size:2.3rem}
+.cur>svg{position:absolute;left:-.4rem;top:50%;translate:0 -50%;width:4.8rem;height:4.8rem;filter:drop-shadow(0 .3rem .3rem rgba(0,0,0,.35))}
+.cur span{flex:1;text-align:center;padding-right:.4rem}
+.plus{width:2.9rem;height:2.9rem;border-radius:50%;background:radial-gradient(#7af07a,#2cb02c);border:.2rem solid #1c7d1c;display:grid;place-items:center}.plus svg{width:1.8rem;height:1.8rem}
+#gem{right:26rem;width:12.3rem}#coin{right:11.8rem;width:13rem}
+.sm{top:1.6rem;width:3.9rem;height:3.9rem;border-radius:1.2rem;display:grid;place-items:center}.sm svg{width:2.4rem;height:2.4rem}
+#mail{right:6.6rem}#gear{right:1.6rem}
+/* event */
+#event{right:1.8rem;top:7.7rem;width:23.4rem;height:6.7rem;border-radius:1.8rem;text-align:left;padding:0 3rem 0 9.4rem;background:linear-gradient(100deg,#2f60dc,#5a34c8 70%,#7a3ee0);box-shadow:0 0 0 .3rem #ffd24d,0 .45rem 0 #b9740c,0 0 1.8rem rgba(255,210,77,.6),inset 0 .2rem .3rem rgba(255,255,255,.4);overflow:visible}
+#event>svg.gf{position:absolute;left:.4rem;top:-1.6rem;width:8.6rem;height:8.6rem;filter:drop-shadow(0 .4rem .3rem rgba(0,0,0,.35))}
+#event b{display:block;font-size:2.1rem;line-height:2.3rem;margin-top:.9rem}
+#event small{display:block;font-size:1.12rem;line-height:1.25rem;color:#e8f2ff;font-weight:700;margin-top:.15rem;white-space:normal}
+#event .ch{position:absolute;right:.8rem;top:50%;translate:0 -50%;width:1.8rem;height:2.6rem}
+/* menu */
+.mn{left:1.8rem;width:15.9rem;height:5rem;border-radius:1.7rem;display:flex;align-items:center;justify-content:center;font-size:2.3rem;padding-left:3.4rem}
+.mn>svg{position:absolute;left:1rem;top:50%;translate:0 -50%;width:4rem;height:4rem;filter:drop-shadow(0 .2rem .2rem rgba(0,0,0,.3))}
+.sq{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.1rem;border-radius:1.9rem;font-size:2rem;line-height:1}
+.sq>svg{width:4.6rem;height:4.6rem;filter:drop-shadow(0 .2rem .2rem rgba(0,0,0,.3))}
+/* play */
+#play{left:34.2rem;top:43.4rem;width:31.5rem;height:9.3rem;border-radius:4.7rem;display:flex;align-items:center;justify-content:center;gap:1.4rem;background:linear-gradient(#ffe85e,#ffb81c 70%,#ffa514);box-shadow:0 .6rem 0 #b8700a,0 1rem 1.8rem rgba(120,60,0,.4),inset 0 .3rem .3rem rgba(255,255,255,.8),inset 0 0 0 .3rem #ffe9a0;animation:glow 2.4s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 .6rem 0 #b8700a,0 0 2.8rem rgba(255,230,90,.95),inset 0 .3rem .3rem rgba(255,255,255,.8),inset 0 0 0 .3rem #ffe9a0}}
+#play:hover,#play:active{animation:none}
+#play .gp{width:7.4rem;height:5.6rem;filter:drop-shadow(0 .3rem .2rem rgba(120,60,0,.4))}
+#pt{text-align:center;color:#fff}
+#pt b{display:block;font-size:4.7rem;line-height:4.4rem;-webkit-text-stroke:.35rem #c8610d;paint-order:stroke fill;text-shadow:0 .3rem 0 #c8610d}
+#pt small{display:block;font-size:2rem;line-height:2rem;margin-top:.1rem;-webkit-text-stroke:.22rem #c8610d;paint-order:stroke fill;text-shadow:0 .15rem 0 #c8610d}
+.pa{position:absolute;top:50%;translate:0 -50%;width:3.6rem;height:5rem;display:grid;place-items:center;background:none}
+.pa svg{width:2.8rem;height:3.6rem;filter:drop-shadow(0 .15rem 0 #c8610d)}#pl{left:.6rem}#pr{right:.6rem}
+/* free gift */
+#free{right:2.4rem;top:47.6rem;width:13.9rem;height:4.4rem;border-radius:1.5rem;display:flex;align-items:center;gap:.5rem;padding:0 .6rem;text-align:left;background:linear-gradient(#1b4fb8,#0f2f85);box-shadow:0 .3rem 0 #081c58,inset 0 .15rem .2rem rgba(255,255,255,.3),inset 0 0 0 .18rem rgba(70,150,255,.6)}
+#free>svg{width:4.4rem;height:4.4rem;flex:none;margin-top:-.4rem;filter:drop-shadow(0 .2rem .2rem rgba(0,0,0,.35))}
+#free b{display:block;color:#ffd24d;font-size:1.5rem;line-height:1.5rem}
+#free span{display:flex;align-items:center;gap:.4rem;font-size:1.65rem;line-height:1.8rem}#free span svg{width:1.4rem;height:1.4rem}
+/* modal */
+.ov{position:fixed;inset:0;display:none;place-items:center;background:rgba(18,51,127,.4);backdrop-filter:blur(6px);z-index:50;opacity:0;transition:opacity .25s}
+.ov.show{opacity:1}.ov>.box{transform:scale(.85);transition:transform .25s cubic-bezier(.3,1.5,.5,1)}.ov.show>.box{transform:scale(1)}
+.box{position:relative;width:min(48rem,92vw);max-height:92vh;overflow:auto;background:linear-gradient(#7cc2ff,#4a9ae8);border-radius:2.4rem;padding:3rem 2.4rem 2.4rem;box-shadow:0 1rem 0 var(--bd),0 2rem 3rem rgba(0,0,0,.3);font-size:2.4rem;text-align:center}
+.box h2{margin:0 0 1.2rem;font-size:3.4rem;text-shadow:0 .2rem 0 var(--bd)}.box p{margin:.4rem 0 1rem}
+.x{position:absolute;right:-1rem;top:-1rem;width:4.6rem;height:4.6rem;border-radius:50%;background:#ee4a4a;box-shadow:0 .3rem 0 #8e1d1d;font-size:2.4rem}
+.row{display:flex;justify-content:space-between;align-items:center;background:rgba(18,51,127,.25);border-radius:1.4rem;padding:1rem 1.4rem;margin:.8rem 0;gap:1rem}
+.mode{width:100%;display:flex;align-items:center;justify-content:space-between;margin:.8rem 0;padding:1.2rem 1.6rem;border-radius:1.4rem;background:linear-gradient(#ffd24d,#ff9a1f);box-shadow:0 .4rem 0 #c96a0c;font-size:2.4rem;text-shadow:0 .2rem 0 rgba(107,53,17,.7)}
+.mode small{font-size:1.4rem;font-weight:700;text-shadow:none;color:#fff3c8}
+.tg{min-width:7.6rem;height:3.8rem;border-radius:2rem;background:#7b8aa8;box-shadow:inset 0 .2rem .4rem rgba(0,0,0,.3);font-size:2rem;padding:0 1rem}.tg.on{background:var(--g)}
+#toast{position:fixed;left:50%;bottom:3rem;translate:-50% 2rem;background:var(--bd);padding:.8rem 2.4rem;border-radius:2rem;font-size:2.4rem;opacity:0;transition:opacity .3s,translate .35s cubic-bezier(.3,1.8,.5,1);z-index:99;pointer-events:none;white-space:nowrap}
+#toast.on{opacity:1;translate:-50% 0}
+#rot{position:fixed;inset:0;display:none;place-items:center;text-align:center;background:linear-gradient(#4aa6f0,#bfe6ff);z-index:200;font-size:6vw;padding:2rem}
+@media(max-aspect-ratio:1/1){#rot{display:grid}}
+@media(prefers-reduced-motion:reduce){#play{animation:none}}
+</style></head>
 <body>
-<x-dc>
-<helmet>
-<style>/* latin-ext */
-@font-face {
-  font-family: 'Lilita One';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/lilitaone/v17/i7dPIFZ9Zz-WBtRtedDbYE98RWq7.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Lilita One';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/lilitaone/v17/i7dPIFZ9Zz-WBtRtedDbYEF8RQ.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* cyrillic-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-}
-/* vietnamese */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* cyrillic-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-}
-/* vietnamese */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* cyrillic-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-}
-/* vietnamese */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* cyrillic-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-}
-/* vietnamese */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-</style>
-<style>
-body{margin:0;background:#0a1428}
-a{text-decoration:none;color:inherit}
-button,input{font-family:'Plus Jakarta Sans',sans-serif}
-button{cursor:pointer}
-button:disabled{cursor:not-allowed}
-:focus-visible{outline:3px solid #7dff2e;outline-offset:3px}
-@keyframes idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-@keyframes drift{0%,100%{transform:translateX(0)}50%{transform:translateX(36px)}}
-@keyframes glow{0%,100%{box-shadow:0 7px 0 #3fa312,0 16px 40px rgba(125,255,46,.32)}50%{box-shadow:0 7px 0 #3fa312,0 16px 58px rgba(125,255,46,.55)}}
-@keyframes pop{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
-@keyframes load{0%{margin-left:-40%}100%{margin-left:100%}}
-.fig{animation:idle 3.4s ease-in-out infinite}
-.cl{animation:drift 30s ease-in-out infinite}
-.play{animation:glow 2.6s ease-in-out infinite}
-.mod{animation:pop .18s ease-out}
-.ld{animation:load 1.3s linear infinite}
-.pn{background:linear-gradient(180deg,#16264a,#101d38);border:1px solid #22385f;border-radius:20px;padding:16px;box-sizing:border-box}
-.lb{font-size:12px;font-weight:700;letter-spacing:.14em;color:#8497b3}
-.lg{display:grid;grid-template-columns:300px minmax(0,1fr) 300px;gap:20px;align-items:stretch;flex:1}
-.col{display:flex;flex-direction:column;gap:16px;justify-content:space-between;min-width:0}
-.tbar{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center}
-.sc{scrollbar-width:thin;scrollbar-color:#2f3f7a #101d38}
-.bn{display:flex}
-@media(max-width:1000px){.lg{grid-template-columns:1fr 1fr}.cm{grid-column:1/-1;order:-1}.tbar{grid-template-columns:1fr}.ttl{order:-1}}
-@media(max-width:700px){.lg{grid-template-columns:1fr}.pad{padding-bottom:96px!important}}
-.pad{padding-bottom:96px!important}
-.stg{touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none}
-.stg.dg{cursor:grabbing}
-.persp{position:absolute;inset:0;perspective:900px}
-.rot{position:absolute;inset:0;transform-style:preserve-3d;transform-origin:120px 170px;transform:rotateX(-5deg) rotateY(-28deg);--px:conic-gradient(transparent 25%,rgba(0,0,0,.10) 0 50%,transparent 0 75%,rgba(255,255,255,.10) 0)}
-.cb{position:absolute;transform-style:preserve-3d}
-.fc{position:absolute}
-.ov{position:absolute;display:block}
-.fr{background-image:var(--px);background-size:8px 8px}
-.bk{background-image:linear-gradient(rgba(0,0,0,.38),rgba(0,0,0,.38)),var(--px);background-size:100% 100%,8px 8px}
-.rt{background-image:linear-gradient(rgba(0,0,0,.26),rgba(0,0,0,.26)),var(--px);background-size:100% 100%,8px 8px}
-.lf{background-image:linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)),var(--px);background-size:100% 100%,8px 8px}
-.tp{background-image:linear-gradient(rgba(255,255,255,.16),rgba(255,255,255,.16)),var(--px);background-size:100% 100%,8px 8px}
-@media(prefers-reduced-motion:reduce){.fig,.cl,.play,.mod,.ld{animation:none}}
-</style>
-</helmet>
-<div class="pad" style="min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;box-sizing:border-box;padding:18px 16px 40px;background:radial-gradient(ellipse at 50% -10%,rgba(125,255,46,.08),rgba(125,255,46,0) 55%),#0a1428;color:#eaf2ff;font-family:'Plus Jakarta Sans',sans-serif">
-<div style="width:100%;max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:18px;flex:1">
+<canvas id="gl"></canvas>
+<div id="ui">
+ <div class="ab pn" id="prof" role="button" tabindex="0" data-act="prof">
+  <div id="ava"></div>
+  <div id="pname" class="tx">FajarGG</div>
+  <div id="flag"><svg viewBox="0 0 3 2" width="100%" height="100%" preserveAspectRatio="none"><rect width="3" height="1" fill="#e8202a"/><rect y="1" width="3" height="1" fill="#fff"/></svg></div>
+  <svg id="crown" viewBox="0 0 24 24"><path d="M3 19 2 7l5 4 5-7 5 7 5-4-1 12z" fill="#ffd24d" stroke="#d98a10" stroke-width="1.2" stroke-linejoin="round"/><circle cx="12" cy="13" r="1.5" fill="#a86bff"/><rect x="3" y="19" width="18" height="2.5" rx="1" fill="#8a4ae0"/></svg>
+  <div id="lv" class="tx">Lv. 26</div>
+  <div id="xp"><i style="width:41.7%"></i><span>1.250 / 3.000</span></div>
+ </div>
 
-<header class="tbar">
-<div class="pn" style="display:flex;align-items:center;gap:12px;padding:8px 16px 8px 10px;justify-self:start;max-width:100%">
-<div style="position:relative;flex:none;padding-bottom:8px"><svg width="52" height="52" sc-camel-view-box="12 6 96 100" role="img" aria-label="Avatar NusaBlocker" style="border-radius:12px;background:#101d38;display:block"><rect x="16" y="58" width="18" height="34" fill="#3b92ee"></rect><rect x="86" y="58" width="18" height="34" fill="#3b92ee"></rect><rect x="34" y="58" width="52" height="48" fill="#3b92ee"></rect><rect x="40" y="16" width="40" height="42" fill="#f5d6b8"></rect><rect x="40" y="16" width="40" height="11" fill="#4a2e1a"></rect><rect x="47" y="35" width="8" height="6" fill="#fff"></rect><rect x="50" y="35" width="5" height="6" fill="#1b2236"></rect><rect x="65" y="35" width="8" height="6" fill="#fff"></rect><rect x="68" y="35" width="5" height="6" fill="#1b2236"></rect></svg><span style="position:absolute;left:50%;bottom:0;transform:translateX(-50%);background:#ffe27a;color:#3a2a00;font-family:'Lilita One',sans-serif;font-size:11px;border-radius:6px;padding:1px 6px;white-space:nowrap">LV. 28</span></div>
-<div style="min-width:150px"><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'Lilita One',sans-serif;font-size:20px;line-height:1">NusaBlocker</span><span style="font-size:11px;font-weight:700;color:#7dff2e;border:1px solid #7dff2e;border-radius:6px;padding:1px 7px">VIP</span></div>
-<div style="height:8px;border-radius:99px;background:#101d38;border:1px solid #22385f;margin-top:8px;overflow:hidden"><div style="width:72%;height:100%;border-radius:99px;background:linear-gradient(90deg,#58b02d,#7dff2e)"></div></div></div>
-</div>
-<div class="ttl" style="text-align:center"><div style="color:#7dff2e;font-weight:700;font-size:12px;letter-spacing:.2em">LOBI UTAMA</div><h1 style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:clamp(28px,4vw,42px);line-height:1;margin:4px 0 0">Ular Tangga <span style="color:#7dff2e">Blok</span></h1></div>
-<div style="display:flex;align-items:center;gap:10px;justify-self:end;flex-wrap:wrap">
-<div class="pn" style="display:flex;align-items:center;gap:8px;padding:8px 14px 8px 10px;border-radius:14px"><svg width="24" height="24" sc-camel-view-box="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#f2b705" stroke="#c48f00" stroke-width="2"></circle><rect x="8" y="8" width="8" height="8" fill="#ffe27a"></rect></svg><span style="font-family:'Lilita One',sans-serif;font-size:21px;color:#ffe27a;line-height:1"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Koin </span>42.850</span></div>
-<div class="pn" style="display:flex;align-items:center;gap:8px;padding:8px 14px 8px 10px;border-radius:14px"><svg width="24" height="24" sc-camel-view-box="0 0 24 24" aria-hidden="true"><polygon points="12,2 22,12 12,22 2,12" fill="#2fe0b5" stroke="#1b8672" stroke-width="2"></polygon><polygon points="12,6 18,12 12,18 6,12" fill="#9ff2e0"></polygon></svg><span style="font-family:'Lilita One',sans-serif;font-size:21px;color:#9ff2e0;line-height:1"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Permata </span>1.240</span></div>
-<button type="button" aria-label="Cara bermain" class="pn" sc-camel-on-click="{{openHow}}" style="height:48px;padding:0 16px 0 12px;border-radius:14px;color:#eaf2ff;display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.5 9.5a2.5 2.5 0 015 0c0 1.7-2.5 2-2.5 4M12 17.5v.01"></path></svg>Cara Bermain</button>
-<button type="button" aria-label="Suara" class="pn" style="width:48px;height:48px;padding:0;border-radius:14px;color:#eaf2ff;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 010 8"></path></svg></button>
-</div>
-</header>
+ <div class="ab cur" id="gem"><svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z" fill="#4cc9ff" stroke="#1d7fd0" stroke-width="1.2"/><path d="M2 9h20M9 3l-2 6 5 12 5-12-2-6" fill="none" stroke="#bff0ff" stroke-width=".8"/></svg><span id="gemV"></span><button class="plus" data-act="buygem" aria-label="Tambah gem"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div>
+ <div class="ab cur" id="coin"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffc83a" stroke="#c98a0c" stroke-width="1.5"/><circle cx="12" cy="12" r="7.5" fill="none" stroke="#ffe27a" stroke-width="1"/><text x="12" y="17" font-size="13" font-weight="900" text-anchor="middle" fill="#c98a0c">$</text></svg><span id="coinV"></span><button class="plus" data-act="buycoin" aria-label="Tambah coin"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div>
+ <button class="ab pn sm" id="mail" data-act="mail" aria-label="Pesan"><svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="#fff"/><path d="m3 7 9 7 9-7" fill="none" stroke="#3a8ff0" stroke-width="2" stroke-linejoin="round"/></svg><i class="dot"></i></button>
+ <button class="ab pn sm" id="gear" data-act="gear" aria-label="Pengaturan"><svg viewBox="0 0 24 24"><path fill="#fff" d="M19.4 13c.1-.3.1-.7.1-1s0-.7-.1-1l2.1-1.6-2-3.5-2.5 1a7 7 0 0 0-1.700-1L15 3.200h-4L10.600 6a7 7 0 0 0-1.700 1l-2.500-1-2 3.500L6.600 11c-.1.300-.1.700-.1 1s0 .7.100 1l-2.100 1.600 2 3.500 2.500-1c.5.400 1.100.7 1.700 1l.4 2.800h4l.4-2.800c.6-.3 1.200-.6 1.700-1l2.500 1 2-3.500zM12 15.500a3.500 3.500 0 1 1 0-7 3.500 3.500 0 0 1 0 7Z"/></svg></button>
 
-<div class="lg">
-<div class="col">
-<div style="display:flex;flex-direction:column;gap:16px">
-<section aria-label="Tema papan" class="pn">
-<div class="lb" style="margin-bottom:10px">TEMA PAPAN</div>
-<div role="group" aria-label="Tema papan" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px"><sc-for list="{{themes}}" as="t" hint-placeholder-count="6"><button type="button" disabled="{{t.locked}}" aria-pressed="{{t.on}}" sc-camel-on-click="{{t.pick}}" style="min-height:46px;display:flex;align-items:center;gap:8px;border-radius:12px;padding:0 8px;font-weight:700;font-size:13px;text-align:left;color:#eaf2ff;{{t.style}}"><span style="flex:none;width:22px;height:22px;border-radius:6px;border:2px solid #101d38;background:{{t.sw}};opacity:{{t.op}}"></span><span style="flex:1;min-width:0">{{t.name}}</span><sc-if value="{{t.locked}}" hint-placeholder-val="{{false}}"><svg width="12" height="12" sc-camel-view-box="0 0 24 24" fill="none" stroke="#ffb3b3" stroke-width="3" stroke-linecap="round" role="img" aria-label="Terkunci"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg></sc-if></button></sc-for></div>
-</section>
-<section aria-label="Skin dadu" class="pn">
-<div class="lb" style="margin-bottom:10px">SKIN DADU</div>
-<div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;background:#101d38;border:1px solid #22385f;border-radius:14px;padding:8px 14px 8px 8px"><button type="button" id="diceBtn" aria-label="Kocok dadu pratinjau" style="flex:none;position:relative;width:76px;height:76px;padding:0;border:0;background:transparent;perspective:420px"><span style="position:absolute;left:12px;top:12px;width:52px;height:52px;transform-style:preserve-3d;transform:rotateX(-24deg) rotateY(-30deg)"><span id="dicePrev" style="position:absolute;inset:0;transform-style:preserve-3d"><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{pv.edge}};background:{{pv.f1}};transform:translateZ(26px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{pv.edge}};background:{{pv.f6}};transform:rotateY(180deg) translateZ(26px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{pv.edge}};background:{{pv.f2}};transform:rotateY(90deg) translateZ(26px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{pv.edge}};background:{{pv.f5}};transform:rotateY(-90deg) translateZ(26px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{pv.edge}};background:{{pv.f3}};transform:rotateX(90deg) translateZ(26px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{pv.edge}};background:{{pv.f4}};transform:rotateX(-90deg) translateZ(26px)"></span></span></span></button><div style="min-width:0;flex:1"><div style="font-family:'Lilita One',sans-serif;font-size:19px;line-height:1.1">{{pv.name}}</div><div id="diceMsg" aria-live="polite" style="font-size:12px;color:#aebdd3;margin-top:3px"></div></div><b id="diceNum" style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:30px;color:#ffe27a;min-width:24px;text-align:right"></b></div>
-<div role="group" aria-label="Skin dadu" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px"><sc-for list="{{dices}}" as="d" hint-placeholder-count="6"><button type="button" class="dskin" disabled="{{d.locked}}" aria-pressed="{{d.on}}" sc-camel-on-click="{{d.pick}}" style="min-height:46px;display:flex;align-items:center;gap:8px;border-radius:12px;padding:0 8px;font-weight:700;font-size:13px;text-align:left;color:#eaf2ff;{{d.style}}"><span aria-hidden="true" style="flex:none;position:relative;width:34px;height:34px;perspective:260px;opacity:{{d.op}}"><span style="position:absolute;left:5px;top:5px;width:24px;height:24px;transform-style:preserve-3d;transform:rotateX(-28deg) rotateY(-38deg)"><span style="position:absolute;inset:0;box-sizing:border-box;border:1.5px solid {{d.edge}};background:{{d.f1}};transform:translateZ(12px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:1.5px solid {{d.edge}};background:{{d.f2}};transform:rotateY(90deg) translateZ(12px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:1.5px solid {{d.edge}};background:{{d.f3}};transform:rotateX(90deg) translateZ(12px)"></span></span></span><span style="flex:1;min-width:0">{{d.name}}</span><sc-if value="{{d.locked}}" hint-placeholder-val="{{false}}"><svg width="12" height="12" sc-camel-view-box="0 0 24 24" fill="none" stroke="#ffb3b3" stroke-width="3" stroke-linecap="round" role="img" aria-label="Terkunci"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg></sc-if></button></sc-for></div>
-</section>
-</div>
-<section aria-label="Penawaran hari ini" class="pn" style="border-color:rgba(255,226,122,.55);background:linear-gradient(180deg,#1b2f52,#0b1a2e);box-shadow:0 14px 36px rgba(242,183,5,.14)">
-<div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font-family:'Lilita One',sans-serif;font-size:12px;letter-spacing:.06em;padding:4px 9px;border-radius:7px;background:#ffe27a;color:#3a2a00">PENAWARAN HARI INI</span><span style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:#ffe27a"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>14:22:05</span></div>
-<div style="display:flex;align-items:center;gap:12px;margin:12px 0">
-<span style="flex:none;width:64px;height:64px;border-radius:14px;background:radial-gradient(circle,rgba(242,183,5,.3),rgba(0,0,0,0) 70%),#101d38;border:1.5px solid #f2b705;display:flex;align-items:center;justify-content:center"><svg width="46" height="46" sc-camel-view-box="-28 -4 56 56" aria-hidden="true"><polygon points="0,0 24,12 0,24 -24,12" fill="#fff3b0"></polygon><polygon points="-24,12 0,24 0,48 -24,36" fill="#ffe27a"></polygon><polygon points="0,24 24,12 24,36 0,48" fill="#f2b705"></polygon><path d="M-20 12l20 10 20-10v5l-20 10-20-10z" fill="#0b1a2e" fill-opacity=".85"></path></svg></span>
-<div style="min-width:0"><div style="font-family:'Lilita One',sans-serif;font-size:21px;line-height:1.1">Mahkota Naga Emas</div><div style="font-size:12px;color:#b9c9e4;margin-top:2px">Aksesori Legendary</div></div></div>
-<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px"><svg width="20" height="20" sc-camel-view-box="0 0 24 24" aria-hidden="true" style="align-self:center"><circle cx="12" cy="12" r="10" fill="#f2b705" stroke="#c48f00" stroke-width="2"></circle><rect x="8" y="8" width="8" height="8" fill="#ffe27a"></rect></svg><b style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:24px;color:#ffe27a">2.500</b><s style="font-size:13px;color:#8497b3">4.000</s></div>
-<a href="shop.html" style="display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:12px;background:linear-gradient(180deg,#ffb020,#e07a10);color:#2a1700;font-family:'Lilita One',sans-serif;font-size:20px;box-shadow:0 4px 0 #8a4a08">Beli Sekarang</a>
-</section>
+ <button class="ab" id="event" data-act="event"><svg class="gf" viewBox="0 0 48 48"><rect x="6" y="21" width="36" height="23" rx="3" fill="#8a4ae0"/><rect x="4" y="14" width="40" height="9" rx="3" fill="#a96bff"/><rect x="21" y="14" width="6" height="30" fill="#ffd24d"/><path d="M24 14C13 14 13 2 20 4c3 1 4 10 4 10Zm0 0c11 0 11-12 4-10-3 1-4 10-4 10Z" fill="#ffd24d" stroke="#e8a010" stroke-width="1.5"/></svg><b class="tx">Event Spesial</b><small>Login dan dapatkan hadiah menarik!</small><svg class="ch" viewBox="0 0 14 24"><path d="m3 3 9 9-9 9" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+
+ <button class="ab pn mn" style="top:11rem" data-act="inv"><svg viewBox="0 0 48 48"><path d="M16 12c0-6 16-6 16 0" fill="none" stroke="#e08a10" stroke-width="4"/><rect x="2" y="22" width="6" height="14" rx="3" fill="#e69a18"/><rect x="40" y="22" width="6" height="14" rx="3" fill="#e69a18"/><rect x="8" y="10" width="32" height="34" rx="9" fill="#ffc83a" stroke="#d98a10" stroke-width="2"/><rect x="14" y="26" width="20" height="12" rx="4" fill="#ffdf6a" stroke="#d98a10" stroke-width="2"/><rect x="18" y="30" width="12" height="3" rx="1.5" fill="#d98a10"/></svg><span class="tx">Inventory</span><i class="dot" style="right:-.5rem;top:-.5rem"></i></button>
+ <button class="ab pn mn" style="top:16.8rem" data-act="lead"><svg viewBox="0 0 48 48"><path d="M12 6h24v14a12 12 0 0 1-24 0z" fill="#ffd24d" stroke="#d98a10" stroke-width="2"/><path d="M12 10H5c0 9 3 13 8 14M36 10h7c0 9-3 13-8 14" fill="none" stroke="#e8a010" stroke-width="3" stroke-linecap="round"/><rect x="21" y="30" width="6" height="8" fill="#e8a010"/><rect x="14" y="38" width="20" height="6" rx="2" fill="#ffc83a" stroke="#d98a10" stroke-width="2"/><path d="m24 11 2.500 5 5.500.8-4 3.900 1 5.500-5-2.600-5 2.600 1-5.500-4-3.900 5.500-.8z" fill="#fff4b0"/></svg><span class="tx">Leaderboard</span></button>
+ <button class="ab pn mn" style="top:22.6rem" data-act="prof"><svg viewBox="0 0 48 48"><circle cx="24" cy="15" r="9" fill="#fff"/><path d="M6 43c0-11 8-17 18-17s18 6 18 17z" fill="#fff"/></svg><span class="tx">Profil</span></button>
+
+ <button class="ab pn sq" style="left:2.5rem;top:33.7rem;width:11.4rem;height:8.1rem" data-act="inv"><svg viewBox="0 0 48 48"><path d="M24 4 41 13v20L24 44 7 33V13z" fill="#fff" stroke="#9cc8ff" stroke-width="2" stroke-linejoin="round"/><path d="M7 13l17 9 17-9M24 22v22" fill="none" stroke="#bcd9ff" stroke-width="2"/><circle cx="24" cy="12" r="2.2" fill="#2f7fe8"/><circle cx="16" cy="21" r="2.2" fill="#2f7fe8"/><circle cx="32" cy="21" r="2.2" fill="#2f7fe8"/><circle cx="16" cy="32" r="2.2" fill="#2f7fe8"/><circle cx="32" cy="32" r="2.2" fill="#2f7fe8"/><circle cx="24" cy="32" r="2.2" fill="#2f7fe8"/></svg><span class="tx">Dadu</span></button>
+ <button class="ab pn sq" style="left:2.5rem;top:46rem;width:9.3rem;height:7.4rem" data-act="misi"><svg viewBox="0 0 48 48"><circle cx="22" cy="26" r="17" fill="#fff"/><circle cx="22" cy="26" r="12" fill="#3a8ff0"/><circle cx="22" cy="26" r="7" fill="#fff"/><circle cx="22" cy="26" r="3" fill="#e8402c"/><path d="m22 26 18-18M34 6l.5 7.500L42 14" fill="none" stroke="#ffd24d" stroke-width="3.500" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="tx">Misi</span><i class="dot"></i></button>
+ <button class="ab pn sq" style="left:12.5rem;top:46rem;width:9.7rem;height:7.4rem" data-act="hadiah"><svg viewBox="0 0 48 48"><rect x="6" y="22" width="36" height="22" rx="3" fill="#fff"/><rect x="4" y="14" width="40" height="9" rx="3" fill="#fff"/><rect x="21" y="14" width="6" height="30" fill="#9cc8ff"/><path d="M24 14C13 14 13 2 20 4c3 1 4 10 4 10Zm0 0c11 0 11-12 4-10-3 1-4 10-4 10Z" fill="#fff" stroke="#9cc8ff" stroke-width="1.500"/></svg><span class="tx">Hadiah</span><i class="dot"></i></button>
+
+ <button class="ab pn sq" style="right:2.1rem;top:33rem;width:11.3rem;height:8.3rem" data-act="toko"><svg viewBox="0 0 48 48"><path d="M3 7h7l6 24h24l4-17H13" fill="#fff" stroke="#fff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><path d="M17 17h22M18 23h20M23 14v14M30 14v14" stroke="#3a8ff0" stroke-width="2"/><circle cx="19" cy="39" r="3.500" fill="#fff"/><circle cx="35" cy="39" r="3.500" fill="#fff"/></svg><span class="tx">Toko</span></button>
+ <button class="ab pn sq" style="left:73.7rem;top:46rem;width:8.7rem;height:7.4rem" data-act="teman"><svg viewBox="0 0 48 48"><circle cx="31" cy="14" r="7" fill="#d6e8ff"/><path d="M20 38c0-9 5-14 11-14s11 5 11 14z" fill="#d6e8ff"/><circle cx="17" cy="16" r="8" fill="#fff"/><path d="M2 42c0-10 6-16 15-16s15 6 15 16z" fill="#fff"/></svg><span class="tx">Teman</span><i class="dot"></i></button>
+
+ <button class="ab" id="free" data-act="free"><svg viewBox="0 0 48 48"><rect x="6" y="22" width="36" height="22" rx="3" fill="#ff9a1f"/><rect x="4" y="14" width="40" height="9" rx="3" fill="#ffc83a"/><rect x="21" y="14" width="6" height="30" fill="#4aa8ff"/><path d="M24 14C13 14 13 2 20 4c3 1 4 10 4 10Zm0 0c11 0 11-12 4-10-3 1-4 10-4 10Z" fill="#4aa8ff" stroke="#1f6fe0" stroke-width="1.500"/></svg><div><b>Hadiah Gratis</b><span><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8.500" fill="none" stroke="#fff" stroke-width="3"/><path d="M12 8v5l3 2M9 2h6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg><em id="ft" style="font-style:normal">23:45:12</em></span></div></button>
+
+ <button class="ab" id="play" aria-label="Mulai, pilih mode">
+  <span class="pa" id="pl" role="button" aria-label="Mode sebelumnya"><svg viewBox="0 0 24 32"><path d="m17 4-11 12 11 12" fill="none" stroke="#fff" stroke-width="4.500" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  <svg class="gp" viewBox="0 0 64 48"><path d="M14 10h36c8 0 12 8 14 22 1 8-4 12-9 9-4-3-6-8-10-8H19c-4 0-6 5-10 8-5 3-10-1-9-9C2 18 6 10 14 10Z" fill="#fff" stroke="#9cc8ff" stroke-width="2"/><path d="M19 17v12M13 23h12" stroke="#2f7fe8" stroke-width="4.500" stroke-linecap="round"/><circle cx="44" cy="19" r="3" fill="#2f7fe8"/><circle cx="51" cy="25" r="3" fill="#2f7fe8"/><circle cx="37" cy="25" r="3" fill="#2f7fe8"/><circle cx="44" cy="31" r="3" fill="#2f7fe8"/></svg>
+  <span id="pt"><b>Mulai</b><small id="pm">Pilih Mode</small></span>
+  <span class="pa" id="pr" role="button" aria-label="Mode berikutnya"><svg viewBox="0 0 24 32"><path d="m7 4 11 12L7 28" fill="none" stroke="#fff" stroke-width="4.500" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+ </button>
 </div>
 
-<div class="cm" style="display:flex;flex-direction:column;gap:14px;min-width:0">
-<a href="skins.html" style="align-self:center;display:inline-flex;align-items:center;gap:10px;max-width:100%;box-sizing:border-box;padding:8px 18px;border-radius:999px;background:rgba(10,20,40,.9);border:1.5px solid rgba(255,226,122,.7);box-shadow:0 0 28px rgba(242,183,5,.2)"><span class="lb" style="color:#b9c9e4">SKIN AKTIF</span><b style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:19px">Ksatria Emas</b><span style="font-family:'Lilita One',sans-serif;font-size:11px;letter-spacing:.06em;padding:4px 8px;border-radius:7px;background:#ffe27a;color:#3a2a00">LEGENDARY</span></a>
+<div class="ov" id="modal"><div class="box" role="dialog" aria-modal="true"><button class="x" id="mx" aria-label="Tutup">✕</button><div id="mb"></div></div></div>
+<div id="toast"></div>
+<div id="rot"><div>Putar perangkat ke mode landscape untuk bermain.</div></div>
 
-<section aria-label="Pratinjau karakter" class="stg" sc-camel-tab-index="0" style="position:relative;overflow:hidden;flex:1;min-height:440px;border-radius:26px;border:1px solid #22385f;background:linear-gradient(180deg,#1a6fd6 0%,#6cb8f2 55%,#bfe6ff 100%);box-shadow:0 24px 60px rgba(0,0,0,.5)">
-<svg sc-camel-view-box="0 0 800 520" sc-camel-preserve-aspect-ratio="xMidYMax slice" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%">
-<rect x="610" y="70" width="60" height="60" fill="#fff3a8"></rect>
-<g class="cl" fill="#fff" opacity=".85"><rect x="90" y="90" width="90" height="22"></rect><rect x="116" y="68" width="48" height="22"></rect><rect x="460" y="150" width="110" height="22"></rect></g>
-<polygon points="0,420 0,300 80,300 80,270 180,270 180,310 280,310 280,280 360,280 360,330 460,330 460,290 560,290 560,260 680,260 680,310 800,310 800,420" fill="#2f7a3a" opacity=".85"></polygon>
-<polygon points="0,420 0,350 120,350 120,330 240,330 240,360 380,360 380,340 520,340 520,370 660,370 660,335 800,335 800,420" fill="#1f5a2a"></polygon>
-<g><rect x="70" y="340" width="16" height="70" fill="#5f3f25"></rect><rect x="40" y="300" width="76" height="26" fill="#2d7a21"></rect><rect x="52" y="274" width="52" height="26" fill="#3f9e2b"></rect></g>
-<g><rect x="700" y="350" width="16" height="64" fill="#5f3f25"></rect><rect x="670" y="312" width="76" height="26" fill="#2d7a21"></rect><rect x="682" y="288" width="52" height="26" fill="#3f9e2b"></rect></g>
-<rect y="416" width="800" height="104" fill="#2d7a21"></rect><rect y="416" width="800" height="14" fill="#6fd13a"></rect>
-</svg>
-<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 60%,rgba(255,248,190,.32),rgba(255,248,190,0) 55%),radial-gradient(ellipse at 50% 50%,rgba(0,0,0,0) 55%,rgba(3,12,6,.5) 100%)"></div>
-<div style="position:absolute;left:50%;bottom:62px;transform:translateX(-50%);width:min(330px,70%)">
-<div style="height:18px;background:#6fd13a;border-top:4px solid #9bec4f"></div>
-<div style="height:46px;background:#6b4a2b;position:relative"><div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.08) 50%,transparent 50%),linear-gradient(90deg,rgba(0,0,0,.10) 50%,transparent 50%);background-size:16px 16px"></div></div>
-<div style="height:24px;margin:0 30px;background:#5f3f25"></div>
-</div>
-<div role="img" aria-label="Karakter Ksatria Emas berdiri di platform rumput, bisa diputar dengan klik dan geser" style="position:absolute;left:50%;bottom:118px;width:240px;height:320px;margin-left:-120px;transform:scale(1.03);transform-origin:50% 100%;pointer-events:none"><div style="position:absolute;left:44px;top:294px;width:152px;height:20px;border-radius:50%;background:rgba(0,0,0,.3)"></div><div class="fig" style="position:absolute;inset:0"><div class="persp"><div class="rot" id="rot3d"><div class="cb" style="left:82px;top:120px;width:76px;height:150px;transform:translateZ(-21px)"><div class="fc fr" style="left:0;top:0;width:76px;height:150px;transform:translateZ(3px);background-color:#3b92ee"></div><div class="fc bk" style="left:0;top:0;width:76px;height:150px;transform:rotateY(180deg) translateZ(3px);background-color:#3b92ee"></div><div class="fc rt" style="left:35px;top:0;width:6px;height:150px;transform:rotateY(90deg) translateZ(38px);background-color:#3b92ee"></div><div class="fc lf" style="left:35px;top:0;width:6px;height:150px;transform:rotateY(-90deg) translateZ(38px);background-color:#3b92ee"></div><div class="fc tp" style="left:0;top:72px;width:76px;height:6px;transform:rotateX(90deg) translateZ(75px);background-color:#3b92ee"></div></div><div class="cb" style="left:92px;top:216px;width:27px;height:62px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:27px;height:62px;transform:translateZ(14px);background-color:#8a6a1a"></div><div class="fc bk" style="left:0;top:0;width:27px;height:62px;transform:rotateY(180deg) translateZ(14px);background-color:#8a6a1a"></div><div class="fc rt" style="left:-0.5px;top:0;width:28px;height:62px;transform:rotateY(90deg) translateZ(13.5px);background-color:#8a6a1a"></div><div class="fc lf" style="left:-0.5px;top:0;width:28px;height:62px;transform:rotateY(-90deg) translateZ(13.5px);background-color:#8a6a1a"></div><div class="fc tp" style="left:0;top:17px;width:27px;height:28px;transform:rotateX(90deg) translateZ(31px);background-color:#8a6a1a"></div></div><div class="cb" style="left:92px;top:278px;width:27px;height:18px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:27px;height:18px;transform:translateZ(14px);background-color:#5f3f25"></div><div class="fc bk" style="left:0;top:0;width:27px;height:18px;transform:rotateY(180deg) translateZ(14px);background-color:#5f3f25"></div><div class="fc rt" style="left:-0.5px;top:0;width:28px;height:18px;transform:rotateY(90deg) translateZ(13.5px);background-color:#5f3f25"></div><div class="fc lf" style="left:-0.5px;top:0;width:28px;height:18px;transform:rotateY(-90deg) translateZ(13.5px);background-color:#5f3f25"></div><div class="fc tp" style="left:0;top:-5px;width:27px;height:28px;transform:rotateX(90deg) translateZ(9px);background-color:#5f3f25"></div></div><div class="cb" style="left:121px;top:216px;width:27px;height:62px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:27px;height:62px;transform:translateZ(14px);background-color:#8a6a1a"></div><div class="fc bk" style="left:0;top:0;width:27px;height:62px;transform:rotateY(180deg) translateZ(14px);background-color:#8a6a1a"></div><div class="fc rt" style="left:-0.5px;top:0;width:28px;height:62px;transform:rotateY(90deg) translateZ(13.5px);background-color:#8a6a1a"></div><div class="fc lf" style="left:-0.5px;top:0;width:28px;height:62px;transform:rotateY(-90deg) translateZ(13.5px);background-color:#8a6a1a"></div><div class="fc tp" style="left:0;top:17px;width:27px;height:28px;transform:rotateX(90deg) translateZ(31px);background-color:#8a6a1a"></div></div><div class="cb" style="left:121px;top:278px;width:27px;height:18px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:27px;height:18px;transform:translateZ(14px);background-color:#5f3f25"></div><div class="fc bk" style="left:0;top:0;width:27px;height:18px;transform:rotateY(180deg) translateZ(14px);background-color:#5f3f25"></div><div class="fc rt" style="left:-0.5px;top:0;width:28px;height:18px;transform:rotateY(90deg) translateZ(13.5px);background-color:#5f3f25"></div><div class="fc lf" style="left:-0.5px;top:0;width:28px;height:18px;transform:rotateY(-90deg) translateZ(13.5px);background-color:#5f3f25"></div><div class="fc tp" style="left:0;top:-5px;width:27px;height:28px;transform:rotateX(90deg) translateZ(9px);background-color:#5f3f25"></div></div><div class="cb" style="left:88px;top:120px;width:64px;height:96px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:64px;height:96px;transform:translateZ(17px);background-color:#f2b705"><span class="ov" style="left:0px;top:76px;width:64px;height:9px;background:#3a2a1a"></span><span class="ov" style="left:25px;top:75px;width:14px;height:11px;background:#fff3b0"></span></div><div class="fc bk" style="left:0;top:0;width:64px;height:96px;transform:rotateY(180deg) translateZ(17px);background-color:#f2b705"><span class="ov" style="left:0px;top:76px;width:64px;height:9px;background:#3a2a1a"></span></div><div class="fc rt" style="left:15px;top:0;width:34px;height:96px;transform:rotateY(90deg) translateZ(32px);background-color:#f2b705"></div><div class="fc lf" style="left:15px;top:0;width:34px;height:96px;transform:rotateY(-90deg) translateZ(32px);background-color:#f2b705"></div><div class="fc tp" style="left:0;top:31px;width:64px;height:34px;transform:rotateX(90deg) translateZ(48px);background-color:#f2b705"></div></div><div class="cb" style="left:56px;top:116px;width:32px;height:20px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:32px;height:20px;transform:translateZ(17px);background-color:#ffe27a"></div><div class="fc bk" style="left:0;top:0;width:32px;height:20px;transform:rotateY(180deg) translateZ(17px);background-color:#ffe27a"></div><div class="fc rt" style="left:-1px;top:0;width:34px;height:20px;transform:rotateY(90deg) translateZ(16px);background-color:#ffe27a"></div><div class="fc lf" style="left:-1px;top:0;width:34px;height:20px;transform:rotateY(-90deg) translateZ(16px);background-color:#ffe27a"></div><div class="fc tp" style="left:0;top:-7px;width:32px;height:34px;transform:rotateX(90deg) translateZ(10px);background-color:#ffe27a"></div></div><div class="cb" style="left:152px;top:116px;width:32px;height:20px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:32px;height:20px;transform:translateZ(17px);background-color:#ffe27a"></div><div class="fc bk" style="left:0;top:0;width:32px;height:20px;transform:rotateY(180deg) translateZ(17px);background-color:#ffe27a"></div><div class="fc rt" style="left:-1px;top:0;width:34px;height:20px;transform:rotateY(90deg) translateZ(16px);background-color:#ffe27a"></div><div class="fc lf" style="left:-1px;top:0;width:34px;height:20px;transform:rotateY(-90deg) translateZ(16px);background-color:#ffe27a"></div><div class="fc tp" style="left:0;top:-7px;width:32px;height:34px;transform:rotateX(90deg) translateZ(10px);background-color:#ffe27a"></div></div><div class="cb" style="left:60px;top:136px;width:26px;height:42px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:26px;height:42px;transform:translateZ(13px);background-color:#f2b705"></div><div class="fc bk" style="left:0;top:0;width:26px;height:42px;transform:rotateY(180deg) translateZ(13px);background-color:#f2b705"></div><div class="fc rt" style="left:0px;top:0;width:26px;height:42px;transform:rotateY(90deg) translateZ(13px);background-color:#f2b705"></div><div class="fc lf" style="left:0px;top:0;width:26px;height:42px;transform:rotateY(-90deg) translateZ(13px);background-color:#f2b705"></div><div class="fc tp" style="left:0;top:8px;width:26px;height:26px;transform:rotateX(90deg) translateZ(21px);background-color:#f2b705"></div></div><div class="cb" style="left:60px;top:178px;width:26px;height:34px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:26px;height:34px;transform:translateZ(13px);background-color:#ffe27a"></div><div class="fc bk" style="left:0;top:0;width:26px;height:34px;transform:rotateY(180deg) translateZ(13px);background-color:#ffe27a"></div><div class="fc rt" style="left:0px;top:0;width:26px;height:34px;transform:rotateY(90deg) translateZ(13px);background-color:#ffe27a"></div><div class="fc lf" style="left:0px;top:0;width:26px;height:34px;transform:rotateY(-90deg) translateZ(13px);background-color:#ffe27a"></div><div class="fc tp" style="left:0;top:4px;width:26px;height:26px;transform:rotateX(90deg) translateZ(17px);background-color:#ffe27a"></div></div><div class="cb" style="left:154px;top:136px;width:26px;height:42px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:26px;height:42px;transform:translateZ(13px);background-color:#f2b705"></div><div class="fc bk" style="left:0;top:0;width:26px;height:42px;transform:rotateY(180deg) translateZ(13px);background-color:#f2b705"></div><div class="fc rt" style="left:0px;top:0;width:26px;height:42px;transform:rotateY(90deg) translateZ(13px);background-color:#f2b705"></div><div class="fc lf" style="left:0px;top:0;width:26px;height:42px;transform:rotateY(-90deg) translateZ(13px);background-color:#f2b705"></div><div class="fc tp" style="left:0;top:8px;width:26px;height:26px;transform:rotateX(90deg) translateZ(21px);background-color:#f2b705"></div></div><div class="cb" style="left:154px;top:178px;width:26px;height:34px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:26px;height:34px;transform:translateZ(13px);background-color:#ffe27a"></div><div class="fc bk" style="left:0;top:0;width:26px;height:34px;transform:rotateY(180deg) translateZ(13px);background-color:#ffe27a"></div><div class="fc rt" style="left:0px;top:0;width:26px;height:34px;transform:rotateY(90deg) translateZ(13px);background-color:#ffe27a"></div><div class="fc lf" style="left:0px;top:0;width:26px;height:34px;transform:rotateY(-90deg) translateZ(13px);background-color:#ffe27a"></div><div class="fc tp" style="left:0;top:4px;width:26px;height:26px;transform:rotateX(90deg) translateZ(17px);background-color:#ffe27a"></div></div><div class="cb" style="left:92px;top:52px;width:56px;height:62px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:56px;height:62px;transform:translateZ(28px);background-color:#f2c9a0"><span class="ov" style="left:11px;top:30px;width:11px;height:9px;background:#fff"></span><span class="ov" style="left:15px;top:31px;width:6px;height:8px;background:#1b2236"></span><span class="ov" style="left:34px;top:30px;width:11px;height:9px;background:#fff"></span><span class="ov" style="left:38px;top:31px;width:6px;height:8px;background:#1b2236"></span><span class="ov" style="left:19px;top:47px;width:18px;height:4px;background:#8a4b3c"></span></div><div class="fc bk" style="left:0;top:0;width:56px;height:62px;transform:rotateY(180deg) translateZ(28px);background-color:#f2c9a0"><span class="ov" style="left:0px;top:16px;width:56px;height:26px;background:#4a2e1a"></span></div><div class="fc rt" style="left:0px;top:0;width:56px;height:62px;transform:rotateY(90deg) translateZ(28px);background-color:#f2c9a0"></div><div class="fc lf" style="left:0px;top:0;width:56px;height:62px;transform:rotateY(-90deg) translateZ(28px);background-color:#f2c9a0"></div><div class="fc tp" style="left:0;top:3px;width:56px;height:56px;transform:rotateX(90deg) translateZ(31px);background-color:#f2c9a0"></div></div><div class="cb" style="left:88px;top:40px;width:64px;height:22px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:64px;height:22px;transform:translateZ(32px);background-color:#ffe27a"></div><div class="fc bk" style="left:0;top:0;width:64px;height:22px;transform:rotateY(180deg) translateZ(32px);background-color:#ffe27a"></div><div class="fc rt" style="left:0px;top:0;width:64px;height:22px;transform:rotateY(90deg) translateZ(32px);background-color:#ffe27a"></div><div class="fc lf" style="left:0px;top:0;width:64px;height:22px;transform:rotateY(-90deg) translateZ(32px);background-color:#ffe27a"></div><div class="fc tp" style="left:0;top:-21px;width:64px;height:64px;transform:rotateX(90deg) translateZ(11px);background-color:#ffe27a"></div></div><div class="cb" style="left:88px;top:62px;width:64px;height:6px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:64px;height:6px;transform:translateZ(32px);background-color:#c48f00"></div><div class="fc bk" style="left:0;top:0;width:64px;height:6px;transform:rotateY(180deg) translateZ(32px);background-color:#c48f00"></div><div class="fc rt" style="left:0px;top:0;width:64px;height:6px;transform:rotateY(90deg) translateZ(32px);background-color:#c48f00"></div><div class="fc lf" style="left:0px;top:0;width:64px;height:6px;transform:rotateY(-90deg) translateZ(32px);background-color:#c48f00"></div><div class="fc tp" style="left:0;top:-29px;width:64px;height:64px;transform:rotateX(90deg) translateZ(3px);background-color:#c48f00"></div></div><div class="cb" style="left:88px;top:68px;width:10px;height:28px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:10px;height:28px;transform:translateZ(32px);background-color:#ffe27a"></div><div class="fc bk" style="left:0;top:0;width:10px;height:28px;transform:rotateY(180deg) translateZ(32px);background-color:#ffe27a"></div><div class="fc rt" style="left:-27px;top:0;width:64px;height:28px;transform:rotateY(90deg) translateZ(5px);background-color:#ffe27a"></div><div class="fc lf" style="left:-27px;top:0;width:64px;height:28px;transform:rotateY(-90deg) translateZ(5px);background-color:#ffe27a"></div><div class="fc tp" style="left:0;top:-18px;width:10px;height:64px;transform:rotateX(90deg) translateZ(14px);background-color:#ffe27a"></div></div><div class="cb" style="left:142px;top:68px;width:10px;height:28px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:10px;height:28px;transform:translateZ(32px);background-color:#ffe27a"></div><div class="fc bk" style="left:0;top:0;width:10px;height:28px;transform:rotateY(180deg) translateZ(32px);background-color:#ffe27a"></div><div class="fc rt" style="left:-27px;top:0;width:64px;height:28px;transform:rotateY(90deg) translateZ(5px);background-color:#ffe27a"></div><div class="fc lf" style="left:-27px;top:0;width:64px;height:28px;transform:rotateY(-90deg) translateZ(5px);background-color:#ffe27a"></div><div class="fc tp" style="left:0;top:-18px;width:10px;height:64px;transform:rotateX(90deg) translateZ(14px);background-color:#ffe27a"></div></div><div class="cb" style="left:114px;top:20px;width:12px;height:20px;transform:translateZ(0px)"><div class="fc fr" style="left:0;top:0;width:12px;height:20px;transform:translateZ(18px);background-color:#e24b4b"></div><div class="fc bk" style="left:0;top:0;width:12px;height:20px;transform:rotateY(180deg) translateZ(18px);background-color:#e24b4b"></div><div class="fc rt" style="left:-12px;top:0;width:36px;height:20px;transform:rotateY(90deg) translateZ(6px);background-color:#e24b4b"></div><div class="fc lf" style="left:-12px;top:0;width:36px;height:20px;transform:rotateY(-90deg) translateZ(6px);background-color:#e24b4b"></div><div class="fc tp" style="left:0;top:-8px;width:12px;height:36px;transform:rotateX(90deg) translateZ(10px);background-color:#e24b4b"></div></div></div></div></div></div>
-<span style="position:absolute;left:50%;bottom:14px;transform:translateX(-50%);pointer-events:none;white-space:nowrap;background:rgba(10,20,40,.85);border:1px solid #2f3f7a;border-radius:999px;padding:6px 14px;font-size:12px;color:#b9c9e4">Putar karakter: klik dan geser</span>
-</section>
-
-<button class="play" type="button" sc-camel-on-click="{{openPlay}}" style="display:flex;align-items:center;justify-content:center;gap:12px;min-height:68px;border:0;border-radius:18px;background:#7dff2e;color:#08140a;font-family:'Lilita One',sans-serif;font-size:32px;letter-spacing:.5px">Mulai Bermain<svg width="26" height="26" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
-</div>
-
-<div class="col">
-<section aria-label="Teman online" class="pn">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><span class="lb" style="color:#eaf2ff;font-size:13px">TEMAN ONLINE</span><span style="font-family:'Lilita One',sans-serif;font-size:13px;color:#7dff2e;background:rgba(125,255,46,.1);border-radius:7px;padding:3px 9px">3/12</span></div>
-<ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px">
-<sc-for list="{{friends}}" as="f" hint-placeholder-count="3"><li style="display:flex;align-items:center;gap:10px;min-height:38px"><span style="flex:none;width:10px;height:10px;border-radius:3px;background:{{f.dot}}"></span><span style="flex:1;min-width:0;font-family:'Lilita One',sans-serif;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{f.name}}</span>
-<sc-if value="{{f.invite}}" hint-placeholder-val="{{true}}"><button type="button" aria-label="Undang {{f.name}}" style="min-height:34px;border:1px solid #2f3f7a;border-radius:9px;background:#101d38;color:#7dff2e;font-weight:700;font-size:12px;letter-spacing:.06em;padding:0 12px">UNDANG</button></sc-if>
-<sc-if value="{{f.busy}}" hint-placeholder-val="{{false}}"><span style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#8497b3">DALAM GAME</span></sc-if></li></sc-for>
-</ul>
-</section>
-<section aria-label="Pass musim" class="pn" style="border-color:#2f3f7a;background:linear-gradient(180deg,#1a2f55,#101d38)">
-<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:'Lilita One',sans-serif;font-size:19px">Pass Musim 4</span><span style="font-family:'Lilita One',sans-serif;font-size:16px;color:#7dff2e">LV. 18</span></div>
-<div style="height:10px;border-radius:99px;background:#101d38;border:1px solid #2f3f7a;margin:12px 0 10px;overflow:hidden"><div style="width:62%;height:100%;border-radius:99px;background:linear-gradient(90deg,#58b02d,#7dff2e)"></div></div>
-<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#b9c9e4"><span>Hadiah berikutnya</span><b style="display:flex;align-items:center;gap:5px;color:#ffe27a"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#f2b705" stroke="#c48f00" stroke-width="2"></circle><rect x="8" y="8" width="8" height="8" fill="#ffe27a"></rect></svg>1.000 Koin</b></div>
-</section>
-<section aria-label="Obrolan global" class="pn">
-<div class="lb" style="color:#eaf2ff;margin-bottom:10px">OBROLAN GLOBAL</div>
-<div style="background:#101d38;border:1px solid #22385f;border-radius:14px;padding:10px 12px;font-size:13px;line-height:1.5;color:#c9d8f0;display:flex;flex-direction:column;gap:6px">
-<div><b style="color:#ffe27a">Bung_Tangga:</b> Ada yang mau mabar 4 player?</div>
-<div><b style="color:#7dd3fc">Garuda_Block:</b> Ksatria Emas keren banget skinnya</div></div>
-<label style="display:block;margin-top:10px"><input type="text" placeholder="Tulis pesan…" aria-label="Tulis pesan" style="width:100%;box-sizing:border-box;min-height:42px;background:#101d38;border:1px solid #22385f;border-radius:12px;color:#eaf2ff;font-size:14px;padding:0 14px"></label>
-</section>
-</div>
-</div>
-</div>
-
-<nav class="bn" aria-label="Navigasi utama" style="position:fixed;left:50%;transform:translateX(-50%);width:min(640px,calc(100% - 20px));box-sizing:border-box;bottom:10px;z-index:40;justify-content:space-around;gap:2px;background:rgba(10,20,40,.94);backdrop-filter:blur(10px);border:1px solid #2f3f7a;border-radius:22px;padding:6px;box-shadow:0 14px 40px rgba(0,0,0,.6)">
-<sc-for list="{{nav}}" as="n" hint-placeholder-count="5"><a href="{{n.href}}" aria-current="{{n.cur}}" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;{{n.style}}"><svg width="24" height="24" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.d}}"></path></svg>{{n.name}}</a></sc-for>
-</nav>
-
-<sc-if value="{{open}}" hint-placeholder-val="{{false}}">
-<div sc-camel-on-click="{{closeModal}}" style="position:fixed;inset:0;z-index:60;background:rgba(3,8,18,.82);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px">
-<div class="mod" role="dialog" aria-modal="true" aria-labelledby="mt" sc-camel-on-click="{{stop}}" style="width:min(680px,100%);max-height:calc(100% - 8px);box-sizing:border-box;display:flex;flex-direction:column;background:linear-gradient(180deg,#1b2f52,#0b1a2e);border:1px solid #2f3f7a;border-radius:26px;box-shadow:0 30px 90px rgba(0,0,0,.65);overflow:hidden">
-<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;border-bottom:1px solid #22385f">
-<div><div class="lb" style="color:#7dff2e">SIAP BERTANDING</div><h2 id="mt" style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:clamp(24px,4vw,32px);line-height:1;margin:4px 0 0">Atur Pertandingan</h2></div>
-<button type="button" sc-camel-on-click="{{closeModal}}" aria-label="Tutup" style="flex:none;width:44px;height:44px;border-radius:12px;border:1px solid #2f3f7a;background:#101d38;color:#eaf2ff;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
-</div>
-
-<sc-if value="{{setup}}" hint-placeholder-val="{{true}}">
-<div class="sc" style="overflow:auto;padding:20px 22px;display:flex;flex-direction:column;gap:18px">
-<div style="min-width:0;display:flex;flex-direction:column;gap:18px">
-<div><div class="lb" style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><i style="font-style:normal;background:#ffe27a;color:#30220a;border-radius:5px;padding:1px 7px;font-family:'Lilita One',sans-serif">1</i>MODE PERMAINAN</div>
-<div role="group" aria-label="Mode permainan" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px"><sc-for list="{{modes}}" as="m" hint-placeholder-count="4"><button type="button" aria-pressed="{{m.on}}" sc-camel-on-click="{{m.pick}}" style="min-height:48px;border-radius:12px;font-weight:700;font-size:14px;{{m.style}}">{{m.name}}</button></sc-for></div></div>
-<sc-if value="{{isRoom}}" hint-placeholder-val="{{false}}">
-<div style="background:#101d38;border:1px solid #22385f;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px">
-<div style="display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.5;color:#b9c9e4"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#ffe27a" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" style="flex:none"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg>Kamar private: hanya teman yang punya kode yang bisa bergabung.</div>
-<div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px"><span class="lb">KODE KAMAR</span><b style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:30px;letter-spacing:.22em;color:#ffe27a;line-height:1">{{room}}</b>
-<button type="button" sc-camel-on-click="{{copyRoom}}" style="min-height:40px;border:1px solid #2f3f7a;border-radius:10px;background:#0b1a2e;color:#7dff2e;font-weight:700;font-size:13px;padding:0 14px">{{copyLabel}}</button></div>
-<div><div class="lb" style="margin-bottom:6px">JUMLAH PEMAIN</div>
-<div role="group" aria-label="Jumlah pemain" style="display:flex;gap:6px;background:#0b1a2e;border:1px solid #22385f;border-radius:14px;padding:5px"><sc-for list="{{kps}}" as="c2" hint-placeholder-count="3"><button type="button" aria-pressed="{{c2.on}}" sc-camel-on-click="{{c2.pick}}" style="flex:1;min-height:44px;border:0;border-radius:10px;font-weight:700;font-size:14px;{{c2.style}}">{{c2.name}}</button></sc-for></div></div>
-</div></sc-if>
-<sc-if value="{{hasMode}}" hint-placeholder-val="{{true}}">
-<div><div class="lb" style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><i style="font-style:normal;background:#ffe27a;color:#30220a;border-radius:5px;padding:1px 7px;font-family:'Lilita One',sans-serif">2</i>PILIH SKIN</div>
-<div style="display:flex;flex-direction:column;gap:12px">
-<sc-for list="{{slots}}" as="sl" hint-placeholder-count="2"><div><div style="font-size:13px;font-weight:700;color:#b9c9e4;margin-bottom:6px">{{sl.label}}</div>
-<div class="sc" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px">
-<sc-for list="{{sl.skins}}" as="k" hint-placeholder-count="6"><button type="button" disabled="{{k.disabled}}" aria-pressed="{{k.on}}" aria-label="{{k.name}}" sc-camel-on-click="{{k.pick}}" style="flex:none;width:92px;position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 6px 8px;border-radius:14px;color:#eaf2ff;{{k.style}}"><svg width="44" height="44" sc-camel-view-box="0 0 40 40" aria-hidden="true" style="opacity:{{k.op}}"><rect x="4" y="4" width="32" height="32" style="fill:{{k.base}}"></rect><rect x="4" y="4" width="32" height="9" style="fill:{{k.top}}"></rect><rect x="9" y="17" width="9" height="6" style="fill:{{k.e}}"></rect><rect x="22" y="17" width="9" height="6" style="fill:{{k.e}}"></rect><rect x="12" y="17" width="5" height="6" style="fill:{{k.p}}"></rect><rect x="25" y="17" width="5" height="6" style="fill:{{k.p}}"></rect><rect x="14" y="28" width="12" height="3" style="fill:{{k.m}}"></rect></svg>
-<span style="font-family:'Lilita One',sans-serif;font-size:14px;line-height:1">{{k.name}}</span>
-<sc-if value="{{k.locked}}" hint-placeholder-val="{{false}}"><span style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:#ffb3b3"><svg width="10" height="10" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg>Terkunci</span></sc-if></button></sc-for>
-</div></div></sc-for>
-</div>
-<sc-if value="{{isCpu}}" hint-placeholder-val="{{false}}"><p style="margin:8px 0 0;font-size:13px;color:#aebdd3">Skin komputer diacak dari sisa skin.</p></sc-if>
-</div></sc-if>
-</div>
-
-</div>
-<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:16px 22px;border-top:1px solid #22385f;background:rgba(7,20,12,.6)">
-<a href="shop.html" style="display:inline-flex;align-items:center;min-height:48px;padding:0 20px;border:2px solid #2f3f7a;border-radius:14px;color:#b9c9e4;font-weight:700;font-size:14px">Buka item di Toko</a>
-<button type="button" sc-camel-on-click="{{start}}" disabled="{{cantStart}}" style="min-height:56px;border:0;border-radius:16px;padding:0 44px;font-family:'Lilita One',sans-serif;font-size:24px;{{startStyle}}">Mulai Main</button>
-</div>
-</sc-if>
-
-<sc-if value="{{started}}" hint-placeholder-val="{{false}}">
-<div style="padding:30px 22px 26px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center">
-<h3 style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:30px;margin:0;color:#7dff2e">Menyiapkan papan…</h3>
-<div style="width:min(420px,100%);height:10px;border-radius:99px;background:#101d38;border:1px solid #2f3f7a;overflow:hidden"><div class="ld" style="width:40%;height:100%;border-radius:99px;background:linear-gradient(90deg,#58b02d,#7dff2e)"></div></div>
-<dl style="margin:0;width:min(520px,100%);box-sizing:border-box;background:#101d38;border:1px solid #22385f;border-radius:16px;padding:6px 16px;font-size:14px;text-align:left">
-<div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #1b2f52"><dt style="color:#aebdd3">Mode</dt><dd style="margin:0;font-weight:700">{{sumMode}}</dd></div>
-<sc-if value="{{isRoom}}" hint-placeholder-val="{{false}}"><div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #1b2f52"><dt style="color:#aebdd3">Kode kamar</dt><dd style="margin:0;font-weight:700">{{room}}</dd></div></sc-if>
-<div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #1b2f52"><dt style="color:#aebdd3">Skin</dt><dd style="margin:0;font-weight:700;text-align:right">{{sumSkins}}</dd></div>
-<div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #1b2f52"><dt style="color:#aebdd3">Tema papan</dt><dd style="margin:0;font-weight:700">{{sumTheme}}</dd></div>
-<div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0"><dt style="color:#aebdd3">Skin dadu</dt><dd style="margin:0;font-weight:700">{{sumDice}}</dd></div></dl>
-<a href="{{sumHref}}" style="display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 44px;border-radius:14px;background:#7dff2e;color:#08140a;font-family:'Lilita One',sans-serif;font-size:20px;text-decoration:none;box-shadow:0 6px 0 #3fa312,0 14px 34px rgba(125,255,46,.3)">Mulai Main</a>
-<p style="margin:0;font-size:12px;color:#8497b3;word-break:break-all;max-width:520px">{{sumHref}}</p>
-<button type="button" sc-camel-on-click="{{closeModal}}" style="min-height:48px;border:2px solid #2f3f7a;border-radius:14px;background:transparent;color:#eaf2ff;font-weight:700;font-size:15px;padding:0 24px">Kembali ke lobi</button>
-</div>
-</sc-if>
-</div></div>
-</sc-if>
-<sc-if value="{{howOpen}}" hint-placeholder-val="{{false}}">
-<div sc-camel-on-click="{{closeHow}}" style="position:fixed;inset:0;z-index:60;background:rgba(3,8,18,.82);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px">
-<div class="mod" role="dialog" aria-modal="true" aria-labelledby="ht" sc-camel-on-click="{{stop}}" style="width:min(560px,100%);max-height:calc(100% - 8px);box-sizing:border-box;display:flex;flex-direction:column;background:linear-gradient(180deg,#1b2f52,#0b1a2e);border:1px solid #2f3f7a;border-radius:26px;box-shadow:0 30px 90px rgba(0,0,0,.65);overflow:hidden">
-<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;border-bottom:1px solid #22385f">
-<div><div class="lb" style="color:#7dff2e">PANDUAN</div><h2 id="ht" style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:clamp(24px,4vw,32px);line-height:1;margin:4px 0 0">Cara Bermain</h2></div>
-<button type="button" sc-camel-on-click="{{closeHow}}" aria-label="Tutup" style="flex:none;width:44px;height:44px;border-radius:12px;border:1px solid #2f3f7a;background:#101d38;color:#eaf2ff;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
-</div>
-<div class="sc" style="overflow:auto;padding:20px 22px">
-<ul style="margin:0;padding-left:20px;font-size:14px;line-height:1.6;color:#c9d8f0;display:flex;flex-direction:column;gap:10px">
-<li>Petak kuning adalah dasar tangga, berhenti di sini dan pionmu naik.</li>
-<li>Petak merah muda adalah kepala ular, berhenti di sini dan pionmu ditelan lalu keluar di ekornya.</li>
-<li>Peti memberi power-up acak: Pedang, Bulu, TNT, Apel Emas, Ramuan, dan Blok Rumput.</li>
-<li>Angka 6 memberi lemparan tambahan. Tiga kali 6 berturut-turut membuat giliranmu hangus.</li>
-<li>Petak 100 harus dicapai dengan angka pas, kelebihan angka membuat pionmu memantul mundur.</li>
-<li>Mob di papan memengaruhi posisimu, dan di petak 100 kamu melawan Ender Dragon.</li></ul>
-</div>
-<div style="display:flex;justify-content:flex-end;padding:16px 22px;border-top:1px solid #22385f;background:rgba(7,20,12,.6)">
-<button type="button" sc-camel-on-click="{{closeHow}}" style="min-height:48px;border:0;border-radius:14px;padding:0 32px;background:#7dff2e;color:#08140a;font-family:'Lilita One',sans-serif;font-size:20px;box-shadow:0 4px 0 #3fa312">Mengerti</button>
-</div>
-</div></div>
-</sc-if>
-</div>
-</x-dc>
-<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1000}}">
-class Component extends DCLogic {
-renderVals() {
-const st = this.state || {};
-const open = !!st.open, started = !!st.started, howOpen = !!st.howOpen, copied = !!st.copied;
-const mode = st.mode ?? null, picks = st.picks ?? [], theme = st.theme ?? 'minecraft', dice = st.dice ?? 'klasik', kp = st.kp ?? 2, room = st.room ?? '';
-const I = { lobi:'M3 11l9-7 9 7v9H3zM9 20v-6h6v6', inv:'M4 8l8-4 8 4v8l-8 4-8-4zM4 8l8 4 8-4M12 12v8', skin:'M12 3a4 4 0 100 8 4 4 0 000-8zM4 21c0-4 4-6 8-6s8 2 8 6', shop:'M5 8h14l-1 12H6zM9 8V6a3 3 0 016 0v2', rank:'M8 4h8v6a4 4 0 01-8 0zM8 6H4v2a3 3 0 003 3M16 6h4v2a3 3 0 01-3 3M12 14v4M8 20h8' };
-const nav = [['Lobi','',I.lobi,1],['Inventaris','inventory.html',I.inv],['Skin','skins.html',I.skin],['Toko','shop.html',I.shop],['Peringkat','leaderboard.html',I.rank]]
- .map(n => ({ name:n[0], href:n[1] || '#', d:n[2], cur:n[3] ? 'page' : 'false', style: n[3] ? 'background:#7dff2e;color:#08140a' : 'color:#b9c9e4' }));
-const friends = [
- { name:'Cyber_Ninja', dot:'#7dff2e', invite:true, busy:false },
- { name:'Penyihir_Hijau', dot:'#7dff2e', invite:true, busy:false },
- { name:'Raja_Dadu99', dot:'#f2b705', invite:false, busy:true }];
-const ON = 'background:#7dff2e;color:#08140a;border:2px solid #7dff2e;box-shadow:0 3px 0 #3fa312', OFF = 'background:#101d38;color:#eaf2ff;border:1px solid #22385f';
-const OFFB = 'background:transparent;color:#b9c9e4;border:0';
-// --- data dari lobby.html ---
-const DEFS = [
- { key:'steve', name:'Steve', own:true, base:'#c58c62', top:'#4a2e13', e:'#ffffff', p:'#3b4fd8', m:'#5a3820' },
- { key:'alex', name:'Alex', own:true, base:'#e8b48a', top:'#d4701c', e:'#ffffff', p:'#2f8f3f', m:'#b0563a' },
- { key:'creeper', name:'Creeper', own:true, base:'#5fb34a', top:'#3f8a35', e:'#0b0b0b', p:'#0b0b0b', m:'#0b0b0b' },
- { key:'zombie', name:'Zombie', own:true, base:'#5e9e4a', top:'#2f5f2a', e:'#ffffff', p:'#2a2a8a', m:'#1d3d18' },
- { key:'ender', name:'Enderman', own:false, base:'#141414', top:'#222222', e:'#e879f9', p:'#a21caf', m:'#141414' },
- { key:'skeleton', name:'Skeleton', own:false, base:'#e8e8e8', top:'#c4c4c4', e:'#222222', p:'#222222', m:'#8a8a8a' }];
-const THEMES = [['minecraft','Minecraft','#5FAE3E','#8A5B33',1],['rumput','Rumput','#78D957','#9A6A3B',1],['gurun','Gurun','#FFD98C','#D9763C',1],['salju','Salju','#F4FCFF','#54AEDB',0],['hutan','Hutan','#46C46E','#1F5F4D',0],['nether','Nether','#8A2B2B','#3A0D0D',0]];
-const DICE = [['klasik','Klasik','#ffffff','#1b2a3b','#1b2a3b',1],['tnt','TNT','#d63a2a','#ffffff','#4a0d07',1],['rumput','Rumput','#5fae3e','#1f4a12','#2c5a1c',1],['diamond','Diamond','#4aedd9','#0b4f4a','#0b4f4a',0],['emas','Emas','#ffd23f','#6b4a00','#6b4a00',1],['obsidian','Obsidian','#2a1747','#d3b4ff','#0d0618',0]];
-const MN = { cpu:'VS Komputer', '2':'2 Pemain', '3':'3 Pemain', '4':'4 Pemain', kamar:'Kamar Teman' };
-const PP = { 1:[[50,50]], 2:[[25,25],[75,75]], 3:[[25,25],[50,50],[75,75]], 4:[[25,25],[75,25],[25,75],[75,75]], 5:[[25,25],[75,25],[50,50],[25,75],[75,75]], 6:[[25,25],[75,25],[25,50],[75,50],[25,75],[75,75]] };
-const SH = { 1:'', 2:'rgba(0,0,0,.22)', 3:'rgba(255,255,255,.16)', 4:'rgba(0,0,0,.45)', 5:'rgba(0,0,0,.14)', 6:'rgba(0,0,0,.34)' };
-const faceBg = (r, n, rad) => (SH[n] ? 'linear-gradient('+SH[n]+','+SH[n]+'),' : '') + PP[n].map(c => 'radial-gradient(circle at '+c[0]+'% '+c[1]+'%,'+r[3]+' 0 '+rad+'px,transparent '+(rad+.8)+'px)').join(',') + ',' + r[2];
-const count = (m, n) => m==='cpu' ? 1 : m==='kamar' ? n : +m;
-const modeState = (m, n) => { const np = Array(count(m, n)).fill(null); np[0] = 'steve'; return { mode:m, picks:np }; };
-const genRoom = () => { const a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s = ''; for (let i = 0; i < 5; i++) s += a[Math.floor(Math.random()*a.length)]; return s; };
-const dr = DICE.find(r => r[0]===dice) || DICE[0];
-const pv = { name:dr[1], edge:dr[4] }; [1,2,3,4,5,6].forEach(n => { pv['f'+n] = faceBg(dr, n, 7); });
-const cant = !mode || picks.length===0 || picks.some(x => !x);
-const keys = st.keys ?? [];
-const nameOf = (k) => (DEFS.find(d => d.key===k) || {}).name || k;
-const q = new URLSearchParams({ mode: mode==='kamar' ? String(kp) : (mode ?? ''), skins:keys.join(','), theme:theme, dice:dice });
-if (mode==='kamar') { q.set('private','1'); q.set('room',room); }
-return { pv, nav, friends, open, started, setup:!started, hasMode:!!mode, isCpu:mode==='cpu', isRoom:mode==='kamar', room, howOpen,
- copyLabel: copied ? 'Tersalin' : 'Salin kode',
- openPlay: () => this.setState({ open:true, started:false }),
- closeModal: () => this.setState({ open:false, started:false }),
- openHow: () => this.setState({ howOpen:true }),
- closeHow: () => this.setState({ howOpen:false }),
- stop: (e) => e.stopPropagation(),
- copyRoom: () => { try { if (navigator.clipboard) navigator.clipboard.writeText(room); } catch (e) {} this.setState({ copied:true }); setTimeout(() => this.setState({ copied:false }), 1600); },
- modes: ['cpu','2','3','4','kamar'].map(m => ({ name:MN[m], on:m===mode, style: m===mode ? ON : OFF, pick:() => this.setState({ ...modeState(m, kp), ...(m==='kamar' && !room ? { room:genRoom() } : {}) }) })),
- kps: [2,3,4].map(n => ({ name:n+' Pemain', on:n===kp, style: n===kp ? ON : OFFB, pick:() => { const np = picks.slice(0, n); while (np.length < n) np.push(null); this.setState({ kp:n, picks:np }); } })),
- slots: picks.map((sel,i) => ({ label: mode==='cpu' ? 'Skin kamu' : 'Pemain '+(i+1)+(sel ? ': '+nameOf(sel) : ''),
-  skins: DEFS.map(d => { const dis = !d.own || picks.some((x,j) => j!==i && x===d.key); const on = sel===d.key;
-   return { ...d, locked:!d.own, disabled:dis, on, op: d.own ? 1 : .45, style: on ? 'background:rgba(125,255,46,.14);border:2px solid #7dff2e;box-shadow:0 3px 0 #3fa312' : 'background:#101d38;border:1px solid #22385f;'+(dis ? 'opacity:.6' : ''),
-   pick:() => { const np = picks.slice(); np[i] = np[i]===d.key ? null : d.key; this.setState({ picks:np }); } }; }) })),
- themes: THEMES.map(r => ({ name:r[1], sw:'linear-gradient(90deg,'+r[2]+' 50%,'+r[3]+' 50%)', locked:!r[4], op:r[4]?1:.45, on:r[0]===theme, style: r[0]===theme ? 'background:rgba(125,255,46,.14);border:2px solid #7dff2e' : 'background:#101d38;border:1px solid #22385f;'+(r[4] ? '' : 'opacity:.7'), pick:() => this.setState({ theme:r[0] }) })),
- dices: DICE.map(r => ({ name:r[1], f1:faceBg(r,1,2.6), f2:faceBg(r,2,2.6), f3:faceBg(r,3,2.6), edge:r[4], locked:!r[5], op:r[5]?1:.45, on:r[0]===dice, style: r[0]===dice ? 'background:rgba(125,255,46,.14);border:2px solid #7dff2e' : 'background:#101d38;border:1px solid #22385f;'+(r[5] ? '' : 'opacity:.7'), pick:() => this.setState({ dice:r[0] }) })),
- cantStart: cant,
- startStyle: cant ? 'background:#1b2f52;color:#6b7a99' : 'background:#7dff2e;color:#08140a;box-shadow:0 6px 0 #3fa312,0 14px 34px rgba(125,255,46,.3)',
- start: () => { if (cant) return; const ks = picks.slice(); if (mode==='cpu') { const rest = DEFS.filter(d => d.own && d.key!==ks[0]); ks.push(rest[Math.floor(Math.random()*rest.length)].key); } this.setState({ started:true, keys:ks }); },
- sumMode: MN[mode] || '-', sumSkins: keys.map(nameOf).join(', '), sumTheme: (THEMES.find(r => r[0]===theme) || [])[1], sumDice: (DICE.find(r => r[0]===dice) || [])[1],
- sumHref: 'gameplay.html?'+q.toString() };
-}
-}
-</script>
-
+<script src="assets/js/item-catalog.js"></script>
+<script src="assets/js/item-art.js"></script>
+<script src="assets/js/player-data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>UT.App.init({page:'lobby'});</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-(function(){
-  var ang=-28,tilt=-5,vel=0,lx=0,lt=0,drag=false,raf=0;
-  function el(){return document.getElementById('rot3d')}
-  function apply(){var e=el();if(e)e.style.transform='rotateX('+tilt+'deg) rotateY('+ang+'deg)'}
-  function stg(){return document.querySelector('.stg')}
-  document.addEventListener('pointerdown',function(ev){
-    var s=ev.target.closest&&ev.target.closest('.stg');
-    if(!s||ev.button>0)return;
-    drag=true;lx=ev.clientX;vel=0;cancelAnimationFrame(raf);s.classList.add('dg');
-    try{s.setPointerCapture(ev.pointerId)}catch(e){}
-  });
-  document.addEventListener('pointermove',function(ev){
-    if(!drag)return;
-    var dx=ev.clientX-lx;lx=ev.clientX;lt=ev.timeStamp;
-    ang+=dx*.6;vel=dx*.6;apply();
-  });
-  function end(ev){
-    if(!drag)return;drag=false;
-    var s=stg();if(s)s.classList.remove('dg');
-    if(ev&&ev.timeStamp-lt>80)vel=0;
-    if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-    (function spin(){if(Math.abs(vel)<.1)return;ang+=vel;vel*=.94;apply();raf=requestAnimationFrame(spin)})();
-  }
-  document.addEventListener('pointerup',end);
-  document.addEventListener('pointercancel',end);
-  document.addEventListener('keydown',function(ev){
-    var t=ev.target;
-    if(t&&t.classList&&t.classList.contains('stg')){
-      if(ev.key==='ArrowLeft'){ang-=15;apply();ev.preventDefault()}
-      else if(ev.key==='ArrowRight'){ang+=15;apply();ev.preventDefault()}
-    }
-    if(ev.key==='Escape'){
-      var c=document.querySelector('[aria-modal="true"] button[aria-label="Tutup"]');
-      if(c)c.click();
-    }
-  });
-  new MutationObserver(function(){var e=el();if(e&&!e.style.transform)apply()}).observe(document.body,{childList:true,subtree:true});
-  apply();
-})();
-</script>
-<script>
-(function(){
-  var face={1:[0,0],6:[0,180],2:[0,-90],5:[0,90],3:[-90,0],4:[90,0]};
-  var words={1:'Pelan tapi pasti, 1 petak.',2:'Maju 2 petak.',3:'Maju 3 petak.',4:'Lumayan, 4 petak!',5:'Mantap, 5 petak!',6:'Dadu 6! Giliran bonus!'};
-  var HINT='Klik dadu untuk mengocok';
-  var cx=0,cy=0,rolling=false,ctx=null;
-  function next(cur,t){return Math.ceil(cur/360)*360+720+((t%360)+360)%360}
-  function $(id){return document.getElementById(id)}
-  function sfx(){
-    try{
-      ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();
-      if(ctx.state==='suspended')ctx.resume();
-      for(var i=0;i<5;i++)(function(i){setTimeout(function(){
-        var o=ctx.createOscillator(),g=ctx.createGain();
-        o.type='triangle';o.frequency.value=150+Math.random()*200;
-        g.gain.setValueAtTime(.06,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.06);
-        o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+.06);
-      },i*90)})(i);
-    }catch(e){}
-  }
-  function roll(){
-    var d=$('dicePrev'),num=$('diceNum'),msg=$('diceMsg');
-    if(!d||rolling)return;
-    rolling=true;
-    var rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var n=1+Math.floor(Math.random()*6),t=face[n];
-    cx=next(cx,t[0]);cy=next(cy,t[1]);
-    if(!rm)sfx();
-    d.style.transition=rm?'none':'transform 1.4s cubic-bezier(.2,.8,.2,1)';
-    d.style.transform='rotateX('+cx+'deg) rotateY('+cy+'deg)';
-    if(num)num.textContent='…';
-    if(msg)msg.textContent='Dadu menggelinding…';
-    setTimeout(function(){
-      var num2=$('diceNum'),msg2=$('diceMsg');
-      if(num2)num2.textContent=n;
-      if(msg2)msg2.textContent=words[n];
-      rolling=false;
-    },rm?0:1450);
-  }
-  document.addEventListener('click',function(ev){
-    var t=ev.target;if(!t||!t.closest)return;
-    if(t.closest('#diceBtn')){roll();return}
-    var b=t.closest('.dskin');
-    if(b&&!b.disabled)setTimeout(roll,30);
-  });
-  new MutationObserver(function(){
-    var m=$('diceMsg');if(m&&!m.textContent&&!rolling)m.textContent=HINT;
-  }).observe(document.body,{childList:true,subtree:true});
-})();
-</script>
+(()=>{
+const $=s=>document.querySelector(s),fmt=n=>n.toLocaleString('id-ID');
+/* ---------- data: currency, skin terpasang, dan settings dibaca dari PlayerData (single source of truth).
+   Tidak ada state kedua; key legacy 'inv' tidak dibaca/ditulis lagi oleh halaman ini. ---------- */
+const PD=window.PlayerData,AR=window.ItemArt;
+let PAL=AR.palette(PD.equippedId('skin'))||AR.palette('skin.steve');
+let hero3d=null; /* diisi bagian 3D bila WebGL tersedia */
+const SET=()=>PD.settings();
+const buzz=()=>{if(SET().vibration&&navigator.vibrate)navigator.vibrate(15)};
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),1700)}
+/* ---------- HUD ---------- */
+function renderAvatar(){$('#ava').innerHTML=`<svg viewBox="0 0 40 40"><rect x="7" y="29" width="26" height="12" rx="2" fill="${PAL.hood}"/><rect x="10" y="9" width="20" height="19" fill="#f0b98d"/><rect x="8" y="4" width="24" height="9" fill="${PAL.hair}"/><rect x="8" y="9" width="3" height="10" fill="${PAL.hair}"/><rect x="29" y="9" width="3" height="10" fill="${PAL.hair}"/><rect x="14" y="17" width="3.5" height="4.5" fill="#222"/><rect x="23" y="17" width="3.5" height="4.5" fill="#222"/><path d="M15 23q5 5 10 0z" fill="#c0473a"/></svg>`}
+function renderCurrency(){$('#gemV').textContent=fmt(PD.gems());$('#coinV').textContent=fmt(PD.coins())}
+renderAvatar();renderCurrency();
+/* event: UI ikut berubah tanpa reload halaman */
+UT.Events.on('currencyChanged',renderCurrency);
+UT.Events.on('skinChanged',()=>{PAL=AR.palette(PD.equippedId('skin'))||PAL;renderAvatar();if(hero3d)hero3d.rebuild()});
+// free-gift countdown (persisted)
+let end=+localStorage.getItem('lobbyGift')||0;if(end<Date.now()){end=Date.now()+(23*3600+45*60+12)*1000;try{localStorage.setItem('lobbyGift',end)}catch(e){}}
+const p2=n=>String(n).padStart(2,'0');
+function tick(){const s=Math.max(0,Math.round((end-Date.now())/1000));$('#ft').textContent=p2(s/3600|0)+':'+p2(s%3600/60|0)+':'+p2(s%60)}tick();setInterval(tick,1000);
+/* ---------- modal ---------- */
+const modal=$('#modal');let mOpen=false;
+function openModal(html,init){$('#mb').innerHTML=html;modal.style.display='grid';requestAnimationFrame(()=>modal.classList.add('show'));mOpen=true;init&&init();$('#mx').focus()}
+function closeModal(){if(!mOpen)return;mOpen=false;modal.classList.remove('show');setTimeout(()=>{if(!mOpen)modal.style.display='none'},250)}
+$('#mx').addEventListener('click',closeModal);modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+/* ---------- game modes ---------- */
+const MODES=[['Ular Tangga Blok','Main sendiri atau lawan bot'],['Lawan Teman','Main bareng di satu perangkat'],['Online','Cari lawan secara acak']];
+let mi=-1;
+const setMode=i=>{mi=i;$('#pm').textContent=i<0?'Pilih Mode':MODES[i][0]};
+$('#pl').addEventListener('click',e=>{e.stopPropagation();setMode(mi<=-1?MODES.length-1:mi-1);buzz()});
+$('#pr').addEventListener('click',e=>{e.stopPropagation();setMode(mi>=MODES.length-1?-1:mi+1);buzz()});
+function startMode(i){closeModal();setMode(i);buzz();location.href='mode.html'}
+$('#play').addEventListener('click',()=>{buzz();location.href='mode.html'});
+/* ---------- actions ---------- */
+const soon=n=>toast(n+' segera hadir');
+const ACT={
+ inv(){location.href='inventory.html'},
+ lead(){location.href='leaderboard.html'},prof(){location.href='profile.html'},misi(){soon('Misi')},hadiah(){location.href='dailyreward.html'},toko(){location.href='shop.html'},teman(){location.href='friendship.html'},mail(){soon('Pesan')},
+ event(){openModal('<h2>Event Spesial</h2><p>Login setiap hari dan dapatkan hadiah menarik!</p><div class="row"><span>Hari ini</span><span style="color:#ffe36a">+50 Coin</span></div><div class="row"><span>Hari ke-7</span><span style="color:#ffe36a">+20 Gem</span></div>')},
+ free(){soon('Hadiah gratis')},buygem(){soon('Beli gem')},buycoin(){soon('Beli coin')},
+ gear(){const T=SET(),row=(k,l)=>`<div class="row"><span>${l}</span><button class="tg ${T[k]?'on':''}" data-k="${k}">${T[k]?'ON':'OFF'}</button></div>`;
+  openModal(`<h2>Pengaturan</h2>${row('music','Musik')}${row('sound','Suara')}${row('vibration','Getar')}`,()=>document.querySelectorAll('.tg').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.k,v=!SET()[k];const n=PD.setSettings({[k]:v});b.classList.toggle('on',n[k]);b.textContent=n[k]?'ON':'OFF';buzz()})))}
+};
+document.querySelectorAll('[data-act]').forEach(b=>{const f=()=>{buzz();ACT[b.dataset.act]()};b.addEventListener('click',f);if(b.getAttribute('role')==='button')b.addEventListener('keydown',e=>{if(e.key==='Enter')f()})});
 
-<audio id="bgMusic" src="assets/music/zen.mp3" loop preload="auto"></audio>
-<style>
-#volPanel{position:fixed;right:16px;bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:41;
-  display:flex;align-items:center;gap:6px;background:rgba(10,20,40,.92);backdrop-filter:blur(10px);
-  border:1px solid #2f3f7a;border-radius:999px;padding:6px 8px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
-#volBtn{width:34px;height:34px;border-radius:50%;border:1px solid #2f3f7a;background:#101d38;color:#eaf2ff;
-  display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
-#volBtn svg{width:18px;height:18px}
-#volSlider{-webkit-appearance:none;appearance:none;width:96px;height:4px;border-radius:999px;
-  background:linear-gradient(90deg,#7dff2e var(--p,50%),#22385f var(--p,50%));outline:none;cursor:pointer}
-#volSlider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;
-  background:#7dff2e;border:2px solid #08140a;cursor:pointer}
-#volSlider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#7dff2e;border:2px solid #08140a;cursor:pointer}
-#volLabel{font-family:'Lilita One',sans-serif;font-size:11px;color:#b9c9e4;min-width:30px;text-align:center}
-</style>
-<script>
-(function(){
-  'use strict';
-  var STEPS=[6,5,15,30,50,75,100];
-  function load(){ try{ return JSON.parse(localStorage.getItem('ut-music')); }catch(e){ return null; } }
-  function save(v){ try{ localStorage.setItem('ut-music',JSON.stringify(v)); }catch(e){} }
-  function snap(v){ var best=STEPS[0],d=Math.abs(v-STEPS[0]); for(var i=1;i<STEPS.length;i++){ var dd=Math.abs(v-STEPS[i]); if(dd<d){d=dd;best=STEPS[i]} } return best; }
-  var s=load()||{on:true,v:50}; s.v=snap(s.v);
-  var audio=document.getElementById('bgMusic');
-  if(audio){ audio.volume=s.v/100; audio.muted=!s.on; if(s.on){ audio.play().catch(function(){}); } }
-  function apply(){
-    if(!audio) return;
-    audio.volume=s.v/100; audio.muted=!s.on;
-    var sl=document.getElementById('volSlider'); if(sl){ sl.value=s.v; sl.style.setProperty('--p',s.v+'%'); }
-    var lb=document.getElementById('volLabel'); if(lb){ lb.textContent=s.on?(s.v+'%'):'OFF'; }
-    var b=document.getElementById('volBtn'); if(b){ b.setAttribute('aria-pressed',String(s.on)); }
-  }
-  function build(){
-    var d=document.createElement('div'); d.id='volPanel';
-    var b=document.createElement('button'); b.id='volBtn'; b.type='button'; b.setAttribute('aria-label','Volume');
-    b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M19 5a9 9 0 010 14"/></svg>';
-    b.addEventListener('click',function(){ s.on=!s.on; save(s); apply(); });
-    var sl=document.createElement('input'); sl.type='range'; sl.id='volSlider'; sl.min=0; sl.max=100; sl.step=1; sl.value=s.v;
-    sl.addEventListener('input',function(){ s.v=snap(parseInt(sl.value,10)||0); save(s); apply(); });
-    var lb=document.createElement('span'); lb.id='volLabel';
-    d.appendChild(b); d.appendChild(sl); d.appendChild(lb);
-    document.body.appendChild(d); apply();
-  }
-  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',build); }
-  else { build(); }
+/* ================= 3D LOBBY ================= */
+if(typeof THREE==='undefined'){document.body.insertAdjacentHTML('afterbegin','<div style="position:fixed;inset:0;display:grid;place-items:center;font-size:3rem;z-index:0">3D tidak tersedia</div>');return}
+let seed=11;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+const V=[];
+const col=(h,j)=>{const c=new THREE.Color(h);return c.multiplyScalar(1+(rnd()-.5)*2*j)};
+const B=(x,y,z,c,sx=1,sy=1,sz=1,j=.07)=>V.push([x,y,z,sx,sy,sz,col(c,j)]);
+const GR=[0x5cc03e,0x52b538],DIRT=0x8d5b36;
+function isle(cx,cy,cz,rx,rz,depth,grass){const R=Math.ceil(Math.max(rx,rz));
+ for(let ix=-Math.ceil(rx);ix<=Math.ceil(rx);ix++)for(let iz=-Math.ceil(rz);iz<=Math.ceil(rz);iz++)for(let d=0;d<depth;d++){
+  const k=1-d/(depth+1.5),nx=ix/(rx*k),nz=iz/(rz*k);if(nx*nx+nz*nz+(rnd()-.5)*.25>1)continue;
+  const c=d===0?GR[(ix+iz)&1]:d===1?DIRT:rnd()<.25?0x7b7b86:0x6e4628;B(cx+ix,cy-.5-d,cz+iz,c)}}
+function tree(x,gy,z,h=3,w=1){for(let i=0;i<h;i++)B(x,gy+.5+i,z,0x7a4b2a);const t=gy+h;
+ for(let dx=-w;dx<=w;dx++)for(let dz=-w;dz<=w;dz++)for(let dy=0;dy<2;dy++){if(Math.abs(dx)+Math.abs(dz)===2*w&&rnd()<.6)continue;B(x+dx,t+.5+dy,z+dz,rnd()<.5?0x3aa83a:0x2f9a34)}
+ B(x,t+2.5,z,0x45b840);B(x+1,t+2.5,z,0x45b840,1,1,1);}
+function bush(x,gy,z){B(x,gy+.5,z,0x3aa83a);if(rnd()<.6)B(x+1,gy+.5,z,0x2f9a34);if(rnd()<.5)B(x,gy+1.5,z,0x45b840)}
+function flower(x,gy,z){const c=[0xff7ab8,0xffffff,0xffe05a,0xc78bff][rnd()*4|0];B(x,gy+.2,z,0x2f9a34,.15,.4,.15,0);B(x,gy+.5,z,c,.45,.3,.45,0)}
+function wall(x0,y0,z0,w,h,d,c1,c2){for(let x=0;x<w;x++)for(let y=0;y<h;y++)for(let z=0;z<d;z++){if(x>0&&x<w-1&&z>0&&z<d-1&&y<h-1)continue;B(x0+x+.5,y0+y+.5,z0+z+.5,((x+y+z)&1)?c1:c2,1,1,1,.05)}}
+function roof(cx,y0,cz,r,c){for(let i=0;i<r;i++){const s=r-i;for(let x=-s+1;x<s;x++)for(let z=-s+1;z<s;z++)B(cx+x,y0+i+.5,cz+z,i%2?c:0x3472d2,1,1,1,.05)}}
+function castle(cx,cy,cz){
+ wall(cx-5,cy,cz-3,11,8,5,0xe6eefc,0xc4d4f4);
+ for(let x=0;x<11;x+=2){B(cx-5+x+.5,cy+8.5,cz-3+.5,0xe6eefc);B(cx-5+x+.5,cy+8.5,cz+1.5,0xe6eefc)}
+ wall(cx-7,cy,cz-4,3,13,3,0xdbe6fb,0xb4c9f0);wall(cx+4,cy,cz-4,3,13,3,0xdbe6fb,0xb4c9f0);
+ wall(cx-2,cy+8,cz-3,5,6,5,0xe6eefc,0xc4d4f4);
+ roof(cx-7+1.5,cy+13,cz-4+1.5,3,0x3b7be0);roof(cx+4+1.5,cy+13,cz-4+1.5,3,0x3b7be0);roof(cx+.5,cy+14,cz-.5,4,0x3b7be0);
+ [[cx-5.5,cz-2.5,16],[cx+5.5,cz-2.5,16],[cx+.5,cz-.5,18]].forEach(p=>{for(let i=0;i<3;i++)B(p[0],cy+p[2]+.5+i-1,p[1],0xf0e0b0,.2,1,.2,0);B(p[0]+.6,cy+p[2]+1.5,p[1],0xffc83a,1.2,.8,.15,0)});
+ [-3,0,3].forEach(dx=>B(cx+dx,cy+4.5,cz+2.05,0xd9a441,.8,1.4,.15,0));B(cx,cy+1.4,cz+2.05,0x6b4423,2,2.8,.15,0);
+ [cx-5.5,cx+5.5].forEach(x=>{B(x,cy+8,cz-1.95,0xd9a441,.8,1.4,.15,0);B(x,cy+4,cz-1.95,0xd9a441,.8,1.4,.15,0)});
+ tree(cx-7,cy,cz+5,3);tree(cx+8,cy,cz+4,2);[-4,2,6].forEach(dx=>bush(cx+dx,cy,cz+5.5))}
+function shop(x,cy,z){
+ for(let i=0;i<7;i++)for(let j=0;j<4;j++)B(x-3+i,cy+.5+j,z-1,(i+j)&1?0x8f7fa8:0x7b6c98,1,1,1,.06);
+ [-3,3].forEach(dx=>{for(let j=0;j<5;j++)B(x+dx,cy+.5+j,z+1.7,0x8a5a32)});
+ for(let i=-3;i<=3;i++)B(x+i,cy+.6,z+1.7,0xa06a38,1,1.2,1,.06);
+ for(let i=-4;i<=4;i++)for(let k=0;k<3;k++)B(x+i,cy+5.3-k*.45,z-.4+k*1.5,i&1?0xffffff:0xe23b3b,1,.45,1.6,.02);
+ B(x+4,cy+.5,z+2.6,0xb9742a,1.2,1,1.2);B(x+5.4,cy+.5,z+2,0xa06a38,1,1,1);B(x-4.6,cy+.5,z+2.4,0xb9742a,1.2,1,1.2);
+ B(x-4.6,cy+1.3,z+2.4,0xff7ab8,.6,.5,.6,0);
+ const cv=document.createElement('canvas');cv.width=256;cv.height=96;const c=cv.getContext('2d');c.fillStyle='#8a5a32';c.fillRect(0,0,256,96);c.fillStyle='#a06a38';c.fillRect(6,6,244,84);c.font='900 70px Baloo 2,Arial Black,sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=10;c.strokeStyle='#6b3d14';c.strokeText('SHOP',128,52);c.fillStyle='#ffc83a';c.fillText('SHOP',128,50);
+ const sign=new THREE.Mesh(new THREE.BoxGeometry(5.4,1.9,.5),[M(0x6b3d14),M(0x6b3d14),M(0x6b3d14),M(0x6b3d14),new THREE.MeshStandardMaterial({map:new THREE.CanvasTexture(cv)}),M(0x6b3d14)]);sign.position.set(x,cy+7.3,z+1);scene.add(sign);
+ const npc=character({hood:0x3d5fb8,hair:0xd9a030,pants:0x333a4a});npc.scale.setScalar(.34);npc.position.set(x,cy+.1,z+.1);scene.add(npc);anims.push(t=>npc.userData.anim(t))}
+function stall(x,cy,z){[-3,3].forEach(dx=>{for(let j=0;j<4;j++)B(x+dx,cy+.5+j,z,0x8a5a32)});for(let i=-3;i<=3;i++){B(x+i,cy+4.3,z,i&1?0xffffff:0xf08a2a,1,.5,2.6,.02);B(x+i,cy+.6,z+1,0xa06a38,1,1.2,1,.06)}
+ [-1.2,1.2].forEach((dx,i)=>{const n=character({hood:i?0xd8a030:0x6a8ad8,hair:i?0x3a2a20:0x5a3420,pants:0x3a3a68});n.scale.setScalar(.34);n.position.set(x+dx,cy+.1,z-.4);n.rotation.y=.3*(i?-1:1);scene.add(n);anims.push(t=>n.userData.anim(t+i))})}
+function sign(x,gy,z){for(let i=0;i<5;i++)B(x,gy+.5+i,z,0x7a4b2a,.5,1,.5);B(x+.6,gy+4.2,z+.3,0xb9742a,2.6,.8,.3);B(x-.5,gy+3.1,z+.3,0xa06a38,2.6,.8,.3)}
+function character(sk,emote){const g=new THREE.Group(),P={};const skin=M(0xf0b98d),hood=M(sk.hood),hair=M(sk.hair),pants=M(sk.pants),wh=M(0xffffff),bl=M(0x2f6fd0),pk=M(0x7a4a2a),dk=M(0x221a18);
+ const body=new THREE.Group();body.position.y=2.6;g.add(body);P.body=body;
+ bx(1.7,1.9,1,hood,0,0,0,body);bx(.9,1.1,.1,wh,0,-.1,.52,body);bx(1.1,1.4,.5,pk,0,0,-.75,body);
+ const head=new THREE.Group();head.position.y=2.1;body.add(head);P.head=head;
+ bx(2.2,2.1,2.1,skin,0,0,0,head);bx(2.4,.8,2.3,hair,0,1.15,-.05,head);bx(2.4,1.8,.5,hair,0,.2,-1,head);bx(.4,1.2,2.1,hair,-1.2,.4,0,head);bx(.4,1.2,2.1,hair,1.2,.4,0,head);bx(2.2,.5,.5,hair,0,.8,1.05,head);
+ P.eyes=[-.55,.55].map(x=>{const e=new THREE.Group();e.position.set(x,.05,1.06);head.add(e);bx(.42,.55,.1,dk,0,0,0,e);bx(.14,.16,.1,wh,.08,.12,.06,e);return e});
+ bx(.7,.15,.1,M(0xc0473a),0,-.6,1.06,head);
+ const arm=x=>{const a=new THREE.Group();a.position.set(x,.8,0);body.add(a);bx(.7,1.5,.7,hood,0,-.6,0,a);bx(.6,.5,.6,skin,0,-1.5,0,a);return a};
+ P.aL=arm(-1.2);P.aR=arm(1.2);
+ const leg=x=>{const l=new THREE.Group();l.position.set(x,-1,0);body.add(l);bx(.8,1.4,.9,pants,0,-.6,0,l);bx(1,.5,1.3,wh,0,-1.45,.15,l);bx(1.02,.18,1.32,bl,0,-1.2,.15,l);return l};
+ P.lL=leg(-.45);P.lR=leg(.45);
+ g.userData.anim=t=>{const k=emote||'idle';P.body.position.y=2.6+Math.sin(t*2)*.05;P.body.scale.y=1+Math.sin(t*2)*.012;P.head.rotation.set(0,Math.sin(t*.7)*.12,Math.sin(t*.9)*.03);
+  P.aL.rotation.z=-.15;P.aR.rotation.z=k==='cheer'?2.5+Math.sin(t*12)*.35:.15-Math.sin(t*2)*.05;if(k==='cheer')g.position.y=Math.abs(Math.sin(t*6))*.5;
+  P.eyes.forEach(e=>e.scale.y=(t%4<.15)?.1:1)};
+ return g}
+function bx(w,h,d,m,x=0,y=0,z=0,p){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;p&&p.add(o);return o}
+function M(c,r=.7){return new THREE.MeshStandardMaterial({color:new THREE.Color(c),roughness:r})}
+
+/* scene */
+const cv=$('#gl'),renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xc8e8ff,45,135);
+const cam=new THREE.PerspectiveCamera(36,16/9,.1,250);
+scene.add(new THREE.AmbientLight(0xffffff,.7),new THREE.HemisphereLight(0xcfeaff,0x6a9a50,.55));
+const sun=new THREE.DirectionalLight(0xfff2d8,.95);sun.position.set(9,18,14);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-24,right:24,top:16,bottom:-14,near:1,far:60});sun.shadow.bias=-.0008;scene.add(sun);
+const anims=[];
+
+// foreground ground + pedestal
+const GY=-2;isle(0,GY,2,22,9,6);
+for(let x=-5;x<=5;x++)for(let z=-5;z<=5;z++){const r=Math.hypot(x,z);
+ if(r<=3.9)B(x,-1.5,z,((x+z)&1)?0x9a9cae:0x8b8da0,1,1,1,.06);
+ if(r<=4.4)B(x,-.5,z,r<=3.4?((x+z)&1?0xc9cbd6:0xb6b9c8):GR[(x+z)&1&1],1,1,1,.05)}
+for(let i=0;i<14;i++){const a=rnd()*6.28,r=3.9+rnd()*.3;B(Math.cos(a)*r,-1.5+rnd()*1.2,Math.sin(a)*r+.4,0x3aa83a,.5,.8,.5)}
+[[-3,-2],[3,-3],[-4,0],[4,1],[-2,3],[3,3]].forEach(p=>bush(p[0],-.0+(Math.hypot(...p)<=4?0:GY),p[1]));
+// ground detail
+for(let i=0;i<60;i++){const x=(rnd()-.5)*40,z=-6+rnd()*16;if(Math.hypot(x,z)<5||(Math.abs(x-11.5)<5&&z<1)||(Math.abs(x+11.5)<4&&z<0))continue;if(Math.abs(x)>19||z>10)continue;rnd()<.45?bush(x,GY,z):flower(x,GY,z)}
+for(let i=0;i<7;i++)B(1.5-i*.9+(i%2)*.5,GY+.1,6+i*.45,0xd9ccb0,1.3,.2,1.1,.04);
+tree(-17.5,GY,1,5,1);tree(-20,GY,-3,4,1);tree(18,GY,0,5,1);tree(20,GY,-3,6,1);tree(15.5,GY,6,3,1);tree(-15.5,GY,6,3,1);
+shop(11.5,GY,-3);stall(-12,GY,-3);sign(-7.2,GY,-3.5);
+// lantern
+for(let j=0;j<4;j++)B(-8.8,GY+.5+j,3,0x7a4b2a,.5,1,.5);B(-8.8,GY+4.6,3,0x3a2a20,1.3,.3,1.3);
+const lamp=new THREE.Mesh(new THREE.BoxGeometry(1,1.2,1),new THREE.MeshStandardMaterial({color:0xffe08a,emissive:0xffb830,emissiveIntensity:1}));lamp.position.set(-8.8,GY+5.4,3);scene.add(lamp);
+// castle island + waterfall
+isle(6,6,-20,9,7,9);castle(6,6,-20);
+for(let i=0;i<6;i++)B(0+i%2-.5,6+.1,-12.8+(i%3)*.2,0xffffff,.6,.3,.6,0);
+const wf=new THREE.Mesh(new THREE.BoxGeometry(1.7,20,.6),new THREE.MeshBasicMaterial({color:0x8adcff,transparent:true,opacity:.8}));wf.position.set(-.5,-4,-13.1);scene.add(wf);
+// other floating islands
+[[-15,4,-15,4.5,3.5,5,1],[-26,9,-26,5,4,6,1],[-8,10,-30,4,3,5,1],[0,17,-38,5,4,6,1],[24,10,-32,6,4,6,1],[18,18,-44,5,4,5,0],[-3,-3,-14,3,3,4,0],[28,2,-18,4,3,5,1],[-34,2,-30,6,5,6,1],[38,18,-40,5,4,5,1]].forEach(p=>{isle(p[0],p[1],p[2],p[3],p[4],p[5]);if(p[6])tree(p[0],p[1],p[2],3);bush(p[0]+2,p[1],p[2]+1);flower(p[0]-2,p[1],p[2]+1)});
+// wooden bridge between left islands
+for(let i=0;i<9;i++)B(-12+i*1.15,3.6+Math.sin(i*.35)*.2,-14,0xa06a38,1.1,.25,2,.06);
+// airship cube
+const air=new THREE.Group(),fc=document.createElement('canvas');fc.width=fc.height=128;{const c=fc.getContext('2d');c.fillStyle='#4b92ee';c.fillRect(0,0,128,128);c.fillStyle='#f4f8ff';c.beginPath();c.roundRect?c.roundRect(20,20,88,88,16):c.rect(20,20,88,88);c.fill();c.fillStyle='#3a6fc8';c.fillRect(40,50,12,18);c.fillRect(76,50,12,18);c.fillRect(54,82,20,6)}
+const cubeM=[M(0x3a7ee8),M(0x3a7ee8),M(0x6aa8f5),M(0x2f68c8),new THREE.MeshStandardMaterial({map:new THREE.CanvasTexture(fc)}),M(0x3a7ee8)];
+air.add(new THREE.Mesh(new THREE.BoxGeometry(5,5,5),cubeM));
+const bk=new THREE.Mesh(new THREE.BoxGeometry(3,1.6,3),M(0xa06a38));bk.position.y=-3.4;air.add(bk);
+[-2.8,2.8].forEach(x=>{const w=new THREE.Mesh(new THREE.BoxGeometry(1.2,3,.4),M(0xe8eef8));w.position.set(x,0,0);air.add(w)});
+air.position.set(-9.5,13,-10);air.rotation.y=.35;air.children.forEach(c=>c.castShadow=true);scene.add(air);
+// clouds
+const clouds=[];const cm=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.95,fog:false});
+for(let i=0;i<12;i++){const g=new THREE.Group(),n=3+(rnd()*4|0);for(let k=0;k<n;k++){const m=new THREE.Mesh(new THREE.BoxGeometry(3+rnd()*3,1.6+rnd(),2.5+rnd()*2),cm);m.position.set(k*2.6-n,rnd()*.8,rnd()*1.5);g.add(m)}
+ g.position.set(-50+rnd()*100,3+rnd()*18,-28-rnd()*20);g.userData.v=.25+rnd()*.35;scene.add(g);clouds.push(g)}
+// pedestal glow
+const ring=new THREE.Mesh(new THREE.RingGeometry(2.1,2.7,48),new THREE.MeshBasicMaterial({color:0x57dfff,transparent:true,opacity:.95,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.03;scene.add(ring);
+const disc=new THREE.Mesh(new THREE.CircleGeometry(2.1,48),new THREE.MeshBasicMaterial({color:0xaaf0ff,transparent:true,opacity:.35}));disc.rotation.x=-Math.PI/2;disc.position.y=.025;scene.add(disc);
+// voxel mesh
+const mesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshStandardMaterial({roughness:.85}),V.length);
+{const m=new THREE.Matrix4(),q=new THREE.Quaternion(),p=new THREE.Vector3(),s=new THREE.Vector3();V.forEach((v,i)=>{m.compose(p.set(v[0],v[1],v[2]),q,s.set(v[3],v[4],v[5]));mesh.setMatrixAt(i,m);mesh.setColorAt(i,v[6])});mesh.instanceMatrix.needsUpdate=true;mesh.instanceColor.needsUpdate=true}
+mesh.castShadow=mesh.receiveShadow=true;mesh.frustumCulled=false;scene.add(mesh);
+// hero character (palet dari ItemArt.palette skin terpasang di PlayerData)
+const hero=new THREE.Group();let chI=character(PAL,'idle'),chC=character(PAL,'cheer');chC.visible=false;hero.add(chI,chC);hero.position.set(.3,0,0);scene.add(hero);
+hero3d={rebuild(){const p=AR.palette(PD.equippedId('skin'))||AR.palette('skin.steve');hero.remove(chI);hero.remove(chC);chI=character(p,'idle');chC=character(p,'cheer');chC.visible=false;hero.add(chI,chC)}};
+let cheer=0;
+cv.addEventListener('pointerdown',e=>{const x=e.clientX/innerWidth,y=e.clientY/innerHeight;if(x>.36&&x<.64&&y>.2&&y<.68){cheer=1.6;chI.visible=false;chC.visible=true;buzz()}});
+// pointer parallax
+let px=0,py=0,tx=0,ty=0;addEventListener('pointermove',e=>{tx=e.clientX/innerWidth-.5;ty=e.clientY/innerHeight-.5});
+function fit(){const w=innerWidth,h=innerHeight;renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(w,h,false);cam.aspect=w/h;const a=w/h,base=36;cam.fov=a<16/9?2*Math.atan(Math.tan(base*Math.PI/360)*(16/9)/a)*180/Math.PI:base;cam.updateProjectionMatrix()}
+addEventListener('resize',fit);fit();
+const clock=new THREE.Clock();
+function loop(){requestAnimationFrame(loop);const t=clock.getElapsedTime(),dt=Math.min(clock.getDelta(),.05);
+ px+=(tx-px)*.05;py+=(ty-py)*.05;cam.position.set(px*3,5.5-py*1.2,26);cam.lookAt(0,3,0);
+ if(cheer>0){cheer-=.016;if(cheer<=0){chI.visible=true;chC.visible=false}}
+ (chC.visible?chC:chI).userData.anim(t);hero.rotation.y=-.3+Math.sin(t*.5)*.08;
+ anims.forEach(f=>f(t));
+ air.position.y=13+Math.sin(t*.9)*.6;air.rotation.y=.35+Math.sin(t*.4)*.1;
+ clouds.forEach(c=>{c.position.x+=c.userData.v*.016;if(c.position.x>60)c.position.x=-60});
+ ring.material.opacity=.75+Math.sin(t*2.5)*.2;ring.scale.setScalar(1+Math.sin(t*2.5)*.03);wf.material.opacity=.7+Math.sin(t*5)*.08;lamp.material.emissiveIntensity=.9+Math.sin(t*3)*.15;
+ renderer.render(scene,cam)}
+loop();
 })();
 </script>
 </body></html>

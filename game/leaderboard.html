@@ -1,361 +1,251 @@
 <!DOCTYPE html>
-<html lang="id"><head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Papan Peringkat Ular Tangga Blok</title>
-<script src="assets/js/vendor/react.production.min.js"></script>
-<script src="assets/js/vendor/react-dom.production.min.js"></script>
-<script src="assets/js/vendor/dc-runtime.js"></script>
-</head>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Leaderboard</title>
+<link rel="stylesheet" href="assets/css/base.css"><style>
+:root{--bd:#12337f;--g:#3cc23c}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html{font-size:min(1vw,1.78vh)}
+html,body{margin:0;height:100%;overflow:hidden;font-family:'Baloo 2','Fredoka','Nunito',system-ui,sans-serif;font-weight:800;color:#fff;background:linear-gradient(#5db4f5,#a9dcf8 60%,#d5f0ff)}
+#sky{position:fixed;inset:0;overflow:hidden}
+.isl{position:absolute;opacity:.75;animation:fl 6s ease-in-out infinite}
+.isl i{display:block;background:#6fbf4a}.isl b{display:block;background:#8a5a3a;margin:0 auto}
+@keyframes fl{50%{translate:0 -.8rem}}
+.ab{position:absolute}
+button{font:inherit;color:inherit;border:0;cursor:pointer;transition:transform .15s cubic-bezier(.3,1.6,.5,1),filter .15s}
+button:hover{transform:scale(1.05);filter:brightness(1.08)}button:active{transform:scale(.94)}button:focus-visible{outline:.3rem solid #fff}
+.blue{background:linear-gradient(#4aa8ff,#1f6fe0);box-shadow:0 .5rem 0 var(--bd),0 1rem 1.4rem rgba(18,51,127,.4),inset 0 .2rem .2rem rgba(255,255,255,.6)}
+svg{display:block}
+#back{left:1.8rem;top:1.3rem;width:5.4rem;height:5.4rem;border-radius:1.6rem;padding:0;display:grid;place-items:center}
+#back svg{width:3.4rem;height:3.4rem}
+#title{left:7.8rem;top:1.3rem;width:32.6rem;height:5.4rem;border-radius:2.7rem;display:flex;align-items:center;gap:1.4rem;padding-left:2.4rem;font-size:4.2rem;text-shadow:0 .2rem 0 var(--bd)}
+#title svg{width:4.4rem;height:4.4rem}
+.cur{top:1.8rem;display:flex;align-items:center;height:4.2rem;padding:0 .5rem 0 4.8rem;border-radius:2.1rem;background:linear-gradient(#2d62c8,#173c94);box-shadow:0 .4rem 0 #0b2160,0 1rem 1.4rem rgba(18,51,127,.4),inset 0 .2rem .2rem rgba(255,255,255,.35);font-size:2rem;justify-content:space-between;gap:1rem;min-width:11.5rem}
+.cur>svg{position:absolute;left:-.5rem;top:50%;translate:0 -50%;width:5.2rem;height:5.2rem;filter:drop-shadow(0 .3rem .3rem rgba(0,0,0,.35))}
+.plus{width:3.2rem;height:3.2rem;border-radius:50%;background:radial-gradient(#7af07a,#2cb02c);border:.2rem solid #1c7d1c;display:grid;place-items:center;padding:0}.plus svg{width:1.9rem;height:1.9rem}
+.pulse{animation:pu .4s}@keyframes pu{50%{transform:scale(1.15)}}
+#gem{left:67.7rem;width:11.2rem}#coin{left:79.4rem;width:13rem}
+#gear{left:94rem;top:1.7rem;width:4.4rem;height:4.4rem;border-radius:1.4rem;padding:0;display:grid;place-items:center}#gear svg{width:2.8rem;height:2.8rem}
+/* tabs */
+#tb{left:2.5rem;top:8.4rem;display:flex;gap:0;height:4.8rem}
+.tb{height:4.8rem;border-radius:2.4rem;display:flex;align-items:center;justify-content:center;gap:1.2rem;font-size:2.2rem;padding:0 2rem;background:linear-gradient(#2f94f0,#1766d8);box-shadow:0 .3rem 0 var(--bd),inset 0 .15rem .2rem rgba(255,255,255,.4);border:.25rem solid transparent;text-shadow:0 .15rem 0 var(--bd)}
+.tb svg{width:3.2rem;height:3.2rem}
+.tb.on{border-color:#ffe36a;background:linear-gradient(#ffe36a,#f4b62a);box-shadow:0 .3rem 0 #b9740c,0 0 1.4rem #ffd24d;text-shadow:0 .2rem 0 #a35f08;transform:scale(1.04)}
+/* podium */
+#pod{left:0;top:12.4rem;width:48rem;height:32.6rem}
+#glow{position:absolute;left:25%;top:0;width:50%;height:80%;background:radial-gradient(ellipse at 50% 55%,rgba(255,240,150,.85),rgba(255,240,150,0) 65%);pointer-events:none}
+#pod canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.med{position:absolute;translate:-50% 0;pointer-events:none;filter:drop-shadow(0 .3rem .3rem rgba(0,0,0,.3));animation:fl 4s ease-in-out infinite}
+.med svg{width:100%;height:100%}
+.plate{position:absolute;translate:-50% 0;bottom:1rem;border-radius:1.6rem;text-align:center;padding:.6rem .6rem .5rem;line-height:1.15;box-shadow:0 .3rem 0 rgba(10,30,100,.55),inset 0 .15rem .2rem rgba(255,255,255,.35);border:.25rem solid rgba(255,255,255,.35)}
+.plate .pn{font-size:2rem}.plate .ps{display:flex;gap:.5rem;justify-content:center;align-items:center;font-size:2.3rem}.plate svg{width:2.4rem;height:2.4rem}
+#p1{left:50%;width:17rem;bottom:2.4rem;background:linear-gradient(#2d5fcb,#143a96);border-color:#ffc83a}
+#p1 .pn{font-size:2.3rem}#p1 .ps{font-size:2.8rem;color:#ffe36a}
+#p2{left:21%;width:12rem;background:linear-gradient(#34508a,#1c2f63)}
+#p3{left:79%;width:12rem;background:linear-gradient(#7a4a3e,#4a2a2a)}
+/* me bar */
+#me{left:1.9rem;top:45rem;width:46.5rem;height:8.5rem;border-radius:2.2rem;padding:1rem 1.4rem;background:linear-gradient(#3b9cf8,#2a86ee);box-shadow:0 .4rem 0 var(--bd),inset 0 .2rem .3rem rgba(255,255,255,.5),inset 0 0 0 .25rem rgba(120,195,255,.7);display:flex;align-items:center;gap:1.2rem}
+#me .bk{width:4rem;height:6.2rem;border-radius:1.2rem;padding:0;display:grid;place-items:center;flex:none}#me .bk svg{width:2.2rem;height:2.2rem}
+.pos{background:linear-gradient(#2a6ad8,#1a4aa8);border-radius:1.4rem;padding:.4rem 1.2rem .3rem;text-align:center;line-height:1;box-shadow:inset 0 .15rem .3rem rgba(0,0,0,.25);flex:none;min-width:10rem}
+.pos small{display:block;font-size:1.2rem;color:#dff0ff}.pos b{font-size:3.4rem;color:#ffd24d;text-shadow:0 .2rem 0 #a35f08}
+.av{display:block;width:5.6rem;height:5.6rem;border-radius:1.2rem;border:.25rem solid #cfe6ff;overflow:hidden;background:#7cc2ff;flex:none}.av svg{width:100%;height:100%}
+#me .inf{flex:1;min-width:0;line-height:1.1}#me .nm{font-size:2rem}#me .lv{font-size:1.4rem;color:#ffd24d}
+.xp{position:relative;height:1.8rem;border-radius:.9rem;background:#12337f;margin-top:.4rem;overflow:hidden;box-shadow:inset 0 .1rem .2rem rgba(0,0,0,.4)}
+.xp i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(#5adcff,#1fa0e8);border-radius:.9rem}.xp span{position:absolute;inset:0;text-align:center;font-size:1.1rem;line-height:1.8rem}
+.mysc{display:flex;align-items:center;gap:.7rem;font-size:2.8rem;flex:none;padding-right:.6rem}.mysc svg{width:3.6rem;height:3.6rem}
+/* right panel */
+#rt{left:50.6rem;top:11.2rem;width:47.2rem;height:41.9rem;border-radius:2.6rem;padding:1.2rem 1.3rem;background:linear-gradient(#3b9cf8,#2a86ee);box-shadow:0 .6rem 0 var(--bd),0 1.4rem 2.4rem rgba(18,51,127,.35),inset 0 .2rem .3rem rgba(255,255,255,.6),inset 0 0 0 .3rem #6cc0ff;display:flex;flex-direction:column;gap:.7rem}
+.gc{display:grid;grid-template-columns:6.4rem 1fr 14rem 7rem;align-items:center}
+#hd{height:3.4rem;border-radius:1.2rem;background:linear-gradient(#2a6ad8,#1a4aa8);font-size:1.7rem;text-align:center;flex:none;box-shadow:inset 0 .15rem .3rem rgba(0,0,0,.25)}
+#hd span:nth-child(2){text-align:left;padding-left:5.2rem}
+#rows{flex:1;min-height:0;display:flex;flex-direction:column;gap:.55rem}
+.lr{flex:1;min-height:0;border-radius:1.4rem;background:linear-gradient(#1f5fd0,#143e9c);box-shadow:0 .2rem 0 rgba(10,30,100,.5),inset 0 .15rem .2rem rgba(255,255,255,.25);animation:pop .35s both;cursor:pointer}
+@keyframes pop{from{opacity:0;transform:scale(.93)}}
+.lr.me{background:linear-gradient(#2d8cf8,#1b62d8);box-shadow:0 0 0 .3rem #ffe36a,0 0 1.4rem rgba(255,227,106,.7),inset 0 .2rem .3rem rgba(255,255,255,.5)}
+.lr .no{text-align:center;font-size:2.4rem}
+.lr .who{display:flex;align-items:center;gap:1.2rem;min-width:0}.lr .av{width:4.6rem;height:4.6rem}
+.lr .nm2{font-size:2rem;line-height:1.05}.lr .lv2{font-size:1.2rem;color:#cfe6ff;line-height:1}
+.lr .sc{display:flex;align-items:center;gap:.7rem;font-size:2.1rem}.lr .sc svg{width:2.8rem;height:2.8rem}
+.lr .rk{display:grid;place-items:center}.lr .rk svg{width:3.4rem;height:3.4rem}
+#ft{height:7.2rem;border-radius:1.8rem;background:linear-gradient(#2a6ad8,#1a4aa8);display:flex;align-items:center;gap:1.4rem;padding:0 1.4rem;flex:none;box-shadow:inset 0 .15rem .3rem rgba(0,0,0,.25)}
+#ft>svg{width:5rem;height:5rem;flex:none}#ft p{margin:0;flex:1;font-size:1.5rem;line-height:1.3;font-weight:700;color:#e0f2ff}
+.gold{background:linear-gradient(#ffd24d,#ff9a1f);box-shadow:0 .4rem 0 #c96a0c,inset 0 .2rem .2rem rgba(255,255,255,.6);text-shadow:0 .15rem 0 #8a4a0a}
+#rw{height:5rem;padding:0 2rem;border-radius:2.5rem;font-size:2.4rem;display:flex;align-items:center;gap:1rem}#rw svg{width:3.2rem;height:3.2rem}
+/* modal */
+.ov{position:fixed;inset:0;display:none;place-items:center;background:rgba(18,51,127,.4);backdrop-filter:blur(6px);z-index:50;opacity:0;transition:opacity .25s}
+.ov.show{opacity:1}.ov>.box{transform:scale(.85);transition:transform .25s cubic-bezier(.3,1.5,.5,1)}.ov.show>.box{transform:scale(1)}.ov.closing>.box{transform:scale(.9)}
+.box{position:relative;width:min(48rem,92vw);max-height:92vh;overflow:auto;background:linear-gradient(#7cc2ff,#4a9ae8);border-radius:2.4rem;padding:3rem 2.4rem 2.4rem;box-shadow:0 1rem 0 var(--bd),0 2rem 3rem rgba(0,0,0,.3);font-size:2.6rem;text-align:center}
+.box h2{margin:0 0 1.2rem;font-size:3.4rem;text-shadow:0 .2rem 0 var(--bd)}
+.x{position:absolute;right:-1rem;top:-1rem;width:4.6rem;height:4.6rem;border-radius:50%;background:#ee4a4a;box-shadow:0 .3rem 0 #8e1d1d;font-size:2.4rem;padding:0}
+.row{display:flex;justify-content:space-between;align-items:center;background:rgba(18,51,127,.25);border-radius:1.4rem;padding:1rem 1.4rem;margin:.8rem 0;gap:1rem}
+.row b{display:flex;align-items:center;gap:.6rem}.row svg{width:2.8rem;height:2.8rem}
+.tg{min-width:7.6rem;height:3.8rem;border-radius:2rem;background:#7b8aa8;box-shadow:inset 0 .2rem .4rem rgba(0,0,0,.3);font-size:2rem;padding:0 1rem}.tg.on{background:var(--g)}
+.pack{width:100%;display:flex;justify-content:space-between;align-items:center;margin:.8rem 0;padding:1.2rem 1.6rem;border-radius:1.4rem;background:linear-gradient(#ffd24d,#ff9a1f);box-shadow:0 .4rem 0 #c96a0c;font-size:2.6rem;text-shadow:0 .2rem 0 rgba(107,53,17,.7)}
+#toast{position:fixed;left:50%;bottom:3rem;translate:-50% 2rem;background:var(--bd);padding:.8rem 2.4rem;border-radius:2rem;font-size:2.6rem;opacity:0;transition:opacity .3s,translate .35s cubic-bezier(.3,1.8,.5,1);z-index:99;pointer-events:none;white-space:nowrap}
+#toast.on{opacity:1;translate:-50% 0}
+#top{display:contents}
+@media(max-aspect-ratio:1/1){
+html{font-size:2.5vw}
+#ui{position:fixed;inset:0;overflow:auto;display:flex;flex-direction:column;gap:1.4rem;padding:1.2rem}
+.ab{position:relative!important;left:auto!important;top:auto!important;right:auto!important}
+#top{display:flex;flex-wrap:wrap;align-items:center;gap:1.2rem 3rem}
+#title{order:-1;width:auto!important}
+#tb{overflow-x:auto}.tb{flex:none}
+#pod{width:auto!important;height:78vw!important}
+#me{width:auto!important}
+#rt{width:auto!important;height:auto!important}.lr{flex:none;height:7rem}
+.cur{width:auto!important}
+}
+</style></head>
 <body>
-<x-dc>
-<helmet>
-<style>/* latin-ext */
-@font-face {
-  font-family: 'Lilita One';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/lilitaone/v17/i7dPIFZ9Zz-WBtRtedDbYE98RWq7.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Lilita One';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/lilitaone/v17/i7dPIFZ9Zz-WBtRtedDbYEF8RQ.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* cyrillic-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-}
-/* vietnamese */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* cyrillic-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-}
-/* vietnamese */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* cyrillic-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-}
-/* vietnamese */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* cyrillic-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-}
-/* vietnamese */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-</style>
-<style>
-body{margin:0;background:#0a1428}
-button,input{font-family:'Plus Jakarta Sans',sans-serif}
-button{cursor:pointer}
-:focus-visible{outline:3px solid #7dff2e;outline-offset:2px}
-@keyframes idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-.fig{animation:idle 3.2s ease-in-out infinite}
-.rw{display:grid;grid-template-columns:52px minmax(0,1fr) 110px 120px 84px;gap:14px;align-items:center}
-.hd{color:#8fa6c9;font-size:12px;font-weight:700;letter-spacing:.1em;padding:0 18px}
-.wm{display:none}
-.sc{scrollbar-width:none}
-@media(max-width:700px){.rw{grid-template-columns:34px minmax(0,1fr) auto;gap:10px}.wd,.hd{display:none}.wm{display:block}.ch{grid-column:3;justify-self:end}}
-@media(prefers-reduced-motion:reduce){.fig{animation:none}}
-</style>
-</helmet>
-<div style="min-height:1200px;box-sizing:border-box;padding:24px 16px 56px;color:#eaf2ff;font-family:'Plus Jakarta Sans',sans-serif;background:radial-gradient(ellipse at 50% -8%,rgba(52,211,153,.20),rgba(52,211,153,0) 55%),linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px) 0 0/28px 28px,#0a1428;position:relative;overflow:hidden">
-<svg sc-camel-view-box="0 0 1200 120" sc-camel-preserve-aspect-ratio="xMidYMin slice" aria-hidden="true" style="position:absolute;top:0;left:0;width:100%;height:120px;opacity:.55;pointer-events:none"><g fill="#2d7a21"><rect x="40" y="70" width="28" height="28"></rect><rect x="68" y="42" width="28" height="28"></rect><rect x="40" y="98" width="28" height="22" fill="#5f3f25"></rect><rect x="1100" y="56" width="28" height="28"></rect><rect x="1128" y="84" width="28" height="28" fill="#58b02d"></rect><rect x="1072" y="84" width="28" height="28" fill="#58b02d"></rect></g><g fill="#34d399" opacity=".5"><rect x="300" y="30" width="10" height="10"></rect><rect x="860" y="22" width="8" height="8"></rect><rect x="620" y="14" width="8" height="8"></rect></g></svg>
-<div style="max-width:1000px;margin:0 auto;display:flex;flex-direction:column;gap:20px;position:relative">
-
-<div style="text-align:center;padding-top:8px">
-<div style="color:#7dff2e;font-weight:700;font-size:13px;letter-spacing:.14em">ULAR TANGGA BLOK</div>
-<h1 style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:clamp(38px,7vw,64px);line-height:1;margin:8px 0 10px;text-shadow:0 4px 0 rgba(0,0,0,.35)">Papan <span style="color:#7dff2e">Peringkat</span></h1>
-<span style="display:inline-flex;align-items:center;gap:8px;background:rgba(52,211,153,.10);border:1px solid rgba(52,211,153,.4);color:#c9d8f0;padding:7px 14px;border-radius:999px;font-size:13px"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>{{updated}}</span>
+<div id="sky"></div>
+<div id="ui">
+<div id="top">
+ <button class="ab blue" id="back" aria-label="Kembali"><svg viewBox="0 0 24 24"><path d="M20 12H5m6-7-7 7 7 7" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+ <div class="ab blue" id="title"><svg viewBox="0 0 24 24"><path d="M7 3h10v5a5 5 0 0 1-10 0zM7 5H3c0 4 2 6 4 6M17 5h4c0 4-2 6-4 6M12 13v4M8 21h8M9 17h6v4H9z" fill="#fff" stroke="#fff" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/></svg>Leaderboard</div>
+ <div class="ab cur" id="gem"><svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z" fill="#4cc9ff" stroke="#1d7fd0" stroke-width="1.2"/><path d="M2 9h20M9 3l-2 6 5 12 5-12-2-6" fill="none" stroke="#bff0ff" stroke-width=".8"/></svg><span id="gemV"></span><button class="plus" data-buy="gem" aria-label="Tambah gem"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div>
+ <div class="ab cur" id="coin"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffc83a" stroke="#c98a0c" stroke-width="1.5"/><text x="12" y="17" font-size="14" font-weight="900" text-anchor="middle" fill="#c98a0c">$</text></svg><span id="coinV"></span><button class="plus" data-buy="coin" aria-label="Tambah coin"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div>
+ <button class="ab blue" id="gear" aria-label="Pengaturan"><svg viewBox="0 0 24 24"><path fill="#fff" d="M19.4 13c.1-.3.1-.7.1-1s0-.7-.1-1l2.1-1.6-2-3.5-2.5 1a7 7 0 0 0-1.700-1L15 3.200h-4L10.600 6a7 7 0 0 0-1.700 1l-2.500-1-2 3.500L6.600 11c-.1.3-.1.7-.1 1s0 .7.1 1l-2.100 1.600 2 3.500 2.500-1c.5.4 1.100.7 1.700 1l.4 2.800h4l.4-2.800c.6-.3 1.200-.6 1.700-1l2.500 1 2-3.500zM12 15.500a3.500 3.500 0 1 1 0-7 3.500 3.500 0 0 1 0 7Z"/></svg></button>
 </div>
-
-<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;background:#101d38;border:1px solid #22385f;border-radius:20px;padding:12px">
-<div role="tablist" aria-label="Periode" style="display:flex;gap:6px;background:#0a1428;border:1px solid #22385f;border-radius:14px;padding:5px">
-<sc-for list="{{tabs}}" as="t" hint-placeholder-count="2"><button role="tab" type="button" aria-selected="{{t.on}}" sc-camel-on-click="{{t.pick}}" style="min-height:44px;border:0;border-radius:10px;padding:0 24px;font-weight:700;font-size:15px;{{t.style}}">{{t.name}}</button></sc-for>
+<nav class="ab" id="tb" aria-label="Kategori"></nav>
+<div class="ab" id="pod">
+ <div id="glow"></div><canvas id="gl"></canvas>
+ <div class="med" id="m1" style="left:50%;top:0;width:8rem;height:8rem"></div>
+ <div class="med" id="m2" style="left:21%;top:17%;width:6.4rem;height:6.4rem;animation-delay:-1s"></div>
+ <div class="med" id="m3" style="left:79%;top:22%;width:6.4rem;height:6.4rem;animation-delay:-2s"></div>
+ <div class="plate" id="p2"></div><div class="plate" id="p1"></div><div class="plate" id="p3"></div>
 </div>
-<label style="position:relative;flex:1 1 220px;max-width:360px"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#7e93b6" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" style="position:absolute;left:14px;top:14px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg><input type="search" placeholder="Cari nama pemain…" aria-label="Cari nama pemain" value="{{q}}" sc-camel-on-input="{{onSearch}}" style="width:100%;box-sizing:border-box;min-height:46px;background:#0a1428;border:1px solid #22385f;border-radius:14px;color:#eaf2ff;font-size:15px;padding:0 16px 0 44px"></label>
+<section class="ab" id="me"></section>
+<section class="ab" id="rt">
+ <div class="gc" id="hd"><span>#</span><span>Pemain</span><span>Skor</span><span>Rank</span></div>
+ <div id="rows"></div>
+ <div id="ft"><svg viewBox="0 0 24 24"><path d="M3 18 2 7l5 4 5-7 5 7 5-4-1 11z" fill="#ffd24d" stroke="#c98a0c" stroke-width="1" stroke-linejoin="round"/><rect x="3" y="19" width="18" height="2.500" rx="1" fill="#ffc83a"/></svg><p>Tantang temanmu<br>dan raih peringkat tertinggi!</p><button class="gold" id="rw"></button></div>
+</section>
 </div>
-
-<sc-if value="{{showPodium}}" hint-placeholder-val="{{true}}">
-<div style="display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:clamp(6px,2vw,22px);align-items:end;padding-top:30px">
-<sc-for list="{{podium}}" as="p" hint-placeholder-count="3">
-<div style="display:flex;flex-direction:column;align-items:center;min-width:0">
-<div style="position:relative;width:min(100%,{{p.aw}});display:flex;justify-content:center">
-<svg class="fig" sc-camel-view-box="0 0 120 176" role="img" aria-label="Avatar {{p.name}}" style="width:100%;height:auto;overflow:visible;margin-bottom:-6px">
-<defs><pattern id="px{{p.rank}}" width="8" height="8" sc-camel-pattern-units="userSpaceOnUse"><rect width="4" height="4" fill="#fff" opacity=".10"></rect><rect x="4" y="4" width="4" height="4" fill="#000" opacity=".10"></rect></pattern></defs>
-<sc-if value="{{p.cape}}" hint-placeholder-val="{{false}}"><rect x="30" y="58" width="60" height="78" style="fill:{{p.capeC}}"></rect></sc-if>
-<rect x="36" y="114" width="24" height="52" style="fill:{{p.pants}}"></rect><rect x="60" y="114" width="24" height="52" style="fill:{{p.pants}}"></rect>
-<rect x="36" y="154" width="24" height="12" fill="#2a2f3a"></rect><rect x="60" y="154" width="24" height="12" fill="#2a2f3a"></rect>
-<rect x="34" y="58" width="52" height="56" style="fill:{{p.shirt}}"></rect><rect x="34" y="102" width="52" height="6" fill="#3a2a1a"></rect>
-<rect x="16" y="58" width="18" height="34" style="fill:{{p.shirt}}"></rect><rect x="86" y="58" width="18" height="34" style="fill:{{p.shirt}}"></rect>
-<rect x="16" y="92" width="18" height="22" style="fill:{{p.skin}}"></rect><rect x="86" y="92" width="18" height="22" style="fill:{{p.skin}}"></rect>
-<rect x="40" y="16" width="40" height="42" style="fill:{{p.skin}}"></rect><rect x="40" y="16" width="40" height="11" style="fill:{{p.hair}}"></rect><rect x="40" y="16" width="6" height="24" style="fill:{{p.hair}}"></rect><rect x="74" y="16" width="6" height="24" style="fill:{{p.hair}}"></rect>
-<rect x="47" y="35" width="8" height="6" fill="#fff"></rect><rect x="50" y="35" width="5" height="6" fill="#1b2236"></rect><rect x="65" y="35" width="8" height="6" fill="#fff"></rect><rect x="68" y="35" width="5" height="6" fill="#1b2236"></rect><rect x="54" y="47" width="12" height="3" fill="#8a4b3c"></rect>
-<sc-if value="{{p.crown}}" hint-placeholder-val="{{false}}"><g><rect x="38" y="6" width="44" height="11" fill="#ffe27a"></rect><polygon points="38,6 44,-8 50,6" fill="#ffe27a"></polygon><polygon points="53,6 60,-12 67,6" fill="#ffe27a"></polygon><polygon points="70,6 76,-8 82,6" fill="#ffe27a"></polygon><rect x="38" y="13" width="44" height="4" fill="#c48f00"></rect></g></sc-if>
-<g fill="url(#px{{p.rank}})"><rect x="40" y="16" width="40" height="42"></rect><rect x="34" y="58" width="52" height="56"></rect><rect x="16" y="58" width="18" height="56"></rect><rect x="86" y="58" width="18" height="56"></rect><rect x="36" y="114" width="48" height="52"></rect></g>
-<g fill="#000" opacity=".16"><rect x="74" y="16" width="6" height="42"></rect><rect x="80" y="58" width="6" height="56"></rect><rect x="98" y="58" width="6" height="56"></rect><rect x="78" y="114" width="6" height="52"></rect><rect x="58" y="114" width="4" height="52"></rect></g>
-</svg>
-</div>
-<div style="font-family:'Lilita One',sans-serif;font-size:clamp(14px,2.6vw,21px);line-height:1.1;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:8px 0 6px;padding:0 4px;box-sizing:border-box">{{p.name}}</div>
-<div style="width:100%;box-sizing:border-box;background:#0a1428;border:1px solid {{p.edge}};border-radius:12px;padding:6px 8px;display:flex;justify-content:space-between;gap:6px;font-size:11px;color:#9fb3d1;margin-bottom:8px"><span>Menang<b style="display:block;font-family:'Lilita One',sans-serif;font-weight:400;font-size:clamp(14px,2.4vw,18px);color:#eaf2ff">{{p.winsText}}</b></span><span style="text-align:right">Skor<b style="display:block;font-family:'Lilita One',sans-serif;font-weight:400;font-size:clamp(14px,2.4vw,18px);color:{{p.num}}">{{p.scoreText}}</b></span></div>
-<div style="width:100%;position:relative;height:{{p.ph}}px;background:linear-gradient(180deg,{{p.face0}},{{p.face1}});border-radius:6px 6px 0 0;display:flex;align-items:center;justify-content:center;overflow:hidden">
-<div style="position:absolute;left:0;right:0;top:0;height:12px;background:{{p.top}}"></div>
-<div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.08) 50%,transparent 50%),linear-gradient(90deg,rgba(0,0,0,.08) 50%,transparent 50%);background-size:16px 16px"></div>
-<span style="position:relative;font-family:'Lilita One',sans-serif;font-size:clamp(40px,8vw,68px);line-height:1;color:{{p.ink}}">{{p.rank}}</span>
-</div>
-</div>
-</sc-for>
-</div>
-</sc-if>
-
-<div>
-<div class="rw hd"><span style="text-align:center">#</span><span>PEMAIN</span><span class="wd">MENANG</span><span style="text-align:right">SKOR</span><span style="text-align:center">PERUBAHAN</span></div>
-<ul style="list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:8px">
-<sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
-<li class="rw" style="padding:10px 18px;border-radius:16px;box-sizing:border-box;background:{{r.bg}};border:1.5px solid {{r.bd}};box-shadow:{{r.sh}}">
-<span style="font-family:'Lilita One',sans-serif;font-size:22px;text-align:center;color:{{r.rkc}}">{{r.rank}}</span>
-<span style="display:flex;align-items:center;gap:12px;min-width:0">
-<svg width="44" height="44" sc-camel-view-box="12 6 96 100" aria-hidden="true" style="flex:none;border-radius:10px;background:#0a1428"><rect x="16" y="58" width="18" height="34" style="fill:{{r.shirt}}"></rect><rect x="86" y="58" width="18" height="34" style="fill:{{r.shirt}}"></rect><rect x="34" y="58" width="52" height="48" style="fill:{{r.shirt}}"></rect><rect x="40" y="16" width="40" height="42" style="fill:{{r.skin}}"></rect><rect x="40" y="16" width="40" height="11" style="fill:{{r.hair}}"></rect><rect x="47" y="35" width="8" height="6" fill="#fff"></rect><rect x="50" y="35" width="5" height="6" fill="#1b2236"></rect><rect x="65" y="35" width="8" height="6" fill="#fff"></rect><rect x="68" y="35" width="5" height="6" fill="#1b2236"></rect></svg>
-<span style="min-width:0"><span style="display:flex;align-items:center;gap:8px"><span style="font-family:'Lilita One',sans-serif;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{r.name}}</span><sc-if value="{{r.me}}" hint-placeholder-val="{{false}}"><span style="flex:none;background:#7dff2e;color:#08140a;font-weight:700;font-size:11px;border-radius:99px;padding:2px 9px">KAMU</span></sc-if></span><span class="wm" style="color:#9fb3d1;font-size:12px">{{r.winsText}} kemenangan</span></span>
-</span>
-<span class="wd" style="font-family:'Lilita One',sans-serif;font-size:18px">{{r.winsText}}</span>
-<span style="font-family:'Lilita One',sans-serif;font-size:20px;text-align:right;color:{{r.num}}">{{r.scoreText}}</span>
-<span class="ch" role="img" aria-label="{{r.chLabel}}" style="display:flex;align-items:center;justify-content:center;gap:4px;font-weight:700;font-size:13px;color:{{r.chc}}">
-<sc-if value="{{r.up}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4l9 12H3z"></path></svg></sc-if>
-<sc-if value="{{r.down}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20L3 8h18z"></path></svg></sc-if>
-<sc-if value="{{r.same}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="4" fill="currentColor"></rect></svg></sc-if>
-{{r.chText}}</span>
-</li>
-</sc-for>
-</ul>
-<sc-if value="{{noRows}}" hint-placeholder-val="{{false}}"><div style="padding:40px 20px;text-align:center;color:#9fb3d1;background:#101d38;border:2px dashed #22385f;border-radius:18px">Tidak ada pemain dengan nama itu.</div></sc-if>
-</div>
-</div>
-</div>
-</x-dc>
-<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1200}}">
-class Component extends DCLogic {
-renderVals() {
-const st = this.state || {};
-const tab = st.tab ?? 'Global', q = (st.q ?? '').trim().toLowerCase();
-const fmt = (n) => n.toLocaleString('id-ID');
-// nama, kulit, rambut, baju, celana, [skorG, menangG, ubahG], [skorW, menangW, ubahW], kamu
-const P = [
-['RajaBlok99','#f2c9a0','#7a5230','#f2b705','#a35a22',[48210,812,0],[4980,41,-1]],
-['Budi_VoxelMaster','#e8b98a','#3b2a1a','#3b92ee','#2f3f7a',[45870,774,1],[4520,36,2]],
-['Siti_NinjaBlok','#f5d6b8','#1b2236','#2fbfa3','#1b8672',[44120,730,-1],[5230,47,3]],
-['NaraPixel','#f2c9a0','#5a3a22','#9a63e8','#6a3db0',[39650,668,2],[4700,38,0]],
-['SiUlarHijau','#e8b98a','#2d7a21','#58b02d','#2d5a1a',[37400,641,0],[3760,30,-2]],
-['KubikKuning','#f2c9a0','#c48f00','#ffe27a','#8a6a1a',[35980,612,-2],[3410,27,1]],
-['KamuBlok','#f5d6b8','#4a2e1a','#34d399','#0f6a4a',[34210,590,3],[4410,35,4],1],
-['Lintang_Voxel','#e8b98a','#3b2a1a','#8fd0ff','#1f5fb8',[31800,548,-1],[3150,24,0]],
-['PixelPanda','#f2c9a0','#1b2236','#e4ecf7','#5d7090',[29900,512,1],[3980,32,2]],
-['Gilang3D','#f2c9a0','#5a3a22','#f08a24','#b5600f',[27650,470,0],[2640,19,-1]],
-['Mawar_Blocky','#f5d6b8','#a8316a','#e0568f','#7a2250',[25400,431,-3],[2890,21,1]],
-['AriTanggaEmas','#e8b98a','#7a5230','#c48f00','#5f3f25',[23100,390,2],[2210,16,0]]];
-const gi = tab==='Global' ? 5 : 6;
-const arr = P.map(p => ({ name:p[0], skin:p[1], hair:p[2], shirt:p[3], pants:p[4], score:p[gi][0], wins:p[gi][1], d:p[gi][2], me:!!p[7] }))
- .sort((a,b) => b.score-a.score).map((p,i) => ({ ...p, rank:i+1 }));
-const PD = {
- 1:{ aw:'150px', ph:150, top:'#ffe27a', face0:'#f2b705', face1:'#a87800', ink:'#3a2a00', edge:'rgba(255,226,122,.5)', num:'#ffe27a', crown:true },
- 2:{ aw:'124px', ph:116, top:'#e4ecf7', face0:'#aebdd3', face1:'#6b7e9a', ink:'#1b2a40', edge:'rgba(213,224,240,.35)', num:'#e4ecf7' },
- 3:{ aw:'124px', ph:92, top:'#f0a96a', face0:'#d17a36', face1:'#8a4a1a', ink:'#2e1604', edge:'rgba(246,182,127,.35)', num:'#f0a96a' }};
-const podium = [arr[1], arr[0], arr[2]].map(p => ({ ...p, ...PD[p.rank], winsText:fmt(p.wins), scoreText:fmt(p.score), cape:p.rank===1, capeC:'#c48f00' }));
-const filt = arr.filter(p => p.name.toLowerCase().includes(q));
-const show = !q;
-const list = show ? arr.slice(3) : filt;
-const rows = list.map(p => ({ ...p, winsText:fmt(p.wins), scoreText:fmt(p.score),
- up:p.d>0, down:p.d<0, same:p.d===0, chText: p.d===0 ? '0' : String(Math.abs(p.d)), chc: p.d>0 ? '#7dff2e' : p.d<0 ? '#ff8a8a' : '#8fa6c9',
- chLabel: p.d>0 ? 'Naik '+p.d+' peringkat' : p.d<0 ? 'Turun '+Math.abs(p.d)+' peringkat' : 'Tidak berubah',
- bg: p.me ? 'linear-gradient(90deg,rgba(125,255,46,.16),rgba(52,211,153,.06))' : '#101d38', bd: p.me ? '#7dff2e' : '#22385f',
- sh: p.me ? '0 0 0 3px rgba(125,255,46,.14),0 10px 30px rgba(125,255,46,.12)' : 'none', rkc: p.me ? '#7dff2e' : '#b9c9e4', num: p.me ? '#7dff2e' : '#eaf2ff' }));
-return { podium, rows, showPodium:show, noRows:rows.length===0, q:st.q ?? '',
- updated: tab==='Global' ? 'Pembaruan terakhir: 29 Okt 2026, 08.00 WIB' : 'Minggu 26 Okt – 1 Nov 2026 · diperbarui 29 Okt 2026, 08.00 WIB',
- tabs: ['Global','Weekly'].map(n => ({ name:n, on:n===tab, style: n===tab ? 'background:#7dff2e;color:#08140a;box-shadow:0 3px 0 #3fa312' : 'background:transparent;color:#b9c9e4', pick:() => this.setState({ tab:n }) })),
- onSearch:(e) => this.setState({ q:e.target.value }) };
-}
-}
-</script>
-
-
-
-<div style="height:84px;padding-bottom:96px"></div>
-<nav aria-label="Navigasi utama" style="position:fixed;left:50%;transform:translateX(-50%);width:min(640px,calc(100% - 20px));box-sizing:border-box;bottom:10px;z-index:40;display:flex;justify-content:space-around;gap:2px;background:rgba(10,20,40,.94);backdrop-filter:blur(10px);border:1px solid #2f3f7a;border-radius:22px;padding:6px;box-shadow:0 14px 40px rgba(0,0,0,.6)"><a href="lobby.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V11z"/></svg>Lobi</a><a href="inventory.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l10 5v6a1 1 0 01-.5.87L12 20l-9.5-5.13A1 1 0 012 13V7l10-5zm0 7.5L6.5 7.5 12 4.5l5.5 3-5.5 3z"/></svg>Inventaris</a><a href="skins.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6v1H4v-1z"/></svg>Skin</a><a href="shop.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 8h10l1 12a1 1 0 01-1 1H6a1 1 0 01-1-1L7 8zm3-2V6a2 2 0 014 0v2h2V6a4 4 0 00-8 0v2h2z"/></svg>Toko</a><a href="leaderboard.html" aria-current="page" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;background:#7dff2e;color:#08140a"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 6h14v2a5 5 0 01-10 0H7A5 5 0 015 6zM5 10h14v11a1 1 0 01-2 0v-3H7v3a1 1 0 01-2 0V10zM11 2h2v8h-2z"/></svg>Peringkat</a></nav>
-
-<audio id="bgMusic" src="assets/music/zen.mp3" loop preload="auto"></audio>
-<style>
-#volPanel{position:fixed;right:16px;bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:41;
-  display:flex;align-items:center;gap:6px;background:rgba(10,20,40,.92);backdrop-filter:blur(10px);
-  border:1px solid #2f3f7a;border-radius:999px;padding:6px 8px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
-#volBtn{width:34px;height:34px;border-radius:50%;border:1px solid #2f3f7a;background:#101d38;color:#eaf2ff;
-  display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
-#volBtn svg{width:18px;height:18px}
-#volSlider{-webkit-appearance:none;appearance:none;width:96px;height:4px;border-radius:999px;
-  background:linear-gradient(90deg,#7dff2e var(--p,50%),#22385f var(--p,50%));outline:none;cursor:pointer}
-#volSlider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;
-  background:#7dff2e;border:2px solid #08140a;cursor:pointer}
-#volSlider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#7dff2e;border:2px solid #08140a;cursor:pointer}
-#volLabel{font-family:'Lilita One',sans-serif;font-size:11px;color:#b9c9e4;min-width:30px;text-align:center}
-</style>
+<div class="ov" id="modal"><div class="box" id="box" role="dialog" aria-modal="true"><button class="x" id="mx" aria-label="Tutup">✕</button><div id="mb"></div></div></div>
+<div id="toast"></div>
+<script src="assets/js/item-catalog.js"></script>
+<script src="assets/js/player-data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>UT.App.init({page:'leaderboard'});</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-(function(){
-  'use strict';
-  var STEPS=[6,5,15,30,50,75,100];
-  function load(){ try{ return JSON.parse(localStorage.getItem('ut-music')); }catch(e){ return null; } }
-  function save(v){ try{ localStorage.setItem('ut-music',JSON.stringify(v)); }catch(e){} }
-  function snap(v){ var best=STEPS[0],d=Math.abs(v-STEPS[0]); for(var i=1;i<STEPS.length;i++){ var dd=Math.abs(v-STEPS[i]); if(dd<d){d=dd;best=STEPS[i]} } return best; }
-  var s=load()||{on:true,v:50}; s.v=snap(s.v);
-  var audio=document.getElementById('bgMusic');
-  if(audio){ audio.volume=s.v/100; audio.muted=!s.on; if(s.on){ audio.play().catch(function(){}); } }
-  function apply(){
-    if(!audio) return;
-    audio.volume=s.v/100; audio.muted=!s.on;
-    var sl=document.getElementById('volSlider'); if(sl){ sl.value=s.v; sl.style.setProperty('--p',s.v+'%'); }
-    var lb=document.getElementById('volLabel'); if(lb){ lb.textContent=s.on?(s.v+'%'):'OFF'; }
-    var b=document.getElementById('volBtn'); if(b){ b.setAttribute('aria-pressed',String(s.on)); }
-  }
-  function build(){
-    var d=document.createElement('div'); d.id='volPanel';
-    var b=document.createElement('button'); b.id='volBtn'; b.type='button'; b.setAttribute('aria-label','Volume');
-    b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M19 5a9 9 0 010 14"/></svg>';
-    b.addEventListener('click',function(){ s.on=!s.on; save(s); apply(); });
-    var sl=document.createElement('input'); sl.type='range'; sl.id='volSlider'; sl.min=0; sl.max=100; sl.step=1; sl.value=s.v;
-    sl.addEventListener('input',function(){ s.v=snap(parseInt(sl.value,10)||0); save(s); apply(); });
-    var lb=document.createElement('span'); lb.id='volLabel';
-    d.appendChild(b); d.appendChild(sl); d.appendChild(lb);
-    document.body.appendChild(d); apply();
-  }
-  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',build); }
-  else { build(); }
+(()=>{
+const $=s=>document.querySelector(s),hex=n=>'#'+n.toString(16).padStart(6,'0'),fmt=n=>n.toLocaleString('id-ID');
+// ---- state: currency & settings dari PlayerData; tidak ada state kedua. Key legacy 'inv' tidak dibaca/ditulis lagi.
+const PD=window.PlayerData;
+const SET=()=>PD.settings();
+const SFX={click:'button',select:'button',open:'button',error:'button',coin:'button',purchase:'power',chest:'chest'};
+function playSound(n){if(!SET().sound)return;try{UT.Audio.play(SFX[n]||'button')}catch(e){}}
+const buzz=()=>{if(SET().vibration&&navigator.vibrate)navigator.vibrate(15)};
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),1600)}
+// ---- sky
+(()=>{const sk=$('#sky');[[5,60,6],[18,30,4],[30,70,5],[62,16,5],[86,48,7],[92,12,4],[2,20,5],[75,75,6],[45,85,4]].forEach((p,i)=>{const e=document.createElement('div');e.className='isl';e.style.cssText=`left:${p[0]}%;top:${p[1]}%;animation-delay:${-i}s;filter:blur(${i%3}px)`;e.innerHTML=`<i style="width:${p[2]}rem;height:${p[2]*.4}rem"></i><b style="width:${p[2]*.7}rem;height:${p[2]*.6}rem"></b>`;sk.appendChild(e)})})();
+// ---- icons
+const DM='<svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z" fill="#4cc9ff" stroke="#1d7fd0" stroke-width="1.2"/><path d="M2 9h20M9 3l-2 6 5 12 5-12-2-6" fill="none" stroke="#bff0ff" stroke-width=".8"/></svg>';
+const TR='<svg viewBox="0 0 24 24"><path d="M7 3h10v5a5 5 0 0 1-10 0zM7 5H3c0 4 2 6 4 6M17 5h4c0 4-2 6-4 6M12 13v4M8 21h8M9 17h6v4H9z" fill="#ffc83a" stroke="#c98a0c" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+const SHD='<svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.500 9 8 11 4.500-2 8-6 8-11V5z" fill="#b8c8e0" stroke="#7a8aa8" stroke-width="1.500" stroke-linejoin="round"/><text x="12" y="16" font-size="10" font-weight="900" text-anchor="middle" fill="#5a6a88">S</text></svg>';
+const TABS=[['global','Global','<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-4 4-4 14 0 18M12 3c4 4 4 14 0 18" fill="none"/>'],['teman','Teman','<circle cx="9" cy="8" r="3.500"/><path d="M2 20c0-4 3-6 7-6s7 2 7 6zM16 5a3.500 3.500 0 0 1 0 7M18 14c3 .5 4 3 4 6h-3"/>'],['mingguan','Mingguan','<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18M8 14h.1M12 14h.1M16 14h.1M8 18h.1M12 18h.1" stroke-linecap="round"/>']];
+const medal=(n,c1,c2)=>`<svg viewBox="0 0 100 100"><path d="M18 60C6 45 8 25 22 16M82 60c12-15 10-35-4-44" fill="none" stroke="${c2}" stroke-width="7" stroke-linecap="round"/><circle cx="50" cy="50" r="33" fill="url(#g${n})" stroke="${c2}" stroke-width="5"/><defs><linearGradient id="g${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><text x="50" y="66" font-size="46" font-weight="900" text-anchor="middle" fill="#fff" stroke="${c2}" stroke-width="2" paint-order="stroke">${n}</text></svg>`;
+$('#m1').innerHTML=medal(1,'#ffe27a','#d9920c');$('#m2').innerHTML=medal(2,'#d6e2f2','#6f88ac');$('#m3').innerHTML=medal(3,'#f0a066','#a85a28');
+const face=(hair,hood)=>`<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#8fd0ff"/><rect x="6" y="30" width="28" height="12" fill="${hex(hood)}"/><rect x="10" y="9" width="20" height="21" fill="#f0b98d"/><rect x="8" y="5" width="24" height="9" fill="${hex(hair)}"/><rect x="8" y="10" width="4" height="12" fill="${hex(hair)}"/><rect x="28" y="10" width="4" height="12" fill="${hex(hair)}"/><rect x="14" y="19" width="3.500" height="4.500" fill="#222"/><rect x="23" y="19" width="3.500" height="4.500" fill="#222"/><rect x="17" y="25" width="6" height="2" fill="#c0473a"/></svg>`;
+// ---- data
+const ME={name:'Kamu',lv:16,hair:0x7a4a2a,hood:0x1fb8d8,xp:320,xpMax:1000};
+const DATA={
+ global:{top:[['RizkyPro',15720],['Zyrex',12450],['Luna',11960]],others:[['FajarGG',26,8420,0x8a2be2,0x4a2a8a],['Sakura',24,7950,0xff6ab8,0x1fb8d8],['Barra',23,7680,0x7a4a2a,0x2a3a5a],['Nayla',22,7420,0x2a2a34,0x2a2a34],['Dika',21,7210,0x2fb04a,0x2fa04a]],me:{rank:128,score:3420}},
+ teman:{top:[['Dika',6200],['Barra',5480],['Nayla',4900]],others:[['Sakura',24,2980,0xff6ab8,0x1fb8d8],['FajarGG',26,2640,0x8a2be2,0x4a2a8a],['Luna',20,2210,0xd23a32,0xd23a32],['Zyrex',19,1870,0xcfcfd6,0xeeeef2]],me:{rank:4,score:3420}},
+ mingguan:{top:[['Luna',2840],['RizkyPro',2610],['FajarGG',2390]],others:[['Zyrex',19,2100,0xcfcfd6,0xeeeef2],['Sakura',24,1980,0xff6ab8,0x1fb8d8],['Barra',23,1760,0x7a4a2a,0x2a3a5a],['Nayla',22,1640,0x2a2a34,0x2a2a34],['Dika',21,1500,0x2fb04a,0x2fa04a]],me:{rank:57,score:820}}
+};
+let tab='global';
+const pad=n=>n<10?'0'+n:''+n;
+function renderTabs(){$('#tb').innerHTML=TABS.map(t=>`<button class="tb ${t[0]===tab?'on':''}" data-t="${t[0]}"><svg viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="1.800" stroke-linejoin="round" stroke-linecap="round">${t[2]}</svg>${t[1]}</button>`).join('');
+ document.querySelectorAll('.tb').forEach(b=>b.addEventListener('click',()=>{if(tab===b.dataset.t)return;tab=b.dataset.t;playSound('select');buzz();renderTabs();renderAll()}))}
+function renderPodium(){const d=DATA[tab].top;
+ const pl=(i,k)=>`<div class="pn">${d[i][0]}</div><div class="ps">${TR}${fmt(d[i][1])}</div>`;
+ $('#p1').innerHTML=pl(0);$('#p2').innerHTML=pl(1);$('#p3').innerHTML=pl(2)}
+function renderMe(){const m=DATA[tab].me;
+ $('#me').innerHTML=`<button class="blue bk" id="bk" aria-label="Sebelumnya"><svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="pos"><small>Posisi Kamu</small><b>#${m.rank}</b></div><span class="av">${face(ME.hair,ME.hood)}</span><div class="inf"><div class="nm">${ME.name}</div><div class="lv">Lv. ${ME.lv}</div><div class="xp"><i style="width:${ME.xp/ME.xpMax*100}%"></i><span>${ME.xp} / ${fmt(ME.xpMax)}</span></div></div><div class="mysc">${TR}${fmt(m.score)}</div>`;
+ $('#bk').addEventListener('click',()=>{playSound('click');toast('Posisi kamu: #'+m.rank)})}
+function renderRows(){const d=DATA[tab],m=d.me;
+ const list=d.others.map(o=>({n:o[0],lv:o[1],s:o[2],h:o[3],c:o[4]}));
+ const me={n:ME.name,lv:ME.lv,s:m.score,h:ME.hair,c:ME.hood,me:1};
+ let out=[];
+ if(m.rank<=8){list.splice(m.rank-4,0,me);out=list.map((o,i)=>({...o,r:4+i}))}
+ else{out=list.slice(0,5).map((o,i)=>({...o,r:4+i}));out.push({...me,r:m.rank})}
+ out=out.slice(0,6);if(m.rank<=8&&!out.some(o=>o.me))out[5]={...me,r:m.rank};
+ $('#rows').innerHTML=out.map((o,i)=>`<div class="gc lr ${o.me?'me':''}" style="animation-delay:${i*40}ms" data-n="${o.n}" data-r="${o.r}"><span class="no">${o.me&&o.r>99?o.r:pad(o.r)}</span><div class="who"><span class="av">${face(o.h,o.c)}</span><div><div class="nm2">${o.n}</div><div class="lv2">Lv. ${o.lv}</div></div></div><div class="sc">${TR}${fmt(o.s)}</div><div class="rk">${o.me?SHD:DM}</div></div>`).join('');
+ document.querySelectorAll('.lr').forEach(r=>r.addEventListener('click',()=>{playSound('click');toast(r.dataset.n+' — peringkat #'+r.dataset.r)}))}
+function renderCur(){renderCurrency()}
+function renderCurrency(){$('#gemV').textContent=fmt(PD.gems());$('#coinV').textContent=fmt(PD.coins())}
+function renderAll(){renderPodium();renderMe();renderRows();renderCur()}
+// ---- event: currency ikut berubah tanpa reload halaman
+UT.Events.on('currencyChanged',renderCurrency);
+$('#rw').innerHTML=TR+'Lihat Hadiah';
+// ---- modal
+const modal=$('#modal');let mOpen=false;
+function openModal(html,init){$('#mb').innerHTML=html;modal.style.display='grid';requestAnimationFrame(()=>modal.classList.add('show'));mOpen=true;playSound('open');init&&init();$('#mx').focus()}
+function closeModal(){if(!mOpen)return;mOpen=false;modal.classList.add('closing');modal.classList.remove('show');setTimeout(()=>{modal.style.display='none';modal.classList.remove('closing')},250)}
+$('#mx').addEventListener('click',closeModal);modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+function pulse(id){const e=$(id);e.classList.remove('pulse');void e.offsetWidth;e.classList.add('pulse')}
+$('#rw').addEventListener('click',()=>{playSound('click');
+ const R=[['Peringkat 1','500',DM],['Peringkat 2','300',DM],['Peringkat 3','200',DM],['Top 10','100',DM],['Top 100','50',DM]];
+ openModal('<h2>Hadiah Musim Ini</h2>'+R.map(r=>`<div class="row"><span>${r[0]}</span><b>+${r[1]}${r[2]}</b></div>`).join(''))});
+function buy(type){const g=type==='gem',packs=g?[[10,'Rp 15.000'],[50,'Rp 59.000'],[120,'Rp 129.000']]:[[500,'10 Gem'],[2500,'40 Gem'],[10000,'120 Gem']];
+ openModal(`<h2>Tambah ${g?'Gem':'Coin'}</h2>`+packs.map((p,i)=>`<button class="pack" data-i="${i}"><span>+${fmt(p[0])}</span><span>${p[1]}</span></button>`).join(''),()=>{
+  document.querySelectorAll('.pack').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.i,p=packs[i];const r=g?PD.addCurrency(0,p[0]):PD.addCurrency(p[0],-[10,40,120][i]);
+   if(!r.ok){toast(r.reason==='gem-kurang'?'Gem tidak cukup.':'Transaksi gagal.');playSound('error');return}
+   renderCurrency();pulse(g?'#gem':'#coin');playSound('coin');toast(g?'Berhasil (mock)':'Berhasil');closeModal()}))})}
+document.querySelectorAll('[data-buy]').forEach(b=>b.addEventListener('click',()=>buy(b.dataset.buy)));
+$('#gear').addEventListener('click',()=>{const T=SET();const row=(k,l)=>`<div class="row"><span>${l}</span><button class="tg ${T[k]?'on':''}" data-k="${k}">${T[k]?'ON':'OFF'}</button></div>`;
+ openModal(`<h2>Pengaturan</h2>${row('music','Musik')}${row('sound','Suara')}${row('vibration','Getar')}<div class="row"><span>Grafik</span><button class="tg on" data-k="graphics">${T.graphics==='high'?'Tinggi':'Rendah'}</button></div>`,()=>{
+  document.querySelectorAll('.tg').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.k,cur=SET();let v;
+   if(k==='graphics'){v=cur.graphics==='high'?'low':'high';b.textContent=v==='high'?'Tinggi':'Rendah';PD.setSettings({graphics:v});fit()}
+   else{v=!cur[k];b.classList.toggle('on',v);b.textContent=v?'ON':'OFF';PD.setSettings({[k]:v})}
+   playSound('click');buzz()}))})});
+$('#back').addEventListener('click',()=>{playSound('click');location.href='lobby.html'});
+window.openLeaderboard=()=>{$('#ui').style.display=''};window.closeLeaderboard=()=>{$('#ui').style.display='none'};
+// ---- 3D podium
+const M=(c,r=.7)=>new THREE.MeshStandardMaterial({color:c,roughness:r});
+const bx=(w,h,d,m,x=0,y=0,z=0,p)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);p&&p.add(o);return o};
+function character(sk,emote){const g=new THREE.Group(),P={};const skin=M(0xf0b98d),hood=M(sk.hood),hair=M(sk.hair),pants=M(sk.pants),wh=M(0xffffff),bl=M(0x2f6fd0),pk=M(0x7a4a2a),dk=M(0x221a18);
+ const body=new THREE.Group();body.position.y=2.6;g.add(body);P.body=body;
+ bx(1.7,1.9,1,hood,0,0,0,body);bx(.9,1.1,.1,wh,0,-.1,.52,body);bx(1.1,1.4,.5,pk,0,0,-.75,body);
+ const head=new THREE.Group();head.position.y=2.1;body.add(head);P.head=head;
+ bx(2.2,2.1,2.1,skin,0,0,0,head);bx(2.4,.8,2.3,hair,0,1.15,-.05,head);bx(2.4,1.8,.5,hair,0,.2,-1,head);bx(.4,1.2,2.1,hair,-1.2,.4,0,head);bx(.4,1.2,2.1,hair,1.2,.4,0,head);bx(2.2,.5,.5,hair,0,.8,1.05,head);
+ P.eyes=[-.55,.55].map(x=>{const e=new THREE.Group();e.position.set(x,.05,1.06);head.add(e);bx(.42,.55,.1,dk,0,0,0,e);bx(.14,.16,.1,wh,.08,.12,.06,e);return e});
+ bx(.7,.15,.1,M(0xc0473a),0,-.6,1.06,head);
+ const arm=x=>{const a=new THREE.Group();a.position.set(x,.8,0);body.add(a);bx(.7,1.5,.7,hood,0,-.6,0,a);bx(.6,.5,.6,skin,0,-1.5,0,a);return a};
+ P.aL=arm(-1.2);P.aR=arm(1.2);
+ const leg=x=>{const l=new THREE.Group();l.position.set(x,-1,0);body.add(l);bx(.8,1.4,.9,pants,0,-.6,0,l);bx(1,.5,1.3,wh,0,-1.45,.15,l);bx(1.02,.18,1.32,bl,0,-1.2,.15,l);return l};
+ P.lL=leg(-.45);P.lR=leg(.45);
+ g.userData.anim=t=>{const k=emote||'idle';P.body.position.y=2.6+Math.sin(t*2)*.05;P.body.scale.y=1+Math.sin(t*2)*.012;P.head.rotation.set(0,Math.sin(t*.7)*.12,Math.sin(t*.9)*.03);
+  P.aL.rotation.z=-.15;P.aR.rotation.z=.15;
+  if(k==='idle')P.aR.rotation.z=.15-Math.sin(t*2)*.05;
+  if(k==='wave')P.aR.rotation.z=2.4+Math.sin(t*10)*.35;
+  P.eyes.forEach(e=>e.scale.y=(t%4<.15)?.1:1)};
+ return g}
+let ok=typeof THREE!=='undefined',R=null;
+function build(){const cv=$('#gl');
+ try{const r=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
+  const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(30,1.45,.1,100);
+  scene.add(new THREE.AmbientLight(0xffffff,.75),new THREE.HemisphereLight(0xcfeaff,0x6a9a50,.6));
+  const sun=new THREE.DirectionalLight(0xfff2d8,.9);sun.position.set(5,12,10);scene.add(sun);
+  const holder=new THREE.Group();scene.add(holder);
+  const cfg=[{x:-3.3,h:1.9,col:0x9fb4d4,cap:0xc4d4ec,sk:{hood:0xeeeef2,hair:0xcfcfd6,pants:0x2a2a30},rot:.25},
+             {x:0,h:2.6,col:0xf2b72a,cap:0xffd964,sk:{hood:0x1fb8d8,hair:0x7a4a2a,pants:0x4a4a58},rot:0,emote:'wave'},
+             {x:3.3,h:1.5,col:0xc8743a,cap:0xe29a60,sk:{hood:0xd23a32,hair:0x5a3420,pants:0x333a4a},rot:-.25}];
+  const chars=[];
+  cfg.forEach(c=>{const pod=new THREE.Mesh(new THREE.CylinderGeometry(1.75,1.95,c.h,8),M(c.col,.6));pod.position.set(c.x,c.h/2,0);pod.rotation.y=Math.PI/8;holder.add(pod);
+   const cap=new THREE.Mesh(new THREE.CylinderGeometry(1.55,1.75,.14,8),M(c.cap,.5));cap.position.set(c.x,c.h+.07,0);cap.rotation.y=Math.PI/8;holder.add(cap);
+   const w=new THREE.Group();w.position.set(c.x,c.h+.14,0);w.scale.setScalar(.46);w.rotation.y=c.rot;const ch=character(c.sk,c.emote);w.add(ch);holder.add(w);chars.push(ch)});
+  const ring=new THREE.Mesh(new THREE.RingGeometry(4.6,5.6,48),new THREE.MeshBasicMaterial({color:0xbfeaff,transparent:true,opacity:.55,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.02;ring.scale.set(1.6,1,1);holder.add(ring);
+  R={r,scene,cam,chars,cv}}catch(e){ok=false;console.warn('WebGL unavailable',e)}}
+function fit(){if(!R)return;const w=R.cv.clientWidth,h=R.cv.clientHeight;if(!w||!h)return;const hi=SET().graphics==='high';R.r.setPixelRatio(hi?Math.min(devicePixelRatio,1.5):1);R.r.setSize(w,h,false);R.cam.aspect=w/h;R.cam.fov=w/h<1.2?36:30;R.cam.updateProjectionMatrix()}
+function loop(t0){requestAnimationFrame(loop);const t=t0/1000;if(!R.cv.offsetParent)return;R.chars.forEach(c=>c.userData.anim(t));R.cam.position.set(0,4.2,15);R.cam.lookAt(0,3.4,0);R.r.render(R.scene,R.cam)}
+renderTabs();renderAll();
+if(ok)build();
+if(ok&&R){new ResizeObserver(fit).observe($('#pod'));fit();requestAnimationFrame(loop)}
+else $('#pod').insertAdjacentHTML('afterbegin','<div style="position:absolute;inset:0;display:grid;place-items:center;font-size:3rem">3D tidak tersedia</div>');
 })();
 </script>
 </body></html>

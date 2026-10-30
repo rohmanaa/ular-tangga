@@ -52,8 +52,10 @@
     skin('ender',    'Enderman', 'Epic',      'epic',   700, 'Makhluk tinggi dari dimensi lain dengan mata ungu menyala.', { featured: true }),
 
     /* ---- Skin dadu (Aksesori) ---- */
+    /* legacyIds = metadata migrasi Tahap 3 (ID lama yang dipetakan eksplisit ke ID canonical ini).
+       ID legacy yang tidak tercantum di sini adalah UNMAPPED (lihat DATA_MIGRATION.md). */
     dice('klasik',   'Klasik',   'common',    0,   'Dadu putih sederhana yang tidak pernah ketinggalan zaman.',
-         { bg: '#ffffff', pip: '#1b2a3b', edge: '#1b2a3b' }),
+         { bg: '#ffffff', pip: '#1b2a3b', edge: '#1b2a3b' }, { legacyIds: ['standard'] }),
     dice('rumput',   'Rumput',   'common',    100, 'Dadu hijau segar bergaya blok rumput.',
          { bg: '#5fae3e', pip: '#1f4a12', edge: '#2c5a1c' }),
     dice('tnt',      'TNT',      'rare',      200, 'Dadu merah meledak-ledak. Semoga angkanya ikut meledak!',
@@ -63,7 +65,7 @@
     dice('obsidian', 'Obsidian', 'epic',      500, 'Dadu ungu gelap dari obsidian dengan titik berpendar.',
          { bg: '#2a1747', pip: '#d3b4ff', edge: '#0d0618' }),
     dice('emas',     'Emas',     'legendary', 900, 'Dadu emas berkilau untuk pemain yang percaya diri.',
-         { bg: '#ffd23f', pip: '#6b4a00', edge: '#6b4a00' }, { featured: true }),
+         { bg: '#ffd23f', pip: '#6b4a00', edge: '#6b4a00' }, { featured: true, legacyIds: ['emas'] }),
 
     /* ---- Tema papan (Lainnya) ---- */
     theme('minecraft', 'Minecraft', 'common', 0,   'Padang rumput blok bergaya klasik.',

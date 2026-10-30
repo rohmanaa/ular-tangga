@@ -1,7 +1,7 @@
-<!doctype html><html lang="id"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Ular Tangga Blok</title></head><body>
+<!doctype html><html lang="id"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="stylesheet" href="assets/css/base.css"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Ular Tangga Blok</title></head><body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&family=Silkscreen:wght@400;700&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 /* Layout: kanvas 3D memenuhi layar. HUD di atas (pemain + alat), dock di bawah (pesan + dadu), menu dan hasil sebagai kartu di tengah. Warna langit berganti sesuai tema. */
 :root{
@@ -194,6 +194,58 @@ body.playing .side{display:block}
 @keyframes pcpop{0%{transform:translate(-50%,-50%) scale(.85)}60%{transform:translate(-50%,-50%) scale(1.1)}100%{transform:translate(-50%,-50%) scale(1)}}
 @media(prefers-reduced-motion:reduce){.pucard,.pucard.pop{animation:none}}
 </style>
+<style>
+/* ===== HUD bergaya Inventory: panel biru glossy, tombol permen berbayang navy, kartu aktif emas ===== */
+:root{--bd:#12337f;--font-display:'Baloo 2','Fredoka','Nunito',system-ui,sans-serif;--font-body:'Baloo 2','Fredoka','Nunito',system-ui,sans-serif}
+body{font-weight:800}
+/* panel */
+body .pnl{background:linear-gradient(#3b9cf8,#2a86ee);border:0;border-radius:22px;color:#fff;box-shadow:0 6px 0 var(--bd),0 14px 24px rgba(18,51,127,.35),inset 0 2px 3px rgba(255,255,255,.6),inset 0 0 0 3px #6cc0ff}
+body .pnl h3{color:#fff;font-size:17px;font-weight:800;letter-spacing:0;text-transform:none;text-shadow:0 2px 0 var(--bd)}
+/* kartu pemain */
+body .pr{font-family:var(--font-display);font-size:15px;font-weight:800;text-transform:none;border:0;border-radius:16px;padding:7px 10px;opacity:1;color:#fff;text-shadow:0 2px 0 var(--bd);background:linear-gradient(#3f9bff,#1c55c0);box-shadow:0 3px 0 rgba(10,30,100,.5),inset 0 0 0 3px rgba(120,190,255,.55)}
+body .pr.on{background:linear-gradient(#ffd24d,#f4a81f);box-shadow:0 4px 0 #b9740c,0 0 18px #ffd24d;text-shadow:0 2px 0 #a35f08;transform:scale(1.04)}
+body .pr img,body .sr img{width:30px;height:30px;border:3px solid var(--pc,#fff);border-radius:9px;background:#fff}
+body .pr .pos{padding:0 10px;border-radius:10px;background:rgba(10,40,120,.45);font-size:13px;opacity:1;text-shadow:none}
+body .pr.on .pos{background:rgba(163,95,8,.35)}
+body .hp{height:10px;border:0;border-radius:6px;overflow:hidden;background:rgba(10,30,100,.55)}
+body .hp i{background:linear-gradient(#ff8a7a,#e53935)}
+body .bf{font-size:12px;text-shadow:none}
+body .sr{font-family:var(--font-display);text-transform:none;font-size:14px}
+/* tombol: dasar emas, varian .light biru */
+body .btn{font-family:var(--font-display);font-size:18px;font-weight:800;text-transform:none;letter-spacing:0;color:#fff;border:0;border-radius:20px;padding:10px 20px;background:linear-gradient(#ffd24d,#ff9a1f);text-shadow:0 2px 0 #8a4a0a;box-shadow:0 5px 0 #c96a0c,inset 0 3px 3px rgba(255,255,255,.6)}
+body .btn:hover:not(:disabled){filter:brightness(1.08)}
+body .btn:active:not(:disabled){transform:translateY(4px);box-shadow:0 1px 0 #c96a0c,inset 0 3px 3px rgba(255,255,255,.6)}
+body .btn:disabled{background:linear-gradient(#8a9bb8,#5a6b8c);color:#d0dbee;text-shadow:none;box-shadow:0 3px 0 #2c3a56;transform:translateY(2px)}
+body .btn.light,body .hud .btn.light{color:#fff;background:linear-gradient(#4aa8ff,#1f6fe0);text-shadow:0 2px 0 var(--bd);box-shadow:0 5px 0 var(--bd),0 10px 14px rgba(18,51,127,.35),inset 0 2px 2px rgba(255,255,255,.6)}
+body .btn.light:active:not(:disabled){box-shadow:0 1px 0 var(--bd),inset 0 2px 2px rgba(255,255,255,.6)}
+body .btn.small,body .hud .btn.small{font-size:14px;padding:8px 14px;border-radius:15px;white-space:nowrap}
+body .btn.light[aria-pressed=true]{background:linear-gradient(#ffd24d,#f4a81f);text-shadow:0 2px 0 #a35f08;box-shadow:0 4px 0 #b9740c,0 0 14px #ffd24d}
+/* panel giliran */
+body .tn .btn{width:100%;font-size:22px;border-radius:999px;padding:8px 16px;color:#fff;background:linear-gradient(#ffd24d,#ff9a1f);text-shadow:0 2px 0 #8a4a0a;box-shadow:0 5px 0 #c96a0c,inset 0 3px 3px rgba(255,255,255,.6)}
+body .tn .btn:disabled{background:linear-gradient(#8a9bb8,#5a6b8c);color:#d0dbee;text-shadow:none;box-shadow:0 3px 0 #2c3a56}
+body #turnName{font-size:20px;text-transform:none;text-shadow:0 2px 0 var(--bd)}
+body .tn .msg{font-size:14px;font-weight:700;color:#e0f2ff;text-shadow:none}
+/* power-up */
+body .pb{background:linear-gradient(#3f9bff,#1c55c0);border:0;border-radius:16px;color:#fff;transition:transform .15s cubic-bezier(.3,1.6,.5,1),filter .15s;box-shadow:0 4px 0 var(--bd),inset 0 0 0 3px rgba(120,190,255,.55),inset 0 2px 2px rgba(255,255,255,.4)}
+body .pb:not(:disabled):hover{transform:scale(1.07);filter:brightness(1.1)}
+body .pb:not(:disabled):active{transform:scale(.94)}
+body .pb:disabled{opacity:.5;filter:grayscale(.5)}
+body .pb em{color:#fff;font:800 11px var(--font-display);text-transform:none;text-shadow:0 1px 0 var(--bd)}
+body .pb b{top:-7px;right:-7px;bottom:auto;min-width:22px;height:22px;padding:0 4px;box-sizing:border-box;display:grid;place-items:center;border-radius:11px;background:#3cc23c;border:2px solid #fff;font:800 12px var(--font-display);color:#fff;text-shadow:none}
+body .pb:disabled b{background:#7a8fb0}
+/* kartu pop-up power-up */
+body .pucard{background:linear-gradient(#3b9cf8,#2a86ee);border:0;border-radius:26px;color:#fff;box-shadow:0 8px 0 var(--bd),0 0 28px rgba(255,210,77,.65),inset 0 3px 3px rgba(255,255,255,.55),inset 0 0 0 4px #ffe36a}
+body #pcName{font-size:26px;text-transform:none;color:#ffe36a;text-shadow:0 3px 0 var(--bd)}
+body #pcWho{color:#e0f2ff;font-size:15px;text-transform:none}
+body .pucard p{font-weight:700}
+/* menu, jeda, hasil */
+body .card{background:linear-gradient(#7cc2ff,#4a9ae8);border:0;border-radius:26px;color:#fff;box-shadow:0 10px 0 var(--bd),0 22px 30px rgba(0,0,0,.3),inset 0 3px 3px rgba(255,255,255,.55)}
+body .card h1,body .card h2,body #pauseMenu .card h2,body #exitConfirm .card h2{color:#fff;text-transform:none;letter-spacing:0;font-size:clamp(30px,8vw,42px);text-shadow:0 4px 0 var(--bd)}
+body .card p{color:#eaf6ff;font-weight:700}
+body .eyebrow,body .lbl{color:#d7ecff;text-transform:none;letter-spacing:.02em;font-size:15px}
+body #pauseMenu,body #exitConfirm{background:rgba(18,51,127,.5);backdrop-filter:blur(6px)}
+@media(max-width:699px){body .tn .msg{font-size:12px}body .btn.small,body .hud .btn.small{font-size:12px;padding:6px 10px}}
+</style>
 <canvas id="c" aria-label="Papan ular tangga 3D"></canvas>
 
 <header class="hud" id="hud">
@@ -295,6 +347,8 @@ if (typeof THREE === 'undefined') {
 <script src="assets/js/item-catalog.js"></script>
 <script src="assets/js/player-data.js"></script>
 <script src="assets/js/game-integration.js"></script>
+<script src="assets/js/app.js"></script>
+<script>UT.App.init({page:'gameplay'});</script>
 <script>
     if (window.__NO_THREE) { throw new Error('Three.js tidak dimuat'); }
 (function(){
@@ -1498,7 +1552,7 @@ async function usePU(k,cpu){
 function renderChips(){
   const box=$('players'),sc=$('scores'),pu=$('pus'); box.textContent=''; sc.textContent=''; pu.textContent='';
   players.forEach((p,i)=>{
-    const d=document.createElement('div'); d.className='pr'+(i===cur&&!gameOver?' on':''); d.style.background=p.css;
+    const d=document.createElement('div'); d.className='pr'+(i===cur&&!gameOver?' on':''); d.style.setProperty('--pc',p.css);
     const im=document.createElement('img'); im.src=faceURL(p.key); im.alt='';
     const nm=document.createElement('span'); nm.textContent=p.name;
     const ps=document.createElement('span'); ps.className='pos'; ps.textContent=p.pos===0?'Mulai':(p.pos===100?'Naga '+p.dhp:String(p.pos));

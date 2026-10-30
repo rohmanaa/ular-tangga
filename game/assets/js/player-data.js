@@ -1,12 +1,36 @@
-/* Data pemain bersama — dibaca/ditulis oleh SEMUA halaman lewat objek ini.
+/* Data pemain bersama — SINGLE SOURCE OF TRUTH (Tahap 3).
+   Dibaca/ditulis oleh SEMUA halaman non-gameplay lewat objek ini.
    Penyimpanan: localStorage["ularTanggaBlok:player:v1"] (hanya di browser ini, tanpa sinkronisasi server).
-   Butuh: item-catalog.js dimuat lebih dulu. */
+   Butuh: item-catalog.js dimuat lebih dulu.
+
+   MIGRASI (v1): data lama dari kunci legacy "inv", "shop", "modeScreen", "ut-dadu", "ut-tema2"
+   diimpor SEKALI secara idempoten. Kunci legacy TIDAK dihapus dan TIDAK ditimpa — tetap
+   dipertahankan sebagai sumber kompatibilitas sampai tahap cleanup di masa depan.
+   Tidak ada localStorage.clear() / removeItem untuk key legacy di file ini. */
 (function (g) {
   'use strict';
   var C = g.ItemCatalog;
   var KEY = 'ularTanggaBlok:player:v1';
   var SCHEMA = 1;
-  var START_COINS = 1000; /* saldo awal SEKALI saat data dibuat; tidak ada koin gratis berulang */
+  var MIGRATION_VERSION = 1;   /* playerDataMigrationVersion — naikkan bila ada langkah migrasi baru */
+  var START_COINS = 1000;      /* saldo awal SEKALI saat data dibuat; tidak ada koin gratis berulang */
+  var START_GEMS = 0;
+  var DEFAULT_SETTINGS = { music: true, sound: true, vibration: true, graphics: 'high' };
+  var DEFAULT_PROFILE = { name: 'FajarGG' };
+
+  /* ---------- Mapping legacy -> canonical (EKSPLISIT, bukan tebakan) ----------
+     Dice: hanya pasangan yang dapat DIBUKTIKAN dari project yang dipetakan.
+     - "standard" -> dice.klasik : deskripsi legacy "Dadu klasik untuk semua pemain.",
+       ditandai own:1 (starter) — persis peran dice.klasik di katalog/gameplay.
+     - "emas"     -> dice.emas   : kunci & nama sama ("Dadu Emas"), palet emas sama.
+     "ajaib", "crystal", "lava" dan SEMUA skin legacy (explorer-neon, snow-ranger,
+     red-warrior, purple-mystic, green-ranger, yellow-scout, shadow-ninja, future-hero)
+     TIDAK punya padanan yang dapat dipastikan -> UNMAPPED: tidak diimpor, tidak dihapus,
+     tetap tersimpan di storage legacy (lihat DATA_MIGRATION.md). */
+  var LEGACY_DICE_MAP = { standard: 'dice.klasik', emas: 'dice.emas' };
+  var LEGACY_SKIN_MAP = {};    /* kosong dengan sengaja — tidak ada padanan yang dapat dibuktikan */
+  var LEGACY_THEME_MAP = {};   /* ut-tema2 sudah memakai kunci tema canonical */
+  var LEGACY_MAPS = { skin: LEGACY_SKIN_MAP, dice: LEGACY_DICE_MAP, theme: LEGACY_THEME_MAP };
 
   var memState = null;     /* cadangan di memori jika localStorage tidak bisa dipakai */
   var persistent = probe();
@@ -20,20 +44,40 @@
   function rawSet(s) { try { localStorage.setItem(KEY, s); return true; } catch (e) { return false; } }
   function legacyGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function legacySet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function legacyJSON(k) { /* baca key legacy tanpa pernah menulis/menghapusnya */
+    try { var v = legacyGet(k); if (!v) return null; var o = JSON.parse(v); return (o && typeof o === 'object' && !Array.isArray(o)) ? o : null; }
+    catch (e) { return null; }
+  }
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function normSettings(s) {
+    var out = clone(DEFAULT_SETTINGS);
+    if (s && typeof s === 'object' && !Array.isArray(s)) {
+      if (typeof s.music === 'boolean') out.music = s.music;
+      if (typeof s.sound === 'boolean') out.sound = s.sound;
+      if (typeof s.vibration === 'boolean') out.vibration = s.vibration;
+      if (s.graphics === 'high' || s.graphics === 'low') out.graphics = s.graphics;
+    }
+    return out;
+  }
+  function normProfile(p) {
+    var out = clone(DEFAULT_PROFILE);
+    if (p && typeof p === 'object' && typeof p.name === 'string' && p.name.trim()) out.name = p.name.trim().slice(0, 16);
+    return out;
+  }
 
   /* ---------- Pembuatan data awal ---------- */
   function freshState() {
     var now = Date.now(), seq = 0, inv = {};
     C.starters().forEach(function (it) { inv[it.id] = { qty: 1, acquiredAt: now, seq: seq++ }; });
-    var st = { schema: SCHEMA, createdAt: now, coins: START_COINS, nextSeq: seq,
-               inventory: inv, equipped: clone(C.defaultEquipped) };
-    migrateLegacy(st);
+    var st = { schema: SCHEMA, migration: 0, createdAt: now, coins: START_COINS, gems: START_GEMS, nextSeq: seq,
+               inventory: inv, equipped: clone(C.defaultEquipped),
+               settings: clone(DEFAULT_SETTINGS), profile: clone(DEFAULT_PROFILE) };
+    migrateLegacyEquip(st); /* pilihan dadu/tema lama (ut-dadu, ut-tema2) dulu gratis — pertahankan */
     return st;
   }
 
-  /* Migrasi aman: pilihan dadu/tema lama (ut-dadu, ut-tema2) dulu gratis — pertahankan sebagai milik pemain. */
-  function migrateLegacy(st) {
+  /* Migrasi lama Tahap-2: kunci pilihan dadu/tema gratis. */
+  function migrateLegacyEquip(st) {
     [['dice', 'ut-dadu'], ['theme', 'ut-tema2']].forEach(function (p) {
       var it = C.byGameKey(p[0], legacyGet(p[1]) || '');
       if (!it) return;
@@ -48,9 +92,13 @@
     var now = Date.now();
     var st = {
       schema: SCHEMA,
+      migration: (isFinite(o.migration) && o.migration >= 0) ? Math.floor(o.migration) : 0,
       createdAt: isFinite(o.createdAt) ? +o.createdAt : now,
       coins: (isFinite(o.coins) && o.coins >= 0) ? Math.floor(o.coins) : 0,
-      nextSeq: 0, inventory: {}, equipped: {}
+      gems: (isFinite(o.gems) && o.gems >= 0) ? Math.floor(o.gems) : START_GEMS,
+      nextSeq: 0, inventory: {}, equipped: {},
+      settings: normSettings(o.settings),
+      profile: normProfile(o.profile)
     };
     var inv = (o.inventory && typeof o.inventory === 'object' && !Array.isArray(o.inventory)) ? o.inventory : {};
     var maxSeq = -1;
@@ -88,15 +136,73 @@
     if (t) legacySet('ut-tema2', t.gameKey);
   }
 
+  /* ---------- MIGRASI v1 (idempoten) ----------
+     Dijalankan hanya bila st.migration < MIGRATION_VERSION. Setelah sukses, versi disimpan,
+     sehingga pemanggilan berulang (refresh, pindah halaman) tidak menggandakan apa pun.
+     Pengaman tambahan: currency hanya diimpor bila saldo masih "pristine"
+     (belum pernah diubah sistem baru), item hanya ditambah bila belum dimiliki. */
+  function migrateV1(st) {
+    var inv = legacyJSON('inv'), shop = legacyJSON('shop'), mode = legacyJSON('modeScreen');
+
+    /* --- currency: default 1000 coins TIDAK BOLEH menimpa saldo legacy --- */
+    var pristine = st.coins === START_COINS && (st.gems | 0) === START_GEMS;
+    if (pristine) {
+      var cur = (inv && isFinite(inv.coins)) ? inv : ((shop && isFinite(shop.coins)) ? shop : null);
+      if (cur) {
+        var c = Math.floor(+cur.coins); if (c >= 0) st.coins = c;
+        if (isFinite(cur.gems)) { var gm = Math.floor(+cur.gems); if (gm >= 0) st.gems = gm; }
+      }
+    }
+
+    /* --- inventory: hanya ID canonical hasil mapping eksplisit; tidak pernah menduplikasi --- */
+    function importOwned(list, map) {
+      if (!Array.isArray(list)) return;
+      list.forEach(function (legacyId) {
+        var cid = map[legacyId] || (C.byId(legacyId) ? legacyId : null); /* id legacy yang ternyata canonical */
+        if (!cid) return; /* unmapped: dipertahankan di storage legacy, tidak diimpor */
+        if (!C.byId(cid)) return;
+        if (!st.inventory[cid]) st.inventory[cid] = { qty: 1, acquiredAt: st.createdAt, seq: st.nextSeq++ };
+      });
+    }
+    var own = (inv && inv.own) || (shop && shop.own) || {};
+    importOwned(own.dice, LEGACY_DICE_MAP);
+    importOwned(own.skin, LEGACY_SKIN_MAP);
+    importOwned(own.theme, LEGACY_THEME_MAP);
+
+    /* --- equipped: pulihkan pilihan legacy bila slot masih default --- */
+    var eq = (inv && inv.eq) || (shop && shop.eq) || {};
+    ['skin', 'dice', 'theme'].forEach(function (slot) {
+      var lid = eq[slot]; if (!lid) return;
+      var cid = LEGACY_MAPS[slot][lid] || (function () { var it = C.byId(lid); return (it && it.slot === slot) ? lid : null; })();
+      if (!cid) return;
+      if (st.inventory[cid] && st.equipped[slot] === C.defaultEquipped[slot]) st.equipped[slot] = cid;
+    });
+
+    /* --- settings & nama profil --- */
+    var srcSet = (inv && inv.set) || (shop && shop.set) || (mode && mode.set) || null;
+    if (srcSet) {
+      var merged = normSettings(Object.assign({}, st.settings, srcSet));
+      st.settings = merged;
+    }
+    if (inv && typeof inv.name === 'string' && inv.name.trim()) st.profile.name = inv.name.trim().slice(0, 16);
+  }
+
+  function ensureMigration(st) {
+    if (st.migration >= MIGRATION_VERSION) return st;
+    migrateV1(st);
+    st.migration = MIGRATION_VERSION;
+    return st;
+  }
+
   /* ---------- Baca ---------- */
   function load() {
     if (!persistent) {
-      if (!memState) { memState = freshState(); }
+      if (!memState) memState = ensureMigration(freshState());
       return clone(memState);
     }
     var raw = rawGet();
     if (raw === null) {
-      var st0 = freshState();
+      var st0 = ensureMigration(freshState());
       if (!write(st0)) { persistent = false; memState = clone(st0); }
       return st0;
     }
@@ -105,8 +211,12 @@
     var st = sanitize(parsed);
     if (!st) { /* rusak: cadangkan dulu, lalu mulai bersih — tidak menghapus apa pun */
       try { localStorage.setItem(KEY + ':corrupt:' + Date.now(), raw); } catch (e) {}
-      st = freshState(); write(st);
+      st = ensureMigration(freshState()); write(st);
+      return st;
     }
+    var before = st.migration;
+    st = ensureMigration(st);
+    if (st.migration !== before) write(st); /* hasil migrasi disimpan sekali */
     return st;
   }
 
@@ -118,9 +228,14 @@
   var API = {
     key: KEY,
     startCoins: START_COINS,
+    startGems: START_GEMS,
+    migrationVersion: MIGRATION_VERSION, /* playerDataMigrationVersion */
     get persistent() { return persistent; },
     snapshot: function () { return load(); },
     coins: function () { return load().coins; },
+    gems: function () { return load().gems; },
+    settings: function () { return clone(load().settings); },
+    profile: function () { return clone(load().profile); },
     owns: function (id) { return !!load().inventory[id]; },
     qty: function (id) { var e = load().inventory[id]; return e ? e.qty : 0; },
     equippedId: function (slot) { return load().equipped[slot] || null; },
@@ -149,7 +264,7 @@
       return { ok: true, item: it };
     },
 
-    /* Pembelian atomik: semua validasi dulu, baru ubah saldo + inventory dalam SATU penulisan. */
+    /* Pembelian atomik (harga katalog = coins): validasi dulu, lalu saldo + inventory dalam SATU penulisan. */
     purchase: function (id) {
       var it = C.byId(id);
       if (!it || it.starter || !(it.price > 0)) return { ok: false, reason: 'tidak-tersedia' };
@@ -163,7 +278,74 @@
                              : { qty: 1, acquiredAt: Date.now(), seq: st.nextSeq++ };
       if (!write(st)) return { ok: false, reason: 'gagal-simpan', item: it };
       notify('purchase');
-      return { ok: true, item: it, coins: st.coins, spent: it.price };
+      return { ok: true, item: it, coins: st.coins, gems: st.gems, spent: it.price };
+    },
+
+    /* Perubahan currency atomik: addCurrency(+500) / addCurrency(0, +10) / addCurrency(-200, -5).
+       Return {ok, coins, gems} atau {ok:false, reason:'saldo-kurang'|'gem-kurang', kurang} */
+    addCurrency: function (dCoins, dGems) {
+      var dC = Math.floor(+dCoins || 0), dG = Math.floor(+dGems || 0);
+      var st = load();
+      var nc = st.coins + dC, ng = st.gems + dG;
+      if (nc < 0) return { ok: false, reason: 'saldo-kurang', kurang: -nc };
+      if (ng < 0) return { ok: false, reason: 'gem-kurang', kurang: -ng };
+      st.coins = nc; st.gems = ng;
+      if (!write(st)) return { ok: false, reason: 'gagal-simpan' };
+      notify('currency');
+      return { ok: true, coins: st.coins, gems: st.gems };
+    },
+
+    /* Hadiah/reward atomik (daily reward, event): {coins, gems, item, duplicateCoins, duplicateGems, reason}.
+       Item non-stackable yang sudah dimiliki -> tidak diduplikasi; beri kompensasi duplicateCoins/duplicateGems. */
+    grant: function (o) {
+      o = o || {};
+      var it = o.item ? C.byId(o.item) : null;
+      if (o.item && !it) return { ok: false, reason: 'tidak-dikenal' };
+      var st = load();
+      var duplicate = false, compensation = 0;
+      if (it) {
+        if (st.inventory[it.id] && !it.stackable) {
+          duplicate = true;
+          compensation = Math.max(0, Math.floor(+o.duplicateCoins || 0));
+          st.coins += compensation;
+          var compG = Math.max(0, Math.floor(+o.duplicateGems || 0));
+          st.gems += compG; compensation += compG;
+        } else {
+          var cur = st.inventory[it.id];
+          st.inventory[it.id] = cur ? { qty: cur.qty + 1, acquiredAt: cur.acquiredAt, seq: cur.seq }
+                                    : { qty: 1, acquiredAt: Date.now(), seq: st.nextSeq++ };
+        }
+      }
+      st.coins += Math.max(0, Math.floor(+o.coins || 0));
+      st.gems += Math.max(0, Math.floor(+o.gems || 0));
+      if (!write(st)) return { ok: false, reason: 'gagal-simpan' };
+      notify(o.reason || 'reward');
+      return { ok: true, duplicate: duplicate, compensation: compensation, coins: st.coins, gems: st.gems };
+    },
+
+    /* Pengaturan (bagian dari player state): whitelist field, satu penulisan. */
+    setSettings: function (patch) {
+      var st = load();
+      var p = (patch && typeof patch === 'object') ? patch : {};
+      var next = clone(st.settings);
+      if (typeof p.music === 'boolean') next.music = p.music;
+      if (typeof p.sound === 'boolean') next.sound = p.sound;
+      if (typeof p.vibration === 'boolean') next.vibration = p.vibration;
+      if (p.graphics === 'high' || p.graphics === 'low') next.graphics = p.graphics;
+      st.settings = next;
+      if (!write(st)) return null;
+      notify('settings');
+      return clone(next);
+    },
+
+    /* Nama profil (bagian dari player state). */
+    setName: function (name) {
+      if (typeof name !== 'string' || !name.trim()) return null;
+      var st = load();
+      st.profile.name = name.trim().slice(0, 16);
+      if (!write(st)) return null;
+      notify('profile');
+      return clone(st.profile);
     },
 
     /* Langganan perubahan (halaman ini + tab/halaman lain). Mengembalikan fungsi berhenti. */

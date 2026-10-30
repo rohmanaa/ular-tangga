@@ -1,468 +1,305 @@
 <!DOCTYPE html>
-<html lang="id"><head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Toko Ular Tangga Blok</title>
-<script src="assets/js/vendor/react.production.min.js"></script>
-<script src="assets/js/vendor/react-dom.production.min.js"></script>
-<script src="assets/js/vendor/dc-runtime.js"></script>
-</head>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Toko</title>
+<link rel="stylesheet" href="assets/css/base.css"><style>
+:root{--bd:#12337f;--y1:#ffd24d;--y2:#ff9a1f;--g:#3cc23c;--r0:#6f8aa8;--r1:#2f8cf0;--r2:#9a4ae0;--r3:#f0b030}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html{font-size:min(1vw,1.78vh)}
+html,body{margin:0;height:100%;overflow:hidden;font-family:'Baloo 2','Fredoka','Nunito',system-ui,sans-serif;font-weight:800;color:#fff;background:linear-gradient(#5db4f5,#a9dcf8 60%,#d5f0ff)}
+#sky{position:fixed;inset:0;overflow:hidden}
+.isl{position:absolute;opacity:.75;animation:fl 6s ease-in-out infinite}
+.isl i{display:block;background:#6fbf4a}.isl b{display:block;background:#8a5a3a;margin:0 auto}
+@keyframes fl{50%{translate:0 -.8rem}}
+.ab{position:absolute}
+button{font:inherit;color:inherit;border:0;cursor:pointer;transition:transform .15s cubic-bezier(.3,1.6,.5,1),filter .15s}
+button:hover{transform:scale(1.05);filter:brightness(1.08)}button:active{transform:scale(.94)}button:focus-visible{outline:.3rem solid #fff}
+.blue{background:linear-gradient(#4aa8ff,#1f6fe0);box-shadow:0 .5rem 0 var(--bd),0 1rem 1.4rem rgba(18,51,127,.4),inset 0 .2rem .2rem rgba(255,255,255,.6)}
+svg{display:block}
+#back{left:1.4rem;top:1.3rem;width:5rem;height:5rem;border-radius:1.5rem;padding:0;display:grid;place-items:center}
+#back svg{width:3.2rem;height:3.2rem}
+#title{left:6.8rem;top:1.3rem;width:19rem;height:5.4rem;border-radius:2.7rem;display:flex;align-items:center;gap:1.2rem;padding-left:2rem;font-size:4.4rem;text-shadow:0 .25rem 0 var(--bd)}
+#title svg{width:4.6rem;height:4.6rem}
+#cats{left:1.8rem;top:7.6rem;width:12.6rem;display:flex;flex-direction:column;gap:.9rem}
+.cat{height:4.8rem;border-radius:1.8rem;display:flex;align-items:center;gap:1rem;padding:0 1.4rem;font-size:2.8rem;text-shadow:0 .2rem 0 var(--bd);border:.3rem solid transparent}
+.cat svg{width:3.4rem;height:3.4rem}
+.cat.on{border-color:#ffe36a;background:linear-gradient(#ffd24d,#f4a81f);box-shadow:0 .4rem 0 #b9740c,0 0 1.8rem #ffd24d;transform:scale(1.06);text-shadow:0 .2rem 0 #a35f08}
+#show{left:23rem;top:1rem;width:30rem;height:27rem}
+#show canvas{width:100%;height:100%;display:block}
+#show #art{display:none;position:absolute;inset:0;place-items:center}
+#show #art svg{width:86%;height:86%}
+#show.art canvas{display:none}#show.art #art{display:grid}
+#pv #art{display:none;position:absolute;inset:0 0 4.3rem 0;place-items:center}
+#pv #art svg{width:80%;height:80%}
+#pv.art canvas{display:none}#pv.art #art{display:grid}
+.arr{top:11.5rem;width:4.6rem;height:5.6rem;border-radius:1.6rem;padding:0;display:grid;place-items:center}
+.arr svg{width:2.8rem;height:2.8rem}
+#info{left:53.4rem;top:5.8rem;width:26rem;height:20.6rem;border-radius:2.4rem;padding:2.2rem 2.2rem 1.6rem;background:linear-gradient(#3b95f4,#1c62d4);box-shadow:0 .6rem 0 var(--bd),0 1.4rem 2.4rem rgba(18,51,127,.4),inset 0 .25rem .3rem rgba(255,255,255,.55),inset 0 0 0 .3rem #5cb4ff}
+.badge{display:inline-block;padding:0 1.2rem;border-radius:1rem;font-size:1.9rem;line-height:2.6rem;background:var(--rc,var(--r1));box-shadow:inset 0 .15rem .2rem rgba(255,255,255,.5)}
+#info .badge{position:absolute;left:1.4rem;top:-1.6rem}
+#iname{font-size:4.2rem;line-height:1.1;margin:.2rem 0}
+#idesc{font-size:2rem;line-height:1.2;font-weight:700;color:#e0f2ff;min-height:5rem}
+#iprice{display:flex;align-items:center;gap:.8rem;font-size:3rem;color:#ffe36a;margin:.2rem 0}
+#iprice svg{width:3.2rem;height:3.2rem}
+.cta{width:100%;height:5rem;border-radius:2.5rem;background:linear-gradient(#ffd24d,#ff9a1f);box-shadow:0 .4rem 0 #c96a0c,inset 0 .3rem .3rem rgba(255,255,255,.6);font-size:3.4rem;display:flex;align-items:center;justify-content:center;gap:1rem;text-shadow:0 .2rem 0 #8a4a0a;padding:0;animation:fl 3s ease-in-out infinite}
+.cta svg{width:3.2rem;height:3.2rem}.cta.own{background:linear-gradient(#6fe06f,#2faa2f);box-shadow:0 .4rem 0 #1c6d1c,inset 0 .3rem .3rem rgba(255,255,255,.5);text-shadow:0 .2rem 0 #1c6d1c}
+.cta:disabled{filter:saturate(.8);cursor:default;transform:none}
+#gift{width:100%;height:4.4rem;margin-top:1rem;border-radius:2.2rem;font-size:2.8rem;display:flex;align-items:center;justify-content:center;gap:1rem;padding:0;background:linear-gradient(#4aa8ff,#1f78e8);box-shadow:0 .35rem 0 var(--bd),inset 0 .2rem .2rem rgba(255,255,255,.6)}
+#gift svg{width:2.8rem;height:2.8rem}
+#pv{left:80.6rem;top:6.6rem;width:13.8rem;height:19.6rem;border-radius:2rem;background:linear-gradient(#4aa8ff,#1f6fe0);box-shadow:0 .5rem 0 var(--bd),0 1.2rem 2rem rgba(18,51,127,.4),inset 0 0 0 .3rem #7cc4ff;overflow:hidden}
+#pvc{width:100%;height:15.4rem;display:block}
+#pvbtn{position:absolute;left:1rem;right:1rem;bottom:.9rem;height:3.4rem;border-radius:1.7rem;background:rgba(18,51,127,.55);font-size:1.9rem;padding:0;display:flex;align-items:center;justify-content:center;gap:.6rem}
+#pvbtn svg{width:2.2rem;height:2.2rem}
+.cur{top:2.4rem;display:flex;align-items:center;height:5rem;padding:0 .6rem 0 5.4rem;border-radius:2.5rem;background:linear-gradient(#2d62c8,#173c94);box-shadow:0 .4rem 0 #0b2160,0 1rem 1.4rem rgba(18,51,127,.4),inset 0 .2rem .2rem rgba(255,255,255,.35);font-size:2.9rem;justify-content:space-between;gap:1.4rem;min-width:16rem}
+.cur>svg{position:absolute;left:-.6rem;top:50%;translate:0 -50%;width:6rem;height:6rem;filter:drop-shadow(0 .3rem .3rem rgba(0,0,0,.35))}
+.plus{width:4rem;height:4rem;border-radius:50%;background:radial-gradient(#7af07a,#2cb02c);border:.2rem solid #1c7d1c;display:grid;place-items:center;padding:0}.plus svg{width:2.4rem;height:2.4rem}
+.pulse{animation:pu .4s}@keyframes pu{50%{transform:scale(1.15)}}
+#gem{right:22rem}#coin{right:9.6rem}
+#gear{right:1.4rem;top:1.8rem;width:6rem;height:6rem;border-radius:1.8rem;padding:0;display:grid;place-items:center}#gear svg{width:3.8rem;height:3.8rem}
+#bot{left:16rem;right:6.2rem;top:27.8rem;bottom:1.6rem;border-radius:2.4rem;padding:1.2rem 1.6rem;background:rgba(120,195,255,.8);backdrop-filter:blur(5px);box-shadow:0 .8rem 2rem rgba(18,51,127,.35),inset 0 .2rem .3rem rgba(255,255,255,.8),inset 0 0 0 .3rem rgba(80,160,240,.7);display:flex;flex-direction:column;gap:1rem}
+#tabs{display:flex;gap:1.4rem;justify-content:space-between}
+.tab{flex:0 0 17rem;height:4rem;border-radius:2rem;font-size:2.2rem;display:flex;align-items:center;justify-content:center;gap:.8rem;padding:0;background:linear-gradient(#2f94f0,#1766d8);box-shadow:0 .3rem 0 var(--bd);border:.25rem solid transparent}
+.tab svg{width:2.6rem;height:2.6rem}.tab.on{border-color:#ffe36a;box-shadow:0 .3rem 0 #b9740c,0 0 1.2rem #ffd24d}
+#grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:1fr 1fr;gap:1.1rem 1.2rem}
+.card{position:relative;border-radius:1.6rem;padding:.4rem;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-height:0;background:linear-gradient(var(--c1),var(--c2));box-shadow:0 .3rem 0 rgba(10,30,100,.5),inset 0 0 0 .25rem rgba(255,255,255,.25);animation:pop .35s both;cursor:pointer;overflow:hidden}
+@keyframes pop{from{opacity:0;transform:scale(.85)}}
+.card .badge{position:absolute;left:.6rem;top:.5rem;font-size:1.4rem;line-height:1.9rem;padding:0 .8rem;z-index:1}
+.card.sel{box-shadow:0 0 0 .35rem #ffe36a,0 0 1.8rem #ffe36a}
+.card .th{flex:1;min-height:0;width:70%}.card .th svg{width:100%;height:100%}
+.card:hover .th{animation:wig .8s}@keyframes wig{50%{rotate:8deg;scale:1.1}}
+.card .nm{font-size:1.7rem;line-height:1.7rem;white-space:nowrap}.card .pr{display:flex;align-items:center;gap:.4rem;font-size:1.9rem;line-height:2rem;color:#ffe36a}.card .pr svg{width:1.9rem;height:1.9rem}
+.card .bt{width:88%;height:2.4rem;margin:.2rem 0 .3rem;border-radius:1.2rem;font-size:1.8rem;line-height:2.4rem;padding:0;background:linear-gradient(#ffd24d,#ff9a1f);box-shadow:0 .2rem 0 #c96a0c;text-shadow:0 .1rem 0 #8a4a0a}
+.card .bt.own{background:linear-gradient(#6fe06f,#2faa2f);box-shadow:0 .2rem 0 #1c6d1c}
+.ck{position:absolute;right:.6rem;top:55%;width:2.8rem;height:2.8rem;border-radius:50%;background:var(--g);border:.2rem solid #fff;display:grid;place-items:center}.ck svg{width:1.6rem;height:1.6rem}
+.sp{position:fixed;width:1.3rem;height:1.3rem;background:#fff6a0;rotate:45deg;pointer-events:none;z-index:99;animation:spk .8s forwards}
+@keyframes spk{to{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
+.ov{position:fixed;inset:0;display:none;place-items:center;background:rgba(18,51,127,.4);backdrop-filter:blur(6px);z-index:50;opacity:0;transition:opacity .25s}
+.ov.show{opacity:1}.ov>.box{transform:scale(.85);transition:transform .25s cubic-bezier(.3,1.5,.5,1)}.ov.show>.box{transform:scale(1)}.ov.closing>.box{transform:scale(.9)}
+.box{position:relative;width:min(48rem,92vw);max-height:92vh;overflow:auto;background:linear-gradient(#7cc2ff,#4a9ae8);border-radius:2.4rem;padding:3rem 2.4rem 2.4rem;box-shadow:0 1rem 0 var(--bd),0 2rem 3rem rgba(0,0,0,.3);font-size:2.6rem;text-align:center}
+.box.big{width:min(60rem,92vw)}
+.box h2{margin:0 0 1.2rem;font-size:3.4rem;text-shadow:0 .2rem 0 var(--bd)}
+.x{position:absolute;right:-1rem;top:-1rem;width:4.6rem;height:4.6rem;border-radius:50%;background:#ee4a4a;box-shadow:0 .3rem 0 #8e1d1d;font-size:2.4rem;padding:0}
+.row{display:flex;justify-content:space-between;align-items:center;background:rgba(18,51,127,.25);border-radius:1.4rem;padding:1rem 1.4rem;margin:.8rem 0;gap:1rem}
+.row.sel{outline:.3rem solid #ffe36a}
+.tg{min-width:7.6rem;height:3.8rem;border-radius:2rem;background:#7b8aa8;box-shadow:inset 0 .2rem .4rem rgba(0,0,0,.3);font-size:2rem;padding:0 1rem}.tg.on{background:var(--g)}
+.pack,.mb{width:100%;display:flex;justify-content:space-between;align-items:center;margin:.8rem 0;padding:1.2rem 1.6rem;border-radius:1.4rem;background:linear-gradient(#ffd24d,#ff9a1f);box-shadow:0 .4rem 0 #c96a0c;font-size:2.6rem;text-shadow:0 .2rem 0 rgba(107,53,17,.7)}
+.mb{justify-content:center;width:48%;display:inline-flex;margin:1rem 1% 0}.mb.no{background:linear-gradient(#8ab4e8,#5a88c8);box-shadow:0 .4rem 0 #2f5090;text-shadow:none}
+#bigc{width:100%;aspect-ratio:1;border-radius:1.6rem;background:linear-gradient(#5db4f5,#a9dcf8);display:block;margin-bottom:1rem}
+#toast{position:fixed;left:50%;bottom:3rem;translate:-50% 2rem;background:var(--bd);padding:.8rem 2.4rem;border-radius:2rem;font-size:2.6rem;opacity:0;transition:opacity .3s,translate .35s cubic-bezier(.3,1.8,.5,1);z-index:99;pointer-events:none;white-space:nowrap}
+#toast.on{opacity:1;translate:-50% 0}
+#top{display:contents}#mid{display:contents}
+@media(max-aspect-ratio:1/1){
+html{font-size:2.5vw}
+#ui{position:fixed;inset:0;overflow:auto;display:flex;flex-direction:column;gap:1.4rem;padding:1.2rem}
+.ab{position:relative!important;left:auto!important;top:auto!important;right:auto!important;bottom:auto!important;width:auto!important;height:auto!important}
+#top{display:flex;flex-wrap:wrap;align-items:center;gap:1.2rem 3rem}
+#title{order:-1;width:15rem!important;height:5rem!important;font-size:3.6rem}
+#cats{display:none}
+#show{height:70vw!important;order:1}
+.arr{position:absolute!important;top:30vw!important}.arr.l{left:1rem!important}.arr.r{right:1rem!important}
+#mid{display:flex;gap:1.2rem;order:2;align-items:stretch}
+#info{flex:1;padding-bottom:1.6rem}#pv{width:15rem!important;flex:none;height:auto!important;min-height:20rem}#pvc{height:calc(100% - 4.6rem)}
+#bot{order:3;min-height:60rem}#tabs{overflow-x:auto}.tab{flex:0 0 15rem;height:5rem}
+#grid{grid-template-columns:repeat(2,1fr);grid-template-rows:none;grid-auto-rows:20rem}
+#gem,#coin{right:auto}.cur{height:5rem}
+}
+</style></head>
 <body>
-<x-dc>
-<helmet>
-<style>/* latin-ext */
-@font-face {
-  font-family: 'Lilita One';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/lilitaone/v17/i7dPIFZ9Zz-WBtRtedDbYE98RWq7.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Lilita One';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/lilitaone/v17/i7dPIFZ9Zz-WBtRtedDbYEF8RQ.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* cyrillic-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-}
-/* vietnamese */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* cyrillic-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-}
-/* vietnamese */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* cyrillic-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-}
-/* vietnamese */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* cyrillic-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-}
-/* vietnamese */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yyghfvaZ-EHYA.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("assets/fonts/plus-jakarta-sans-latin.woff2") format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-</style>
-<style>
-body{margin:0;background:#101214}
-button,input{font-family:'Plus Jakarta Sans',sans-serif}
-button{cursor:pointer}
-:focus-visible{outline:3px solid #7dff2e;outline-offset:2px}
-@keyframes idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-@keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
-.fig{animation:idle 3.4s ease-in-out infinite}
-.fl{animation:flt 5s ease-in-out infinite}
-.mod{animation:pop .18s ease-out}
-.pc{transition:transform .15s}.pc:hover{transform:translateY(-4px)}
-.sc{scrollbar-width:none}
-.dt{--rx:-24deg;--ry:-30deg;--s:1;transform:rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--s));transition:transform .22s ease-out}
-.dtA{--rx:-28deg;--ry:-38deg}
-@media(prefers-reduced-motion:reduce){.dt{transition:none}}
-@media(prefers-reduced-motion:reduce){.fig,.fl,.mod{animation:none}}
-</style>
-</helmet>
-<div style="min-height:1100px;box-sizing:border-box;padding:24px 20px 56px;background:radial-gradient(ellipse at 50% -10%,rgba(125,255,46,.08),rgba(125,255,46,0) 55%),#121416;color:#ecf1ee;font-family:'Plus Jakarta Sans',sans-serif;position:relative">
-<div style="max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:20px">
-
-<div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between">
-<div style="display:flex;align-items:center;gap:12px">
-<svg width="40" height="44" sc-camel-view-box="-26 -2 52 52" aria-hidden="true"><polygon points="0,0 24,12 0,24 -24,12" fill="#c6ff5a"></polygon><polygon points="-24,12 0,24 0,48 -24,36" fill="#58b02d"></polygon><polygon points="0,24 24,12 24,36 0,48" fill="#2d7a21"></polygon></svg>
-<div><div style="color:#7dff2e;font-weight:700;font-size:12px;letter-spacing:.14em">ULAR TANGGA BLOK</div>
-<h1 style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:clamp(30px,5vw,44px);line-height:1;margin:2px 0 0">Toko Kosmetik</h1></div></div>
-<div style="display:flex;align-items:center;gap:12px;background:#1b1f22;border:1px solid #2c3236;border-radius:16px;padding:8px 18px 8px 12px">
-<svg width="30" height="30" sc-camel-view-box="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#f2b705" stroke="#c48f00" stroke-width="2"></circle><rect x="8" y="8" width="8" height="8" fill="#ffe27a"></rect></svg>
-<div><div style="font-size:11px;color:#9aa5a0;font-weight:700;letter-spacing:.08em">SALDO KOIN</div>
-<div style="font-family:'Lilita One',sans-serif;font-size:26px;line-height:1;color:#ffe27a">{{coinsText}}</div></div>
+<div id="sky"></div>
+<div id="ui">
+<div id="top">
+ <button class="ab blue" id="back" aria-label="Kembali"><svg viewBox="0 0 24 24"><path d="M20 12H5m6-7-7 7 7 7" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+ <div class="ab blue" id="title"><svg viewBox="0 0 24 24"><path d="M3 9 5 3h14l2 6v2H3z" fill="#fff"/><path d="M5 12h14v9H5z" fill="#e8f4ff"/><rect x="10" y="14" width="4" height="7" fill="#2f8cf0"/><path d="M3 9h18" stroke="#2f8cf0" stroke-width="1.500"/></svg>Toko</div>
+ <div class="ab cur" id="gem"><svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z" fill="#4cc9ff" stroke="#1d7fd0" stroke-width="1.200"/><path d="M2 9h20M9 3l-2 6 5 12 5-12-2-6" fill="none" stroke="#bff0ff" stroke-width=".8"/></svg><span id="gemV"></span><button class="plus" data-buy="gem" aria-label="Tambah gem"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div>
+ <div class="ab cur" id="coin"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffc83a" stroke="#c98a0c" stroke-width="1.500"/><text x="12" y="17" font-size="14" font-weight="900" text-anchor="middle" fill="#c98a0c">$</text></svg><span id="coinV"></span><button class="plus" data-buy="coin" aria-label="Tambah coin"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div>
+ <button class="ab blue" id="gear" aria-label="Pengaturan"><svg viewBox="0 0 24 24"><path fill="#fff" d="M19.400 13c.1-.3.1-.7.1-1s0-.7-.1-1l2.100-1.600-2-3.500-2.500 1a7 7 0 0 0-1.700-1L15 3.200h-4L10.600 6a7 7 0 0 0-1.700 1l-2.500-1-2 3.500L6.600 11c-.1.300-.1.700-.1 1s0 .7.100 1l-2.100 1.600 2 3.500 2.500-1c.5.400 1.100.7 1.700 1l.4 2.800h4l.4-2.800c.6-.3 1.200-.6 1.700-1l2.500 1 2-3.500zM12 15.500a3.500 3.500 0 1 1 0-7 3.500 3.500 0 0 1 0 7Z"/></svg></button>
 </div>
+<nav class="ab" id="cats" aria-label="Kategori"></nav>
+<div class="ab" id="show"><canvas id="gl"></canvas><div id="art"></div></div>
+<button class="ab blue arr l" id="prev" style="left:23.5rem" aria-label="Sebelumnya"><svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button class="ab blue arr r" id="next" style="left:47.6rem" aria-label="Berikutnya"><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<div id="mid">
+ <section class="ab" id="info"><span class="badge" id="irar"></span><div id="iname"></div><div id="idesc"></div><div id="iprice"></div><button class="cta" id="buy"></button><button id="gift"><svg viewBox="0 0 24 24"><path d="M3 8h18v4H3zM5 12h14v9H5z" fill="#fff"/><path d="M12 8v13" stroke="#2f8cf0" stroke-width="2"/><path d="M12 8C9 8 8 3 11 4c1 .5 1 4 1 4Zm0 0c3 0 4-5 1-4-1 .5-1 4-1 4Z" fill="#fff"/></svg>Hadiah</button></section>
+ <section class="ab" id="pv"><canvas id="pvc"></canvas><div id="pvart"></div><button id="pvbtn" aria-label="Preview 360"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-3-6.200M20 3v5h-5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Preview 360°</button></section>
 </div>
-
-<section aria-label="Skin unggulan" style="position:relative;overflow:hidden;border-radius:28px;border:1px solid rgba(255,226,122,.35);background:radial-gradient(ellipse at 70% 55%,rgba(242,183,5,.28),rgba(242,183,5,0) 60%),linear-gradient(135deg,#1d2124,#14171a);box-shadow:0 0 0 1px rgba(255,226,122,.08),0 30px 70px rgba(0,0,0,.5);display:flex;flex-wrap:wrap;align-items:stretch">
-<div style="flex:1 1 340px;padding:clamp(24px,4vw,48px);display:flex;flex-direction:column;gap:14px;justify-content:center;position:relative;z-index:1">
-<span style="align-self:flex-start;font-family:'Lilita One',sans-serif;font-size:14px;letter-spacing:.08em;padding:6px 12px;border-radius:9px;background:#ffe27a;color:#3a2a00">LEGENDARY · UNGGULAN MINGGU INI</span>
-<h2 style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:clamp(40px,6vw,66px);line-height:1;margin:0">Naga <span style="color:#ffe27a">Emas</span></h2>
-<p style="color:#c9d3ce;font-size:17px;line-height:1.6;margin:0;max-width:440px">Mahkota emas, sayap naga, dan jubah kerajaan. Skin legendaris dengan kilau yang terlihat dari ujung papan.</p>
-<div style="display:flex;align-items:center;gap:10px"><svg width="34" height="34" sc-camel-view-box="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#f2b705" stroke="#c48f00" stroke-width="2"></circle><rect x="8" y="8" width="8" height="8" fill="#ffe27a"></rect></svg><span style="font-family:'Lilita One',sans-serif;font-size:38px;color:#ffe27a">{{hero.priceText}}</span></div>
-<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:4px">
-<button type="button" sc-camel-on-click="{{hero.buy}}" aria-disabled="{{hero.owned}}" style="min-height:58px;border:0;border-radius:16px;padding:0 40px;font-family:'Lilita One',sans-serif;font-size:26px;{{hero.btn}}">{{hero.btnText}}</button>
+<section class="ab" id="bot"><div id="tabs"></div><div id="grid"></div></section>
 </div>
-</div>
-<div style="flex:1 1 340px;min-height:420px;position:relative;display:flex;align-items:flex-end;justify-content:center">
-<div class="fl" style="position:absolute;left:14%;top:16%;width:14px;height:14px;background:#ffe27a;opacity:.8"></div>
-<div class="fl" style="position:absolute;right:16%;top:26%;width:10px;height:10px;background:#fff3b0;opacity:.8;animation-delay:-2s"></div>
-<div class="fl" style="position:absolute;right:26%;top:10%;width:8px;height:8px;background:#7dff2e;opacity:.8;animation-delay:-3s"></div>
-<div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:min(420px,90%);height:46px;background:linear-gradient(180deg,#2a3034,#181b1e);border-top:4px solid #7dff2e;border-radius:6px 6px 0 0"></div>
-<svg sc-camel-view-box="0 0 240 320" role="img" aria-label="Pratinjau skin Naga Emas" style="position:relative;height:min(400px,86%);width:auto;margin-bottom:36px;overflow:visible">
-<defs><pattern id="px" width="8" height="8" sc-camel-pattern-units="userSpaceOnUse"><rect width="4" height="4" fill="#fff" opacity=".10"></rect><rect x="4" y="4" width="4" height="4" fill="#000" opacity=".10"></rect></pattern></defs>
-<ellipse cx="120" cy="304" rx="80" ry="10" fill="#000" opacity=".4"></ellipse>
-<g class="fig">
-<g fill="#ffe27a" opacity=".92"><polygon points="86,130 4,60 12,160 70,196"></polygon><polygon points="154,130 236,60 228,160 170,196"></polygon><polygon points="86,130 30,88 34,140 76,170" fill="#fff" opacity=".25"></polygon><polygon points="154,130 210,88 206,140 164,170" fill="#fff" opacity=".25"></polygon></g>
-<rect x="82" y="120" width="76" height="150" fill="#c48f00"></rect>
-<rect x="92" y="208" width="27" height="88" fill="#a35a22"></rect><rect x="121" y="208" width="27" height="88" fill="#a35a22"></rect>
-<rect x="92" y="278" width="27" height="18" fill="#5f3f25"></rect><rect x="121" y="278" width="27" height="18" fill="#5f3f25"></rect>
-<rect x="88" y="120" width="64" height="96" fill="#f2b705"></rect><rect x="88" y="196" width="64" height="9" fill="#3a2a1a"></rect><rect x="113" y="195" width="14" height="11" fill="#fff3b0"></rect>
-<rect x="60" y="120" width="26" height="58" fill="#f2b705"></rect><rect x="154" y="120" width="26" height="58" fill="#f2b705"></rect>
-<rect x="60" y="178" width="26" height="34" fill="#f2c9a0"></rect><rect x="154" y="178" width="26" height="34" fill="#f2c9a0"></rect>
-<rect x="92" y="52" width="56" height="62" fill="#f2c9a0"></rect><rect x="92" y="52" width="56" height="16" fill="#7a5230"></rect><rect x="92" y="52" width="9" height="36" fill="#7a5230"></rect><rect x="139" y="52" width="9" height="36" fill="#7a5230"></rect>
-<rect x="103" y="82" width="11" height="9" fill="#fff"></rect><rect x="107" y="83" width="6" height="8" fill="#1b2236"></rect><rect x="126" y="82" width="11" height="9" fill="#fff"></rect><rect x="130" y="83" width="6" height="8" fill="#1b2236"></rect><rect x="111" y="99" width="18" height="4" fill="#8a4b3c"></rect>
-<rect x="90" y="38" width="60" height="16" fill="#ffe27a"></rect><polygon points="90,38 99,16 108,38" fill="#ffe27a"></polygon><polygon points="111,38 120,12 129,38" fill="#ffe27a"></polygon><polygon points="132,38 141,16 150,38" fill="#ffe27a"></polygon><rect x="90" y="48" width="60" height="6" fill="#c48f00"></rect><rect x="116" y="40" width="8" height="8" fill="#e24b4b"></rect>
-<g fill="url(#px)"><rect x="92" y="52" width="56" height="62"></rect><rect x="88" y="120" width="64" height="96"></rect><rect x="60" y="120" width="26" height="92"></rect><rect x="154" y="120" width="26" height="92"></rect><rect x="92" y="208" width="27" height="88"></rect><rect x="121" y="208" width="27" height="88"></rect></g>
-<g fill="#000" opacity=".16"><rect x="140" y="52" width="8" height="62"></rect><rect x="144" y="120" width="8" height="96"></rect><rect x="172" y="120" width="8" height="92"></rect><rect x="140" y="208" width="8" height="88"></rect><rect x="111" y="208" width="8" height="88"></rect></g>
-</g></svg>
-</div>
-</section>
-
-<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;background:#1b1f22;border:1px solid #2c3236;border-radius:20px;padding:12px">
-<div role="tablist" aria-label="Kategori" class="sc" style="display:flex;gap:6px;background:#121416;border:1px solid #2c3236;border-radius:14px;padding:5px;overflow-x:auto;max-width:100%">
-<sc-for list="{{tabs}}" as="t" hint-placeholder-count="6"><button role="tab" type="button" aria-selected="{{t.on}}" sc-camel-on-click="{{t.pick}}" style="flex:none;min-height:44px;border:0;border-radius:10px;padding:0 18px;font-weight:700;font-size:14px;{{t.style}}">{{t.name}}</button></sc-for>
-</div>
-<label style="position:relative;flex:1 1 200px;min-width:0"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#8a968f" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" style="position:absolute;left:14px;top:14px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg><input type="search" placeholder="Cari kosmetik…" aria-label="Cari kosmetik" value="{{q}}" sc-camel-on-input="{{onSearch}}" style="width:100%;box-sizing:border-box;min-height:46px;background:#121416;border:1px solid #2c3236;border-radius:14px;color:#ecf1ee;font-size:15px;padding:0 16px 0 44px"></label>
-<div role="group" aria-label="Filter kelangkaan" class="sc" style="display:flex;gap:6px;overflow-x:auto;max-width:100%">
-<sc-for list="{{rars}}" as="r" hint-placeholder-count="5"><button type="button" aria-pressed="{{r.on}}" sc-camel-on-click="{{r.pick}}" style="flex:none;min-height:44px;border-radius:12px;padding:0 14px;font-weight:700;font-size:13px;{{r.style}}">{{r.name}}</button></sc-for>
-</div>
-</div>
-
-<sc-if value="{{hasItems}}" hint-placeholder-val="{{true}}">
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:16px">
-<sc-for list="{{items}}" as="p" hint-placeholder-count="8">
-<div class="pc dtw" style="position:relative;display:flex;flex-direction:column;gap:8px;padding:12px;background:#1b1f22;border-radius:20px;border:1.5px solid {{p.rc}};box-shadow:{{p.glow}}">
-<div style="position:relative;height:132px;border-radius:14px;background:radial-gradient(circle at 50% 55%,{{p.tint}},rgba(0,0,0,0) 70%),#121416;display:flex;align-items:center;justify-content:center">
-<sc-if value="{{p.notDice}}" hint-placeholder-val="{{true}}"><svg width="84" height="84" sc-camel-view-box="-28 -4 56 56" aria-hidden="true"><polygon points="0,0 24,12 0,24 -24,12" style="fill:{{p.c0}}"></polygon><polygon points="-24,12 0,24 0,48 -24,36" style="fill:{{p.c1}}"></polygon><polygon points="0,24 24,12 24,36 0,48" style="fill:{{p.c2}}"></polygon><path d="{{p.g}}" fill="#0b1a2e" fill-opacity=".85"></path></svg></sc-if><sc-if value="{{p.isDice}}" hint-placeholder-val="{{false}}"><span aria-hidden="true" style="position:relative;display:block;width:84px;height:84px;perspective:360px"><span class="dt dtA" style="position:absolute;left:20px;top:20px;width:44px;height:44px;transform-style:preserve-3d"><span style="position:absolute;inset:0;box-sizing:border-box;border:2px solid {{p.edge}};background:{{p.k1}};transform:translateZ(22px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:2px solid {{p.edge}};background:{{p.k2}};transform:rotateY(90deg) translateZ(22px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:2px solid {{p.edge}};background:{{p.k3}};transform:rotateX(90deg) translateZ(22px)"></span></span></span></sc-if>
-<sc-if value="{{p.owned}}" hint-placeholder-val="{{false}}"><span style="position:absolute;top:8px;right:8px;display:flex;align-items:center;gap:4px;background:#7dff2e;color:#08140a;font-weight:700;font-size:11px;border-radius:99px;padding:3px 9px"><svg width="10" height="10" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>Dimiliki</span></sc-if>
-</div>
-<span style="font-size:11px;font-weight:700;letter-spacing:.1em;color:{{p.rc}}">{{p.rarU}}</span>
-<span style="font-family:'Lilita One',sans-serif;font-size:19px;line-height:1.1">{{p.name}}</span>
-<div style="display:flex;align-items:center;gap:6px;margin-top:auto"><svg width="20" height="20" sc-camel-view-box="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#f2b705" stroke="#c48f00" stroke-width="2"></circle><rect x="8" y="8" width="8" height="8" fill="#ffe27a"></rect></svg><b style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:20px;color:#ffe27a">{{p.priceText}}</b></div>
-<button type="button" sc-camel-on-click="{{p.buy}}" aria-disabled="{{p.owned}}" aria-label="{{p.btnLabel}}" style="min-height:46px;border:0;border-radius:12px;font-family:'Lilita One',sans-serif;font-size:20px;{{p.btn}}">{{p.btnText}}</button>
-</div>
-</sc-for>
-</div>
-</sc-if>
-<sc-if value="{{noItems}}" hint-placeholder-val="{{false}}">
-<div style="background:#1b1f22;border:2px dashed #2c3236;border-radius:20px;padding:52px 24px;text-align:center">
-<h2 style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:28px;margin:0 0 6px">Tidak ada kosmetik yang cocok</h2>
-<p style="color:#b4beb9;font-size:16px;margin:0 0 18px">Coba kata kunci lain atau hapus filter kelangkaan.</p>
-<button type="button" sc-camel-on-click="{{reset}}" style="min-height:48px;border:2px solid #7dff2e;border-radius:14px;background:rgba(125,255,46,.06);color:#7dff2e;font-family:'Lilita One',sans-serif;font-size:20px;padding:0 24px;box-shadow:0 4px 0 #1f5a14">Atur ulang filter</button>
-</div>
-</sc-if>
-<p style="margin:0;text-align:center;color:#8a968f;font-size:13px">Semua pembelian memakai koin dalam game. Koin didapat dari bermain dan misi harian.</p>
-</div>
-
-<sc-if value="{{modal.open}}" hint-placeholder-val="{{false}}">
-<div sc-camel-on-click="{{closeModal}}" style="position:fixed;inset:0;z-index:50;background:rgba(6,8,9,.78);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px">
-<div class="mod" role="dialog" aria-modal="true" aria-labelledby="mt" sc-camel-on-click="{{stop}}" style="width:min(440px,100%);box-sizing:border-box;background:linear-gradient(180deg,#252b2f,#181b1e);border:1px solid {{modal.rc}};border-radius:24px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.6)">
-<div class="dtw" style="width:112px;height:112px;border-radius:20px;background:radial-gradient(circle,{{modal.tint}},rgba(0,0,0,0) 70%),#121416;border:1.5px solid {{modal.rc}};display:flex;align-items:center;justify-content:center"><sc-if value="{{modal.notDice}}" hint-placeholder-val="{{true}}"><svg width="78" height="78" sc-camel-view-box="-28 -4 56 56" aria-hidden="true"><polygon points="0,0 24,12 0,24 -24,12" style="fill:{{modal.c0}}"></polygon><polygon points="-24,12 0,24 0,48 -24,36" style="fill:{{modal.c1}}"></polygon><polygon points="0,24 24,12 24,36 0,48" style="fill:{{modal.c2}}"></polygon><path d="{{modal.g}}" fill="#0b1a2e" fill-opacity=".85"></path></svg></sc-if><sc-if value="{{modal.isDice}}" hint-placeholder-val="{{false}}"><span aria-hidden="true" style="position:relative;display:block;width:96px;height:96px;perspective:420px"><span class="dt" style="position:absolute;left:20px;top:20px;width:56px;height:56px;transform-style:preserve-3d"><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{modal.edge}};background:{{modal.m1}};transform:translateZ(28px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{modal.edge}};background:{{modal.m6}};transform:rotateY(180deg) translateZ(28px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{modal.edge}};background:{{modal.m2}};transform:rotateY(90deg) translateZ(28px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{modal.edge}};background:{{modal.m5}};transform:rotateY(-90deg) translateZ(28px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{modal.edge}};background:{{modal.m3}};transform:rotateX(90deg) translateZ(28px)"></span><span style="position:absolute;inset:0;box-sizing:border-box;border:3px solid {{modal.edge}};background:{{modal.m4}};transform:rotateX(-90deg) translateZ(28px)"></span></span></span></sc-if></div>
-<span style="font-size:11px;font-weight:700;letter-spacing:.1em;color:{{modal.rc}}">{{modal.rarU}}</span>
-<sc-if value="{{modal.confirming}}" hint-placeholder-val="{{true}}">
-<h2 id="mt" style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:28px;margin:0">Beli {{modal.name}}?</h2>
-<div style="width:100%;background:#121416;border:1px solid #2c3236;border-radius:16px;padding:6px 16px;box-sizing:border-box;font-size:15px">
-<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #22282b"><span style="color:#b4beb9">Harga</span><b style="color:#ffe27a">{{modal.priceText}} koin</b></div>
-<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #22282b"><span style="color:#b4beb9">Saldo sekarang</span><b>{{modal.balText}}</b></div>
-<div style="display:flex;justify-content:space-between;padding:10px 0"><span style="color:#b4beb9">Saldo setelah beli</span><b style="{{modal.afterStyle}}">{{modal.afterText}}</b></div>
-</div>
-<sc-if value="{{modal.short}}" hint-placeholder-val="{{false}}"><p style="margin:0;color:#ffb3b3;font-size:14px;font-weight:600">Koin belum cukup. Kumpulkan {{modal.needText}} koin lagi dengan bermain.</p></sc-if>
-<div style="display:flex;gap:10px;width:100%;margin-top:6px">
-<button type="button" sc-camel-on-click="{{closeModal}}" style="flex:1;min-height:52px;border-radius:14px;border:2px solid #4a545a;background:transparent;color:#ecf1ee;font-weight:700;font-size:16px">Batal</button>
-<button type="button" sc-camel-on-click="{{confirmBuy}}" aria-disabled="{{modal.short}}" style="flex:1.3;min-height:52px;border:0;border-radius:14px;font-family:'Lilita One',sans-serif;font-size:22px;{{modal.btn}}">Konfirmasi Beli</button>
-</div>
-</sc-if>
-<sc-if value="{{modal.done}}" hint-placeholder-val="{{false}}">
-<h2 id="mt" style="font-family:'Lilita One',sans-serif;font-weight:400;font-size:28px;margin:0;color:#7dff2e">Pembelian berhasil</h2>
-<p style="margin:0;color:#c9d3ce;font-size:15px;line-height:1.5">{{modal.name}} sudah masuk ke inventarismu. Sisa saldo {{modal.afterText}} koin.</p>
-<button type="button" sc-camel-on-click="{{closeModal}}" style="width:100%;min-height:54px;border:0;border-radius:14px;background:#7dff2e;color:#08140a;font-family:'Lilita One',sans-serif;font-size:22px;box-shadow:0 5px 0 #3fa312;margin-top:6px">Selesai</button>
-</sc-if>
-</div></div>
-</sc-if>
-</div>
-</x-dc>
-<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1100}}">
-class Component extends DCLogic {
-renderVals() {
-const st = this.state || {};
-const tab = st.tab ?? 'Featured', q = (st.q ?? '').toLowerCase(), rar = st.rar ?? 'Semua';
-const coins = st.coins ?? 2450, bought = st.bought ?? [], mid = st.mid ?? null, done = !!st.done;
-const fmt = (n) => n.toLocaleString('id-ID');
-const PP = { 1:[[50,50]], 2:[[25,25],[75,75]], 3:[[25,25],[50,50],[75,75]], 4:[[25,25],[75,25],[25,75],[75,75]], 5:[[25,25],[75,25],[50,50],[25,75],[75,75]], 6:[[25,25],[75,25],[25,50],[75,50],[25,75],[75,75]] };
-const SH = { 1:'', 2:'rgba(0,0,0,.22)', 3:'rgba(255,255,255,.16)', 4:'rgba(0,0,0,.45)', 5:'rgba(0,0,0,.14)', 6:'rgba(0,0,0,.34)' };
-const faceBg = (bg, pip, n, rad) => (SH[n] ? 'linear-gradient('+SH[n]+','+SH[n]+'),' : '') + PP[n].map(c => 'radial-gradient(circle at '+c[0]+'% '+c[1]+'%,'+pip+' 0 '+rad+'px,transparent '+(rad+1)+'px)').join(',') + ',' + bg;
-const faces = (bg, pip, rad, key) => { const o = {}; [1,2,3,4,5,6].forEach(n => { o[key+n] = faceBg(bg, pip, n, rad); }); return o; };
-
-const RC = { Common:['#8fa6a0','rgba(143,166,160,.16)'], Rare:['#3b92ee','rgba(59,146,238,.22)'], Epic:['#b07af0','rgba(176,122,240,.24)'], Legendary:['#f2b705','rgba(242,183,5,.28)'] };
-const G = { Dadu:'', Skins:'M-14 22l8 4v7l-8-4zM14 22l-8 4v7l8-4z', Accessories:'M-20 12l20 10 20-10v5l-20 10-20-10z', Effects:'M0 16l3 8 8 1-6 5 2 8-7-5-7 5 2-8-6-5 8-1z', Emotes:'M-12 26h24l-4 9h-16z' };
-// id,nama,kategori,rarity,harga,milik,unggulan,c0,c1,c2
-const D = [
-[1,'Naga Emas','Skins','Legendary',3200,0,1,'#ffe27a','#f2b705','#c48f00'],
-[2,'Ksatria Baja','Skins','Epic',1600,0,1,'#aebdd3','#5d7090','#3b92ee'],
-[3,'Ninja Bayangan','Skins','Epic',1500,0,0,'#6b7a99','#3d4a66','#28324a'],
-[4,'Petualang Hutan','Skins','Common',250,1,0,'#c6ff5a','#58b02d','#2d7a21'],
-[5,'Penyihir Rimba','Skins','Rare',800,0,0,'#d8b8ff','#9a63e8','#6a3db0'],
-[6,'Mahkota Raja','Accessories','Legendary',3600,0,1,'#fff3b0','#ffe27a','#f2b705'],
-[7,'Topi Penyihir','Accessories','Epic',1400,0,0,'#d8b8ff','#9a63e8','#6a3db0'],
-[8,'Kacamata Piksel','Accessories','Common',200,1,0,'#aebdd3','#8497b3','#5d7090'],
-[9,'Sayap Peri','Accessories','Rare',700,0,0,'#9ff2e0','#2fbfa3','#1b8672'],
-[10,'Jejak Api','Effects','Epic',1700,0,1,'#ffc98a','#f08a24','#b5600f'],
-[11,'Percikan Bintang','Effects','Legendary',3900,0,0,'#fff3b0','#ffe27a','#f2b705'],
-[12,'Gelembung Hijau','Effects','Common',180,1,0,'#c6ff5a','#58b02d','#2d7a21'],
-[13,'Joget Dadu','Emotes','Rare',650,0,1,'#ff9a9a','#e24b4b','#a82a2a'],
-[14,'Tawa Kubus','Emotes','Epic',1450,0,0,'#ffb3d1','#e0568f','#a8316a'],
-[15,'Salam Blok','Emotes','Common',150,0,0,'#9ff2e0','#2fbfa3','#1b8672'],
-[16,'Nelayan Sungai','Skins','Common',250,0,0,'#9ff2e0','#2a9d8f','#1b6a60'],
-[17,'Bajak Laut','Skins','Rare',850,0,0,'#ff9a9a','#b8322f','#1b2236'],
-[18,'Kesatria Salju','Skins','Rare',900,0,0,'#eaf2ff','#bfe6ff','#54aedb'],
-[19,'Penjaga Labu','Skins','Epic',1550,0,0,'#ffc98a','#e07a10','#2d7a21'],
-[20,'Raja Nether','Skins','Legendary',3400,0,0,'#ff9a9a','#8a2b2b','#3a0d0d'],
-[21,'Pahlawan Redstone','Skins','Epic',1650,0,0,'#ff9a9a','#d63a2a','#8a2b2b'],
-[22,'Astronot Blok','Skins','Epic',1800,0,0,'#ffffff','#aebdd3','#5d7090'],
-[23,'Koki Blok','Skins','Common',200,1,0,'#ffffff','#f4f4f4','#3d4a66'],
-[24,'Penambang','Skins','Common',220,1,0,'#ffe27a','#f2b705','#8a6a3a'],
-[25,'Penjelajah Gurun','Skins','Rare',750,1,0,'#fff3b0','#e8c36a','#b5833a'],
-[26,'Dadu Klasik','Dadu','Common',100,1,0,'#ffffff','#1b2a3b','#1b2a3b'],
-[27,'Dadu TNT','Dadu','Rare',500,1,0,'#d63a2a','#ffffff','#4a0d07'],
-[28,'Dadu Rumput','Dadu','Common',200,1,0,'#5fae3e','#1f4a12','#2c5a1c'],
-[29,'Dadu Emas','Dadu','Epic',1200,1,0,'#ffd23f','#6b4a00','#6b4a00'],
-[30,'Dadu Diamond','Dadu','Epic',1400,0,1,'#4aedd9','#0b4f4a','#0b4f4a'],
-[31,'Dadu Obsidian','Dadu','Legendary',2600,0,1,'#2a1747','#d3b4ff','#0d0618']];
-const open = (id) => () => { const it = D.find(r => r[0]===id); if (it[5] || bought.includes(id)) return; this.setState({ mid:id, done:false }); };
-const mk = (r) => { const own = !!r[5] || bought.includes(r[0]); const leg = r[3]==='Legendary'; const dc = r[2]==='Dadu';
- return { isDice:dc, notDice:!dc, edge:r[9], ...(dc ? { ...faces(r[7], r[8], 4, 'k'), ...faces(r[7], r[8], 6, 'm') } : {}), id:r[0], name:r[1], cat:r[2], rar:r[3], rarU:r[3].toUpperCase(), rc:RC[r[3]][0], tint:RC[r[3]][1], price:r[4], priceText:fmt(r[4]), owned:own, feat:!!r[6], c0:r[7], c1:r[8], c2:r[9], g:G[r[2]],
-  glow: leg ? '0 0 0 1px rgba(255,226,122,.15),0 16px 40px rgba(242,183,5,.18)' : 'none',
-  btnText: own ? 'Dimiliki' : 'Beli', btnLabel: own ? r[1]+' sudah dimiliki' : 'Beli '+r[1],
-  btn: own ? 'background:#22282b;color:#7e8a84;cursor:default' : 'background:#7dff2e;color:#08140a;box-shadow:0 4px 0 #3fa312',
-  buy: open(r[0]) }; };
-const all = D.map(mk);
-const items = all.filter(i => (tab==='Featured' ? i.feat : i.cat===tab) && (rar==='Semua' || i.rar===rar) && i.name.toLowerCase().includes(q))
- .sort((a,b) => b.price - a.price);
-const h = all[0];
-const hero = { priceText:h.priceText, owned:h.owned, buy:h.buy, btnText:h.owned?'Dimiliki':'Beli Sekarang', btn: h.owned ? 'background:#22282b;color:#9aa5a0' : 'background:#7dff2e;color:#08140a;box-shadow:0 7px 0 #3fa312,0 16px 38px rgba(125,255,46,.3)' };
-const m = mid ? all.find(i => i.id===mid) : null;
-const after = m ? coins - (done ? 0 : m.price) : 0;
-const short = !!m && !done && coins < m.price;
-const modal = m ? { ...m, open:true, done, confirming:!done, short, balText:fmt(coins)+' koin', afterText: fmt(Math.max(after,0)), needText: fmt(m.price-coins), afterStyle: short ? 'color:#ffb3b3' : 'color:#7dff2e', btn: short ? 'background:#22282b;color:#7e8a84;cursor:not-allowed' : 'background:#7dff2e;color:#08140a;box-shadow:0 5px 0 #3fa312' } : { open:false };
-const tabs = ['Featured','Skins','Dadu','Accessories','Effects','Emotes'].map(n => ({ name:n, on:n===tab, style: n===tab ? 'background:#7dff2e;color:#08140a;box-shadow:0 3px 0 #3fa312' : 'background:transparent;color:#b4beb9', pick:() => this.setState({ tab:n }) }));
-const rars = ['Semua','Common','Rare','Epic','Legendary'].map(n => ({ name:n, on:n===rar, style: n===rar ? 'border:1.5px solid '+(RC[n]?RC[n][0]:'#7dff2e')+';background:#262c30;color:#fff' : 'border:1px solid #2c3236;background:#121416;color:#b4beb9', pick:() => this.setState({ rar:n }) }));
-return { coinsText:fmt(coins), hero, items, hasItems:items.length>0, noItems:items.length===0, tabs, rars, q:st.q ?? '', modal,
- onSearch:(e) => this.setState({ q:e.target.value }),
- reset:() => this.setState({ q:'', rar:'Semua' }),
- closeModal:() => this.setState({ mid:null, done:false }),
- stop:(e) => e.stopPropagation(),
- confirmBuy:() => { if (m && !short && !done) this.setState({ coins:coins-m.price, bought:[...bought, m.id], done:true }); } };
-}
-}
-</script>
-
-
-
-<div style="height:84px"></div>
-<nav aria-label="Navigasi utama" style="position:fixed;left:50%;transform:translateX(-50%);width:min(640px,calc(100% - 20px));box-sizing:border-box;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;justify-content:space-around;gap:2px;background:rgba(10,20,40,.94);backdrop-filter:blur(10px);border:1px solid #2f3f7a;border-radius:22px;padding:6px;box-shadow:0 14px 40px rgba(0,0,0,.6)"><a href="lobby.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9H3zM9 20v-6h6v6"></path></svg>Lobi</a><a href="inventory.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8l8-4 8 4v8l-8 4-8-4zM4 8l8 4 8-4M12 12v8"></path></svg>Inventaris</a><a href="skins.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a4 4 0 100 8 4 4 0 000-8zM4 21c0-4 4-6 8-6s8 2 8 6"></path></svg>Skin</a><a href="shop.html" aria-current="page" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;background:#7dff2e;color:#08140a"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 016 0v2"></path></svg>Toko</a><a href="leaderboard.html" aria-current="false" style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:16px;font-size:11px;font-weight:700;text-decoration:none;color:#b9c9e4"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v6a4 4 0 01-8 0zM8 6H4v2a3 3 0 003 3M16 6h4v2a3 3 0 01-3 3M12 14v4M8 20h8"></path></svg>Peringkat</a></nav>
-
-<audio id="bgMusic" src="assets/music/zen.mp3" loop preload="auto"></audio>
-<style>
-#volPanel{position:fixed;right:16px;bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:41;
-  display:flex;align-items:center;gap:6px;background:rgba(10,20,40,.92);backdrop-filter:blur(10px);
-  border:1px solid #2f3f7a;border-radius:999px;padding:6px 8px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
-#volBtn{width:34px;height:34px;border-radius:50%;border:1px solid #2f3f7a;background:#101d38;color:#eaf2ff;
-  display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
-#volBtn svg{width:18px;height:18px}
-#volSlider{-webkit-appearance:none;appearance:none;width:96px;height:4px;border-radius:999px;
-  background:linear-gradient(90deg,#7dff2e var(--p,50%),#22385f var(--p,50%));outline:none;cursor:pointer}
-#volSlider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;
-  background:#7dff2e;border:2px solid #08140a;cursor:pointer}
-#volSlider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#7dff2e;border:2px solid #08140a;cursor:pointer}
-#volLabel{font-family:'Lilita One',sans-serif;font-size:11px;color:#b9c9e4;min-width:30px;text-align:center}
-</style>
+<div class="ov" id="modal"><div class="box" id="box" role="dialog" aria-modal="true"><button class="x" id="mx" aria-label="Tutup">✕</button><div id="mb"></div></div></div>
+<div id="toast"></div>
+<script src="assets/js/item-catalog.js"></script>
+<script src="assets/js/item-art.js"></script>
+<script src="assets/js/player-data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>UT.App.init({page:'shop'});</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-(function(){
-  'use strict';
-  var STEPS=[6,5,15,30,50,75,100];
-  function load(){ try{ return JSON.parse(localStorage.getItem('ut-music')); }catch(e){ return null; } }
-  function save(v){ try{ localStorage.setItem('ut-music',JSON.stringify(v)); }catch(e){} }
-  function snap(v){ var best=STEPS[0],d=Math.abs(v-STEPS[0]); for(var i=1;i<STEPS.length;i++){ var dd=Math.abs(v-STEPS[i]); if(dd<d){d=dd;best=STEPS[i]} } return best; }
-  var s=load()||{on:true,v:50}; s.v=snap(s.v);
-  var audio=document.getElementById('bgMusic');
-  if(audio){ audio.volume=s.v/100; audio.muted=!s.on; if(s.on){ audio.play().catch(function(){}); } }
-  function apply(){
-    if(!audio) return;
-    audio.volume=s.v/100; audio.muted=!s.on;
-    var sl=document.getElementById('volSlider'); if(sl){ sl.value=s.v; sl.style.setProperty('--p',s.v+'%'); }
-    var lb=document.getElementById('volLabel'); if(lb){ lb.textContent=s.on?(s.v+'%'):'OFF'; }
-    var b=document.getElementById('volBtn'); if(b){ b.setAttribute('aria-pressed',String(s.on)); }
-  }
-  function build(){
-    var d=document.createElement('div'); d.id='volPanel';
-    var b=document.createElement('button'); b.id='volBtn'; b.type='button'; b.setAttribute('aria-label','Volume');
-    b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M19 5a9 9 0 010 14"/></svg>';
-    b.addEventListener('click',function(){ s.on=!s.on; save(s); apply(); });
-    var sl=document.createElement('input'); sl.type='range'; sl.id='volSlider'; sl.min=0; sl.max=100; sl.step=1; sl.value=s.v;
-    sl.addEventListener('input',function(){ s.v=snap(parseInt(sl.value,10)||0); save(s); apply(); });
-    var lb=document.createElement('span'); lb.id='volLabel';
-    d.appendChild(b); d.appendChild(sl); d.appendChild(lb);
-    document.body.appendChild(d); apply();
-  }
-  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',build); }
-  else { build(); }
+(()=>{
+const $=s=>document.querySelector(s),fmt=n=>n.toLocaleString('id-ID');
+// ---- data: SATU sumber = ItemCatalog. Tidak ada database item kedua di halaman ini.
+const PD=window.PlayerData,IC=window.ItemCatalog,AR=window.ItemArt;
+const RN={common:'COMMON',rare:'RARE',epic:'EPIC',legendary:'LEGENDARY'},RC={common:'var(--r0)',rare:'var(--r1)',epic:'var(--r2)',legendary:'var(--r3)'};
+const BG={common:['#5a8aa8','#2f5f80'],rare:['#3a8ff0','#1b55c0'],epic:['#8a4ae0','#4a2aa8'],legendary:['#f0c040','#b98020']};
+const CI={skin:IC.items.filter(i=>i.kind==='skin'),dice:IC.items.filter(i=>i.kind==='dice'),theme:IC.items.filter(i=>i.kind==='theme')};
+const SOON={item:'Item',effect:'Efek',emote:'Emote'}; /* kategori mock lama tanpa item canonical: ditampilkan "Segera hadir" */
+const CATS=[['skin','Skin','M8 3 2 6l2 5 3-1v11h10V10l3 1 2-5-6-3c-.5 1.700-2 2.600-4 2.600S8.500 4.700 8 3Z'],['dice','Dadu','M4 4h16v16H4zM8 8h.1M16 8h.1M12 12h.1M8 16h.1M16 16h.1'],['theme','Tema','M3 5h18v14H3zM3 15l5-5 4 4 3-3 6 6M15 9h.1'],['item','Item','M3 8h18v4H3zM5 12h14v9H5zM12 8v13'],['effect','Efek','M12 2l2.500 7.500L22 12l-7.500 2.500L12 22l-2.500-7.500L2 12l7.500-2.500z'],['emote','Emote','M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20ZM8 10h.1M16 10h.1M7 15c2 3 8 3 10 0']];
+const icon=p=>`<svg viewBox="0 0 24 24"><path d="${p}" fill="#fff" stroke="#fff" stroke-width="1.800" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+const DM='<svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z" fill="#4cc9ff" stroke="#1d7fd0" stroke-width="1.200"/><path d="M2 9h20M9 3l-2 6 5 12 5-12-2-6" fill="none" stroke="#bff0ff" stroke-width=".8"/></svg>';
+const CM='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffc83a" stroke="#c98a0c" stroke-width="1.500"/><text x="12" y="17" font-size="14" font-weight="900" text-anchor="middle" fill="#c98a0c">$</text></svg>';
+// ---- state: currency/ownership/equipment SETIAKALI dibaca dari PlayerData (single source of truth).
+// Tidak ada let coins/gems/own/eq permanen di halaman ini. Key legacy 'shop' tidak dibaca/ditulis lagi.
+let cat='skin',sel=CI.skin[0];
+const list=c=>CI[c]||null;
+const owned=i=>PD.owns(i.id),equipped=i=>PD.isEquipped(i.id);
+const SET=()=>PD.settings();
+const SFX={click:'button',select:'button',open:'button',error:'button',coin:'button',purchase:'power',chest:'chest'};
+function playSound(n){if(!SET().sound)return;try{UT.Audio.play(SFX[n]||'button')}catch(e){}}
+const buzz=()=>{if(SET().vibration&&navigator.vibrate)navigator.vibrate(15)};
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),1600)}
+function sparkle(el,n=12){const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;for(let i=0;i<n;i++){const s=document.createElement('i');s.className='sp';s.style.left=cx+'px';s.style.top=cy+'px';const a=Math.random()*6.28,d=30+Math.random()*60;s.style.setProperty('--dx',Math.cos(a)*d+'px');s.style.setProperty('--dy',Math.sin(a)*d+'px');document.body.appendChild(s);setTimeout(()=>s.remove(),850)}}
+// ---- sky
+(()=>{const sk=$('#sky');[[5,60,6],[18,30,4],[30,70,5],[62,16,5],[86,48,7],[92,12,4],[2,20,5],[75,75,6],[45,85,4]].forEach((p,i)=>{const e=document.createElement('div');e.className='isl';e.style.cssText=`left:${p[0]}%;top:${p[1]}%;animation-delay:${-i}s;filter:blur(${i%3}px)`;e.innerHTML=`<i style="width:${p[2]}rem;height:${p[2]*.4}rem"></i><b style="width:${p[2]*.7}rem;height:${p[2]*.6}rem"></b>`;sk.appendChild(e)})})();
+// ---- thumbs (ItemArt = satu-satunya sistem art; tanpa definisi gambar kedua)
+function thumb(c,it){
+ if(c==='skin')return AR.face(it.id);
+ if(c==='dice')return AR.dice(it.id);
+ if(c==='theme')return AR.theme(it.id);
+ return `<svg viewBox="0 0 40 40"><rect x="5" y="5" width="30" height="30" rx="7" fill="rgba(255,255,255,.25)"/><path d="M12 21l6 6 11-13" fill="none" stroke="#fff" stroke-width="3.500" stroke-linecap="round" stroke-linejoin="round"/></svg>`}
+// ---- UI render
+function renderCats(){$('#cats').innerHTML=CATS.map(c=>`<button class="blue cat ${c[0]===cat?'on':''}" data-c="${c[0]}" aria-label="${c[1]}">${icon(c[2])}${c[1]}</button>`).join('');
+ $('#tabs').innerHTML=CATS.map(c=>`<button class="tab ${c[0]===cat?'on':''}" data-c="${c[0]}">${icon(c[2])}${c[1]}</button>`).join('');
+ document.querySelectorAll('[data-c]').forEach(b=>b.addEventListener('click',()=>{playSound('click');setCat(b.dataset.c)}))}
+function setCat(c){cat=c;const l=list(c);sel=l?(l.find(i=>equipped(i))||l[0]):null;renderCats();renderGrid();renderInfo();buildModels();playSound('select')}
+function renderGrid(){const g=$('#grid');g.innerHTML='';
+ if(!list(cat)){g.innerHTML=`<div style="grid-column:1/-1;display:grid;place-items:center;font-size:2.6rem;text-shadow:0 .2rem 0 var(--bd)">${SOON[cat]} — Segera hadir</div>`;return}
+ list(cat).forEach((i,n)=>{const b=document.createElement('div');b.className='card'+(i===sel?' sel':'');b.tabIndex=0;b.setAttribute('role','button');b.setAttribute('aria-label',i.name);b.style.setProperty('--c1',BG[i.rarity][0]);b.style.setProperty('--c2',BG[i.rarity][1]);b.style.setProperty('--rc',RC[i.rarity]);b.style.animationDelay=n*25+'ms';
+  const ow=owned(i),eq=equipped(i);
+  b.innerHTML=`<span class="badge">${RN[i.rarity]}</span><div class="th">${thumb(cat,i)}</div>${eq?`<span class="ck">${CK}</span>`:''}<span class="nm">${i.name}</span><span class="pr">${CM}${i.price}</span><button class="bt ${ow?'own':''}">${ow?(eq?'Digunakan':'Dimiliki'):'Beli'}</button>`;
+  b.addEventListener('click',e=>{sel=i;renderGrid();renderInfo();buildModels();playSound('select');sparkle(b,6);if(e.target.closest('.bt'))act(i)});
+  b.addEventListener('keydown',e=>{if(e.key==='Enter')b.click()});g.appendChild(b)})}
+const CK='<svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+/* Transaksi lewat PlayerData: equip -> PlayerData.equip(), beli -> PlayerData.purchase() */
+function act(i){if(owned(i)){const r=PD.equip(i.id);toast(r.ok?(i.kind==='skin'?'Skin digunakan.':'Item digunakan.'):'Gagal memakai item.');renderGrid();renderInfo();playSound('select')}else confirmBuy(i)}
+function renderInfo(){const p=$('#info');
+ if(!sel){$('#irar').textContent='SOON';$('#irar').style.setProperty('--rc',RC.common);$('#iname').textContent=SOON[cat];$('#idesc').textContent='Kategori ini belum memiliki item canonical.';$('#iprice').innerHTML='';const b=$('#buy');b.className='cta';b.disabled=true;b.innerHTML='Segera hadir';renderCurrency();return}
+ const i=sel,ow=owned(i),eq=equipped(i);
+ $('#irar').textContent=RN[i.rarity];$('#irar').style.setProperty('--rc',RC[i.rarity]);$('#iname').textContent=i.name;$('#idesc').textContent=i.desc;$('#iprice').innerHTML=CM+fmt(i.price);
+ const b=$('#buy');b.className='cta'+(ow?' own':'');b.disabled=eq;b.innerHTML=ow?(eq?CK+'Digunakan':'Pakai'):CM+'Beli';
+ p.animate([{transform:'translateY(1rem)',opacity:.4},{transform:'none',opacity:1}],{duration:260,easing:'ease-out'});
+ renderCurrency()}
+function renderCurrency(){$('#gemV').textContent=fmt(PD.gems());$('#coinV').textContent=fmt(PD.coins())}
+function pulse(id){const e=$(id);e.classList.remove('pulse');void e.offsetWidth;e.classList.add('pulse')}
+$('#buy').addEventListener('click',e=>{if(sel){act(sel);sparkle(e.currentTarget)}});
+$('#prev').addEventListener('click',()=>step(-1));$('#next').addEventListener('click',()=>step(1));
+function step(d){const l=list(cat);if(!l)return;const n=(l.indexOf(sel)+d+l.length)%l.length;sel=l[n];renderGrid();renderInfo();buildModels();playSound('select')}
+// ---- event: halaman terbuka ikut memperbarui UI saat state berubah (tanpa reload halaman)
+UT.Events.on('currencyChanged',renderCurrency);
+UT.Events.on('inventoryChanged',()=>{const l=list(cat);if(l&&(!sel||!l.includes(sel)))sel=l.find(i=>equipped(i))||l[0];renderGrid();renderInfo()});
+UT.Events.on('skinChanged',()=>{renderGrid();renderInfo()});
+UT.Events.on('diceChanged',()=>{renderGrid();renderInfo()});
+// ---- modal
+const modal=$('#modal');let mOpen=false,onClose=null;
+function openModal(html,init,big){$('#mb').innerHTML=html;$('#box').classList.toggle('big',!!big);modal.style.display='grid';requestAnimationFrame(()=>modal.classList.add('show'));mOpen=true;playSound('open');init&&init();$('#mx').focus()}
+function closeModal(){if(!mOpen)return;mOpen=false;modal.classList.add('closing');modal.classList.remove('show');onClose&&onClose();onClose=null;setTimeout(()=>{modal.style.display='none';modal.classList.remove('closing')},250)}
+$('#mx').addEventListener('click',closeModal);modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+function confirmBuy(i){const coins=PD.coins(),ok=coins>=i.price;
+ openModal(ok?`<h2>Konfirmasi</h2><p>Apakah kamu ingin membeli ${i.name}?</p><div class="row" style="justify-content:center;gap:.8rem;color:#ffe36a;font-size:3.4rem"><span style="width:3.4rem">${CM}</span>${fmt(i.price)}</div><button class="mb no" id="no">Batal</button><button class="mb" id="yes">Konfirmasi</button>`
+ :`<h2>Coin tidak cukup</h2><p>Kamu butuh ${fmt(i.price-coins)} coin lagi.</p><button class="mb no" id="no">Batal</button><button class="mb" id="more">Dapatkan Coin</button>`,()=>{
+  $('#no').addEventListener('click',()=>{playSound('click');closeModal()});
+  if(ok)$('#yes').addEventListener('click',()=>{const r=PD.purchase(i.id); /* atomik: saldo+inventory satu penulisan */
+   if(!r.ok){toast(r.reason==='sudah-dimiliki'?'Item sudah dimiliki.':r.reason==='saldo-kurang'?'Coin tidak cukup.':'Pembelian gagal.');playSound('error');closeModal();return}
+   closeModal();sel=i.item;renderGrid();renderInfo();playSound('purchase');buzz();toast('Pembelian berhasil!');sparkle($('#show'),24);spin=1});
+  else{playSound('error');$('#more').addEventListener('click',()=>{closeModal();setTimeout(()=>buy('coin'),300)})}})}
+/* Top-up: gem = mock IAP; paket coin dibayar dengan gem. Semua lewat PlayerData.addCurrency (satu sumber). */
+function buy(type){const g=type==='gem',packs=g?[[10,'Rp 15.000'],[50,'Rp 59.000'],[120,'Rp 129.000']]:[[500,'10 Gem'],[2500,'40 Gem'],[10000,'120 Gem']];
+ openModal(`<h2>Tambah ${g?'Gem':'Coin'}</h2>`+packs.map((p,i)=>`<button class="pack" data-i="${i}"><span>+${fmt(p[0])}</span><span>${p[1]}</span></button>`).join(''),()=>{
+  document.querySelectorAll('.pack').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.i,p=packs[i];const r=g?PD.addCurrency(0,p[0]):PD.addCurrency(p[0],-[10,40,120][i]);
+   if(!r.ok){toast(r.reason==='gem-kurang'?'Gem tidak cukup.':'Transaksi gagal.');playSound('error');return}
+   renderInfo();pulse(g?'#gem':'#coin');playSound('coin');toast(g?'Berhasil (mock)':'Berhasil');closeModal()}))})}
+document.querySelectorAll('[data-buy]').forEach(b=>b.addEventListener('click',()=>buy(b.dataset.buy)));
+$('#gift').addEventListener('click',()=>{const fr=['Budi','Sari','Rafi','Nina'];let pick=0;
+ openModal(`<h2>Hadiahkan Item</h2><p style="margin:0">${sel.name} · ${fmt(sel.price)} coin</p>`+fr.map((f,i)=>`<button class="row fr ${i?'':'sel'}" style="width:100%;border:0;color:#fff;font:inherit"><span>${f}</span></button>`).join('')+`<button class="mb no" id="no">Batal</button><button class="mb" id="ok">Konfirmasi</button>`,()=>{
+  const rows=document.querySelectorAll('.fr');rows.forEach((r,i)=>r.addEventListener('click',()=>{pick=i;rows.forEach(x=>x.classList.remove('sel'));r.classList.add('sel')}));
+  $('#no').addEventListener('click',closeModal);
+  $('#ok').addEventListener('click',()=>{const r=PD.addCurrency(-sel.price,0);
+   if(!r.ok){toast('Coin tidak cukup.');playSound('error');return}
+   closeModal();renderInfo();pulse('#coin');playSound('purchase');toast('Hadiah terkirim ke '+fr[pick]+'!')})})});
+$('#gear').addEventListener('click',()=>{const T=SET();const row=(k,l)=>`<div class="row"><span>${l}</span><button class="tg ${T[k]?'on':''}" data-k="${k}">${T[k]?'ON':'OFF'}</button></div>`;
+ openModal(`<h2>Pengaturan</h2>${row('music','Musik')}${row('sound','Suara')}${row('vibration','Getar')}<div class="row"><span>Grafik</span><button class="tg on" data-k="graphics">${T.graphics==='high'?'Tinggi':'Rendah'}</button></div>`,()=>{
+  document.querySelectorAll('.tg').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.k,cur=SET();let v;
+   if(k==='graphics'){v=cur.graphics==='high'?'low':'high';b.textContent=v==='high'?'Tinggi':'Rendah';PD.setSettings({graphics:v});fit()}
+   else{v=!cur[k];b.classList.toggle('on',v);b.textContent=v?'ON':'OFF';PD.setSettings({[k]:v})}
+   playSound('click');buzz()}))})});
+$('#back').addEventListener('click',()=>{playSound('click');location.href='lobby.html'});
+window.openShop=()=>{$('#ui').style.display=''};window.closeShop=()=>{$('#ui').style.display='none'};
+// ---- 3D
+const M=(c,r=.7)=>new THREE.MeshStandardMaterial({color:new THREE.Color(c),roughness:r});
+const bx=(w,h,d,m,x=0,y=0,z=0,p)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;p&&p.add(o);return o};
+function character(sk,emote){const g=new THREE.Group(),P={};const skin=M(0xf0b98d),hood=M(sk.hood),hair=M(sk.hair),pants=M(sk.pants),wh=M(0xffffff),bl=M(0x2f6fd0),pk=M(0x7a4a2a),dk=M(0x221a18);
+ const body=new THREE.Group();body.position.y=2.6;g.add(body);P.body=body;
+ bx(1.7,1.9,1,hood,0,0,0,body);bx(.9,1.1,.1,wh,0,-.1,.52,body);bx(1.1,1.4,.5,pk,0,0,-.75,body);
+ const head=new THREE.Group();head.position.y=2.1;body.add(head);P.head=head;
+ bx(2.2,2.1,2.1,skin,0,0,0,head);bx(2.4,.8,2.3,hair,0,1.15,-.05,head);bx(2.4,1.8,.5,hair,0,.2,-1,head);bx(.4,1.2,2.1,hair,-1.2,.4,0,head);bx(.4,1.2,2.1,hair,1.2,.4,0,head);bx(2.2,.5,.5,hair,0,.8,1.05,head);
+ P.eyes=[-.55,.55].map(x=>{const e=new THREE.Group();e.position.set(x,.05,1.06);head.add(e);bx(.42,.55,.1,dk,0,0,0,e);bx(.14,.16,.1,wh,.08,.12,.06,e);return e});
+ bx(.7,.15,.1,M(0xc0473a),0,-.6,1.06,head);
+ const arm=x=>{const a=new THREE.Group();a.position.set(x,.8,0);body.add(a);bx(.7,1.5,.7,hood,0,-.6,0,a);bx(.6,.5,.6,skin,0,-1.5,0,a);return a};
+ P.aL=arm(-1.2);P.aR=arm(1.2);
+ const leg=x=>{const l=new THREE.Group();l.position.set(x,-1,0);body.add(l);bx(.8,1.4,.9,pants,0,-.6,0,l);bx(1,.5,1.3,wh,0,-1.45,.15,l);bx(1.02,.18,1.32,bl,0,-1.2,.15,l);return l};
+ P.lL=leg(-.45);P.lR=leg(.45);
+ g.userData.anim=t=>{const k=emote||'idle',sw=Math.sin(t*10);P.body.position.y=2.6+Math.sin(t*2)*.05;P.body.scale.y=1+Math.sin(t*2)*.012;P.head.rotation.set(0,Math.sin(t*.7)*.12,Math.sin(t*.9)*.03);
+  P.aL.rotation.z=-.15;P.aR.rotation.z=.15;g.position.y=Math.sin(t*1.6)*.08;P.body.rotation.z=0;
+  if(k==='idle')P.aR.rotation.z=.15-Math.sin(t*2)*.05+(Math.sin(t*.4)>.97?1:0);
+  if(k==='wave'){P.aR.rotation.z=2.4+Math.sin(t*10)*.35}
+  if(k==='dance'){P.body.rotation.z=sw*.12;P.aL.rotation.z=-2+sw*.3;P.aR.rotation.z=2-sw*.3;g.position.y=Math.abs(sw)*.3}
+  if(k==='victory'){P.aL.rotation.z=-2.8;P.aR.rotation.z=2.8;g.position.y=Math.abs(Math.sin(t*4))*.5}
+  if(k==='laugh'){P.body.rotation.z=sw*.04;P.head.rotation.x=-.25+Math.sin(t*16)*.06;P.aL.rotation.z=-.9;P.aR.rotation.z=.9}
+  if(k==='celebrate'){P.aL.rotation.z=-2.5+Math.sin(t*8)*.4;P.aR.rotation.z=2.5-Math.sin(t*8)*.4;g.position.y=Math.abs(Math.sin(t*5))*.9}
+  P.eyes.forEach(e=>e.scale.y=(t%4<.15)?.1:1)};
+ return g}
+function diceTex(c,p){const cv=document.createElement('canvas');cv.width=cv.height=128;const x=cv.getContext('2d');x.fillStyle=c;x.fillRect(0,0,128,128);x.fillStyle=p;[[32,32],[96,32],[64,64],[32,96],[96,96]].forEach(a=>{x.beginPath();x.arc(a[0],a[1],12,0,6.3);x.fill()});return new THREE.CanvasTexture(cv)}
+/* model hanya untuk kategori canonical skin/dice; tema memakai ItemArt (overlay), kategori lain "Segera hadir" */
+function model(c,it){let g;
+ if(c==='skin')g=character(AR.palette(it.id)||{hood:'#00a8a8',hair:'#4a2e13',pants:'#3b4fd8'});
+ else if(c==='dice'){g=new THREE.Group();const m=new THREE.MeshStandardMaterial({map:diceTex(it.art.bg,it.art.pip),roughness:.35});const d=bx(2.6,2.6,2.6,m,0,3,0,g);g.userData.anim=t=>{d.rotation.y=t*.8;d.rotation.x=.5+Math.sin(t)*.2;d.position.y=3+Math.sin(t*1.6)*.2}}
+ return g}
+function island(){const g=new THREE.Group(),cells=[];for(let y=0;y>-4;y--){const r=y===0?3.2:y===-1?3:Math.max(1,3.2+y*.8);for(let x=-3;x<=3;x++)for(let z=-3;z<=3;z++)if(Math.hypot(x,z)<=r+(((x*7+z*13+y*5)%3)*.15)-.2)cells.push([x,y,z])}
+ const m=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshStandardMaterial({roughness:.8}),cells.length),m4=new THREE.Matrix4(),col=new THREE.Color();
+ cells.forEach((c,i)=>{m4.setPosition(c[0],c[1]-.5,c[2]);m.setMatrixAt(i,m4);m.setColorAt(i,col.setHex(c[1]===0?((c[0]+c[2])&1?0x58b83c:0x4fae36):c[1]===-1?0x8a5a3a:(c[0]*c[2]%3===0?0x7a7a80:0x754b30)))});m.castShadow=m.receiveShadow=true;g.add(m);
+ for(let i=0;i<7;i++){const a=i*2.3;bx(.2,.5+.3*(i%2),.2,M(0x3fa83a),Math.cos(a)*2.4,.25,Math.sin(a)*2.4,g)}bx(.25,.25,.25,M(0xffffff),-1.8,.4,1.5,g);bx(.9,.25,.9,M(0x9a9aa0),2,.12,1.9,g);
+ const glow=new THREE.Mesh(new THREE.RingGeometry(3.4,4.3,40),new THREE.MeshBasicMaterial({color:0xbfeaff,transparent:true,opacity:.6,side:THREE.DoubleSide}));glow.rotation.x=-Math.PI/2;glow.position.y=-3.6;g.add(glow);return g}
+let ok=true;const rigs=[];
+function rig(cv,withIsland,cy,dist,fov){if(!ok)return null;try{const r=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});r.shadowMap.enabled=true;r.shadowMap.type=THREE.PCFSoftShadowMap;
+ const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(fov,1,.1,100);scene.add(new THREE.AmbientLight(0xffffff,.6),new THREE.HemisphereLight(0xcfeaff,0x6a9a50,.6));
+ const sun=new THREE.DirectionalLight(0xfff2d8,.9);sun.position.set(6,12,8);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);Object.assign(sun.shadow.camera,{left:-8,right:8,top:10,bottom:-6});scene.add(sun);
+ const holder=new THREE.Group();scene.add(holder);if(withIsland)holder.add(island());
+ const R={r,scene,cam,holder,cv,cy,dist,rot:0,vel:0,cur:null,drag:false,fov};
+ cv.addEventListener('pointerdown',e=>{R.drag=true;R.lx=e.clientX;cv.setPointerCapture(e.pointerId)});
+ cv.addEventListener('pointermove',e=>{if(R.drag){R.vel=(e.clientX-R.lx)*.012;R.rot+=R.vel;R.lx=e.clientX}});
+ const up=()=>R.drag=false;cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);cv.style.touchAction='pan-y';
+ rigs.push(R);return R}catch(e){ok=false;console.warn('WebGL unavailable',e);return null}}
+let main,pv,spin=0;
+function setModel(R,c,it,y){if(!R)return;if(R.cur)R.holder.remove(R.cur);const m=model(c,it);R.holder.add(m);R.cur=m;R.mc=c}
+/* Tema: tampilkan ItemArt (overlay) sebagai ganti render 3D — tanpa sistem art kedua. */
+function showThemeArt(on){const s=$('#show'),p=$('#pv');const sv=on&&sel?AR.theme(sel.id):'';
+ s.classList.toggle('art',!!sv);$('#art').innerHTML=sv;
+ p.classList.toggle('art',!!sv);$('#pvart').innerHTML=sv}
+function buildModels(){if(!list(cat)){showThemeArt(false);return}
+ if(cat==='theme'){showThemeArt(true);return}
+ showThemeArt(false);setModel(main,cat,sel);setModel(pv,cat,sel);spin=1}
+function fit(){const hi=SET().graphics==='high';rigs.forEach(R=>{const w=R.cv.clientWidth,h=R.cv.clientHeight;if(!w||!h)return;R.r.setPixelRatio(hi?Math.min(devicePixelRatio,1.5):1);R.r.setSize(w,h,false);R.cam.aspect=w/h;R.cam.fov=R.fov*(w/h<.8?1.15:1);R.cam.updateProjectionMatrix()})}
+const clock=typeof THREE!=='undefined'?new THREE.Clock():null;
+function loop(){requestAnimationFrame(loop);const t=clock.getElapsedTime();
+ rigs.forEach(R=>{if(!R.cur||!R.cv.offsetParent)return;const el=R.cv.getBoundingClientRect();if(!el.width)return;
+  if(!R.drag){R.vel*=.95;R.rot+=R.vel+.004}if(spin>0&&R===main){}R.holder.rotation.y=R.rot+(spin>0?(1-spin)*6.28:0);
+  R.cur.userData.anim&&R.cur.userData.anim(t);R.cam.position.set(0,R.cy+1,R.dist);R.cam.lookAt(0,R.cy,0);R.r.render(R.scene,R.cam)});
+ if(spin>0)spin=Math.max(0,spin-.025)}
+// preview modal: reparent canvas
+$('#pvbtn').addEventListener('click',()=>{if(!list(cat)||cat==='theme')return;const cv=$('#pvc'),home=cv.parentElement;
+ openModal(`<h2>Preview 360°</h2><div id="slot"></div><p style="margin:0;font-size:2rem">Geser untuk memutar</p>`,()=>{const s=$('#slot');s.appendChild(cv);cv.id='bigc';cv.style.height='';fit()},true);
+ onClose=()=>{cv.id='pvc';home.insertBefore(cv,$('#pvbtn'));setTimeout(fit,50)}});
+if(typeof THREE==='undefined')ok=false;
+renderCats();renderGrid();renderInfo();
+if(ok){main=rig($('#gl'),true,3.4,17,36);pv=rig($('#pvc'),false,3.4,13,38);if(ok){buildModels();new ResizeObserver(fit).observe(document.body);document.querySelectorAll('#show,#pv').forEach(e=>new ResizeObserver(fit).observe(e));fit();requestAnimationFrame(loop)}}
+if(!ok){$('#show').innerHTML='<div style="height:100%;display:grid;place-items:center;font-size:3rem">3D tidak tersedia</div>'}
 })();
 </script>
 </body></html>
-<script>
-(function(){
-  var cur=null;
-  function reduced(){return window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches}
-  function clr(w){if(!w)return;var a=w.querySelectorAll('.dt');for(var i=0;i<a.length;i++){a[i].style.removeProperty('--rx');a[i].style.removeProperty('--ry');a[i].style.removeProperty('--s')}}
-  function tilt(w,ev,press){
-    if(reduced())return;
-    var r=w.getBoundingClientRect(),dx=((ev.clientX-r.left)/r.width-.5)*2,dy=((ev.clientY-r.top)/r.height-.5)*2;
-    dx=Math.max(-1,Math.min(1,dx));dy=Math.max(-1,Math.min(1,dy));
-    var a=w.querySelectorAll('.dt');
-    for(var i=0;i<a.length;i++){
-      var d=a[i],sm=d.classList.contains('dtA');
-      d.style.setProperty('--rx',((sm?-28:-24)-dy*8)+'deg');
-      d.style.setProperty('--ry',((sm?-38:-30)+dx*10)+'deg');
-      d.style.setProperty('--s',press?'.94':'1');
-    }
-  }
-  function hit(ev){var t=ev.target;return t&&t.closest?t.closest('.dtw'):null}
-  document.addEventListener('pointermove',function(ev){
-    var w=hit(ev);if(cur&&cur!==w)clr(cur);cur=w;
-    if(w)tilt(w,ev,ev.buttons>0||ev.pointerType==='touch');
-  });
-  document.addEventListener('pointerdown',function(ev){var w=hit(ev);if(w){cur=w;tilt(w,ev,true)}});
-  function up(ev){
-    if(!cur)return;
-    if(ev.pointerType&&ev.pointerType!=='mouse'){clr(cur);cur=null}
-    else tilt(cur,ev,false);
-  }
-  document.addEventListener('pointerup',up);
-  document.addEventListener('pointercancel',function(){clr(cur);cur=null});
-  document.documentElement.addEventListener('mouseleave',function(){clr(cur);cur=null});
-})();
-</script>

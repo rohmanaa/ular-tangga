@@ -89,5 +89,14 @@
     return '';
   }
 
-  g.ItemArt = { character: character, face: face, dice: dice, theme: theme, forItem: forItem };
+  /* Palet warna karakter untuk renderer 3D halaman (lobby/shop/inventory/profile).
+     Satu sumber warna skin: dibaca dari FACES katalog, bukan database warna kedua. */
+  function palette(skinId) {
+    var it = C.byId(skinId); if (!it || it.kind !== 'skin') return null;
+    var d = FACES[it.gameKey]; if (!d) return null;
+    var hairKey = d.f[0] ? d.f[0].charAt(0) : '';
+    return { gameKey: it.gameKey, hood: d.body.shirt, hair: d.p[hairKey] || d.body.shirt, pants: d.body.pants };
+  }
+
+  g.ItemArt = { character: character, face: face, dice: dice, theme: theme, forItem: forItem, palette: palette };
 })(window);
