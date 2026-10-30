@@ -1377,6 +1377,7 @@ const sfx={
   hop(){ try{ const a=new Audio('assets/sfx/jump.mp3'); a.volume=0.5; a.play().catch(()=>beep(480+Math.random()*120,0.08,'square',0.04)); }catch(e){ beep(480+Math.random()*120,0.08,'square',0.04); } },
   hit(){ try{ const a=new Audio('assets/sfx/hit.mp3'); a.volume=0.6; a.play().catch(()=>beep(330,0.2,'triangle',0.07,0,140)); }catch(e){ beep(330,0.2,'triangle',0.07,0,140); } },
   enderman(){ try{ const a=new Audio('assets/sfx/enderman.ogg'); a.volume=0.7; a.play().catch(()=>beep(700,0.2,'square',0.05,0,1000)); }catch(e){ beep(700,0.2,'square',0.05,0,1000); } },
+  creeper(){ try{ const a=new Audio('assets/sfx/Creeper_fuse.ogg'); a.volume=0.7; a.play().catch(()=>beep(200,0.12,'square',0.09,0,60)); }catch(e){ beep(200,0.12,'square',0.09,0,60); } },
   hundred(){ try{ const a=new Audio('assets/sfx/100.mp3'); a.volume=0.7; a.play().catch(()=>beep(523,0.2,'square',0.05)); }catch(e){ beep(523,0.2,'square',0.05); } },
   caplokular(){ try{ const a=new Audio('assets/sfx/caplokular.mp3'); a.volume=0.7; a.play().catch(()=>beep(200,0.12,'square',0.09,0,60)); }catch(e){ beep(200,0.12,'square',0.09,0,60); } },
   chest(){ try{ const a=new Audio('assets/sfx/game_assets_sfx_chest.mp3'); a.volume=0.6; a.play().catch(()=>beep(300,0.12,'triangle',0.08,0,900)); }catch(e){ beep(300,0.12,'triangle',0.08,0,900); } },
@@ -1769,6 +1770,7 @@ async function playTurn(p,v,gid,bn){
     const k=mobOn(p.pos); mobReact(p.pos);
     if(k==='creeper'){
       setMsg('Creeper meledak! '+p.name+' terlempar mundur 2 blok.');
+      sfx.creeper();
       await A(sleep(300)); await A(explode(p));
       const to=Math.max(1,p.pos-2); await A(walk(p,p.pos,to)); p.pos=to;
     }else if(k==='ender'){
