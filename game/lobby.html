@@ -30,11 +30,6 @@ button:hover{transform:scale(1.05);filter:brightness(1.08)}button:active{transfo
 #xp i{display:block;height:100%;border-radius:1rem;background:linear-gradient(#7af0ff,#25bfe8);box-shadow:inset 0 .15rem .15rem rgba(255,255,255,.6)}
 #xp span{position:absolute;inset:0;display:grid;place-items:center;font-size:1.15rem;line-height:1}
 /* currency */
-.cur{top:1.7rem;height:3.8rem;display:flex;align-items:center;justify-content:space-between;padding:0 .5rem 0 4.6rem;border-radius:2rem;background:linear-gradient(#2d62c8,#173c94);box-shadow:0 .35rem 0 #0b2160,0 .9rem 1.2rem rgba(18,51,127,.4),inset 0 .2rem .2rem rgba(255,255,255,.35),inset 0 0 0 .2rem rgba(80,170,255,.7);font-size:2.3rem}
-.cur>svg{position:absolute;left:-.4rem;top:50%;translate:0 -50%;width:4.8rem;height:4.8rem;filter:drop-shadow(0 .3rem .3rem rgba(0,0,0,.35))}
-.cur span{flex:1;text-align:center;padding-right:.4rem}
-.plus{width:2.9rem;height:2.9rem;border-radius:50%;background:radial-gradient(#7af07a,#2cb02c);border:.2rem solid #1c7d1c;display:grid;place-items:center}.plus svg{width:1.8rem;height:1.8rem}
-#gem{right:26rem;width:12.3rem}#coin{right:11.8rem;width:13rem}
 .sm{top:1.6rem;width:3.9rem;height:3.9rem;border-radius:1.2rem;display:grid;place-items:center}.sm svg{width:2.4rem;height:2.4rem}
 #mail{right:6.6rem}#gear{right:1.6rem}
 /* event */
@@ -78,7 +73,7 @@ button:hover{transform:scale(1.05);filter:brightness(1.08)}button:active{transfo
 #rot{position:fixed;inset:0;display:none;place-items:center;text-align:center;background:linear-gradient(#4aa6f0,#bfe6ff);z-index:200;font-size:6vw;padding:2rem}
 @media(max-aspect-ratio:1/1){#rot{display:grid}}
 @media(prefers-reduced-motion:reduce){#play{animation:none}}
-</style></head>
+</style><style>:root{--curbar-right:11.8rem;--curbar-top:1.7rem;--cur-h:3.8rem;--cur-icon:4.8rem;--cur-plus:2.9rem;--cur-fs:2.3rem;--cur-minw:12.3rem}</style><link rel="stylesheet" href="assets/css/shared-ui.css"></head>
 <body>
 <canvas id="gl"></canvas>
 <div id="ui">
@@ -91,8 +86,7 @@ button:hover{transform:scale(1.05);filter:brightness(1.08)}button:active{transfo
   <div id="xp"><i style="width:41.7%"></i><span>1.250 / 3.000</span></div>
  </div>
 
- <div class="ab cur" id="gem"><svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z" fill="#4cc9ff" stroke="#1d7fd0" stroke-width="1.2"/><path d="M2 9h20M9 3l-2 6 5 12 5-12-2-6" fill="none" stroke="#bff0ff" stroke-width=".8"/></svg><span id="gemV"></span><button class="plus" data-act="buygem" aria-label="Tambah gem"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div>
- <div class="ab cur" id="coin"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffc83a" stroke="#c98a0c" stroke-width="1.5"/><circle cx="12" cy="12" r="7.5" fill="none" stroke="#ffe27a" stroke-width="1"/><text x="12" y="17" font-size="13" font-weight="900" text-anchor="middle" fill="#c98a0c">$</text></svg><span id="coinV"></span><button class="plus" data-act="buycoin" aria-label="Tambah coin"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div>
+ <div class="ut-curbar"><div class="ab cur" id="gem"><svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z" fill="#4cc9ff" stroke="#1d7fd0" stroke-width="1.2"/><path d="M2 9h20M9 3l-2 6 5 12 5-12-2-6" fill="none" stroke="#bff0ff" stroke-width=".8"/></svg><span id="gemV"></span><button class="plus" data-act="buygem" aria-label="Tambah gem"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div><div class="ab cur" id="coin"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffc83a" stroke="#c98a0c" stroke-width="1.5"/><circle cx="12" cy="12" r="7.5" fill="none" stroke="#ffe27a" stroke-width="1"/><text x="12" y="17" font-size="13" font-weight="900" text-anchor="middle" fill="#c98a0c">$</text></svg><span id="coinV"></span><button class="plus" data-act="buycoin" aria-label="Tambah coin"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div></div>
  <button class="ab pn sm" id="mail" data-act="mail" aria-label="Pesan"><svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="#fff"/><path d="m3 7 9 7 9-7" fill="none" stroke="#3a8ff0" stroke-width="2" stroke-linejoin="round"/></svg><i class="dot"></i></button>
  <button class="ab pn sm" id="gear" data-act="gear" aria-label="Pengaturan"><svg viewBox="0 0 24 24"><path fill="#fff" d="M19.4 13c.1-.3.1-.7.1-1s0-.7-.1-1l2.1-1.6-2-3.5-2.5 1a7 7 0 0 0-1.700-1L15 3.200h-4L10.600 6a7 7 0 0 0-1.700 1l-2.500-1-2 3.500L6.600 11c-.1.300-.1.700-.1 1s0 .7.100 1l-2.100 1.600 2 3.500 2.500-1c.5.400 1.100.7 1.700 1l.4 2.800h4l.4-2.800c.6-.3 1.200-.6 1.700-1l2.500 1 2-3.500zM12 15.500a3.500 3.500 0 1 1 0-7 3.500 3.500 0 0 1 0 7Z"/></svg></button>
 

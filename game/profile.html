@@ -32,11 +32,7 @@ svg{display:block}
 #sbs{left:38.2rem;top:14.8rem;display:flex;flex-direction:column;gap:.9rem}
 #sbs button{width:4.4rem;height:3.5rem;border-radius:1.2rem;padding:0;display:grid;place-items:center;font-size:1.3rem;line-height:1}
 #sbs svg{width:2.4rem;height:2.4rem}
-.cur{top:1.8rem;display:flex;align-items:center;height:4.2rem;padding:0 .5rem 0 4.8rem;border-radius:2.1rem;background:linear-gradient(#2d62c8,#173c94);box-shadow:0 .4rem 0 #0b2160,0 1rem 1.4rem rgba(18,51,127,.4),inset 0 .2rem .2rem rgba(255,255,255,.35);font-size:2rem;justify-content:space-between;gap:1rem;min-width:11.5rem}
-.cur>svg{position:absolute;left:-.5rem;top:50%;translate:0 -50%;width:5.2rem;height:5.2rem;filter:drop-shadow(0 .3rem .3rem rgba(0,0,0,.35))}
-.plus{width:3.2rem;height:3.2rem;border-radius:50%;background:radial-gradient(#7af07a,#2cb02c);border:.2rem solid #1c7d1c;display:grid;place-items:center;padding:0}.plus svg{width:1.9rem;height:1.9rem}
 .pulse{animation:pu .4s}@keyframes pu{50%{transform:scale(1.15)}}
-#gem{right:21rem}#coin{right:7.6rem}
 #gear{right:1.4rem;top:1.7rem;width:4.4rem;height:4.4rem;border-radius:1.4rem;padding:0;display:grid;place-items:center}#gear svg{width:2.8rem;height:2.8rem}
 .sp{position:fixed;width:1.3rem;height:1.3rem;background:#fff6a0;rotate:45deg;pointer-events:none;z-index:99;animation:spk .8s forwards}
 @keyframes spk{to{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
@@ -113,17 +109,15 @@ html{font-size:2.5vw}
 #title{order:-1}#cats{width:auto!important;flex-direction:row;overflow-x:auto;padding-bottom:.8rem}.cat{flex:none}
 #show{width:auto!important;height:80vw!important}#sbs{flex-direction:row!important;justify-content:center}
 .pn{width:auto!important;height:auto!important}.pr,.lvc{height:auto}.sk2{padding:.6rem 1rem}.qt{min-height:7rem}
-#gem,#coin{right:auto}
 }
-</style></head>
+</style><style>:root{--curbar-right:7.6rem;--curbar-top:1.8rem;}</style><link rel="stylesheet" href="assets/css/shared-ui.css"></head>
 <body>
 <div id="sky"></div>
 <div id="ui">
 <div id="top">
  <button class="ab blue" id="back" aria-label="Kembali"><svg viewBox="0 0 24 24"><path d="M20 12H5m6-7-7 7 7 7" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <div class="ab blue" id="title"><svg viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5Z" fill="#fff"/></svg>Profil</div>
- <div class="ab cur" id="gem"><svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z" fill="#4cc9ff" stroke="#1d7fd0" stroke-width="1.200"/><path d="M2 9h20M9 3l-2 6 5 12 5-12-2-6" fill="none" stroke="#bff0ff" stroke-width=".8"/></svg><span id="gemV"></span><button class="plus" data-buy="gem" aria-label="Tambah gem"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div>
- <div class="ab cur" id="coin"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffc83a" stroke="#c98a0c" stroke-width="1.500"/><text x="12" y="17" font-size="14" font-weight="900" text-anchor="middle" fill="#c98a0c">$</text></svg><span id="coinV"></span><button class="plus" data-buy="coin" aria-label="Tambah coin"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div>
+ <div class="ut-curbar"><div class="ab cur" id="gem"><svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z" fill="#4cc9ff" stroke="#1d7fd0" stroke-width="1.200"/><path d="M2 9h20M9 3l-2 6 5 12 5-12-2-6" fill="none" stroke="#bff0ff" stroke-width=".8"/></svg><span id="gemV"></span><button class="plus" data-buy="gem" aria-label="Tambah gem"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div><div class="ab cur" id="coin"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffc83a" stroke="#c98a0c" stroke-width="1.500"/><text x="12" y="17" font-size="14" font-weight="900" text-anchor="middle" fill="#c98a0c">$</text></svg><span id="coinV"></span><button class="plus" data-buy="coin" aria-label="Tambah coin"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div></div>
  <button class="ab blue" id="gear" aria-label="Pengaturan"><svg viewBox="0 0 24 24"><path fill="#fff" d="M19.400 13c.1-.3.1-.7.1-1s0-.7-.1-1l2.100-1.600-2-3.500-2.500 1a7 7 0 0 0-1.700-1L15 3.200h-4L10.600 6a7 7 0 0 0-1.700 1l-2.500-1-2 3.500L6.600 11c-.1.300-.1.700-.1 1s0 .7.100 1l-2.100 1.600 2 3.500 2.500-1c.5.400 1.100.7 1.700 1l.4 2.800h4l.4-2.800c.6-.3 1.200-.6 1.700-1l2.500 1 2-3.500zM12 15.500a3.500 3.500 0 1 1 0-7 3.500 3.500 0 0 1 0 7Z"/></svg></button>
 </div>
 <nav class="ab" id="cats" aria-label="Menu profil"></nav>
