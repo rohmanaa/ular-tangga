@@ -1581,6 +1581,7 @@ let players=[],cur=0,busy=false,gameOver=false,gameId=0,mode='cpu',pendingTheme=
 function setMsg(t){ $('msg').textContent=t; }
 /* Stage 4.0.9: jembatan presentasi ke UT.GameplayHUD (gameplay/hud.js). Aman bila HUD tidak termuat; tidak mengubah state/logic. */
 function hud(f,...a){ try{ const H=window.UT&&UT.GameplayHUD; if(H&&H[f]) H[f](...a); }catch(e){ console.error(e); } }
+function fb(k,...a){ try{ const F=window.UT&&UT.Gameplay&&UT.Gameplay.Feedback; if(F&&typeof F[k]==='function') return F[k](...a); }catch(e){ console.error(e); } return false; }
 if(window.UT&&UT.GameplayHUD) UT.GameplayHUD.init({getGameId:()=>gameId,isPaused:()=>paused});
 function setRoll(on){ $('btnRoll').disabled=!on; }
 const FC={
@@ -1605,9 +1606,10 @@ async function giveChest(p){
    openChest(p.pos);
    const ks=Object.keys(p.pu),k=ks[Math.floor(Math.random()*ks.length)];
    p.pu[k]++; p.score+=5; sfx.chest(); setMsg(p.name+' membuka peti: '+PUN[k][1]+' '+PUN[k][0]); hud('showEvent','chest','Chest ditemukan! Dapat '+PUN[k][1]); renderChips();
-   await showPUCard(p,k);
+   await (fb('reward',p,k)||showPUCard(p,k));
    sfx.chestClose();
 }
+try{ fb('setRewardPresenter',showPUCard); }catch(e){ console.error(e); }
 async function showPUCard(p,k){
    const c=$('puCard'),em=$('pcEmoji'),keys=Object.keys(PUN);
    $('pcWho').textContent=p.name+' membuka peti'; $('pcName').textContent='...'; $('pcDesc').textContent='';
@@ -1641,7 +1643,7 @@ async function usePU(k,cpu){
   }catch(e){ console.error(e); }
   if(gid!==gameId) return;
   /* Power = feedback singkat (banner HUD), BUKAN kartu/modal hadiah Chest (#puCard). Urutan: pakai → terapkan efek → feedback → lanjut. */
-  hud('showPower',k,PUN[k][1],p.name);
+  fb('short',k,PUN[k][1],p.name)||hud('showPower',k,PUN[k][1],p.name);
   busy=false; if(!p.cpu) setRoll(true); focus=p.pawn; renderChips();
 }
 function renderChips(){

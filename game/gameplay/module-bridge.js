@@ -12,6 +12,11 @@
      UT.Gameplay.registerModule(name, api) — isi namespace yang masih kosong dengan api; false bila
                                               nama tidak dikenal/api bukan object/namespace sudah terisi
      UT.Gameplay.hasModule(name)           — true bila namespace sudah terisi (bukan sekadar ada)
+   UT.Gameplay.Feedback — kontrak pemisahan feedback (ADAPTER tipis, bukan sistem baru):
+     Feedback.short(key, name, who)   — Power: banner HUD singkat (UT.GameplayHUD.showPower), BUKAN modal Chest
+     Feedback.event(kind, text, opts) — event gameplay: banner HUD (UT.GameplayHUD.showEvent)
+     Feedback.reward(...args)         — reward Chest: modal besar; presenter didaftarkan gameplay.html lewat
+                                        Feedback.setRewardPresenter(fn). Mengembalikan false bila belum terdaftar.
    Tidak mengekspos players, scene, renderer, camera, dan tidak membuat UT.Gameplay.State. */
 (function (win) {
   'use strict';
@@ -22,6 +27,33 @@
                'Geometry', 'Pawn', 'Camera', 'Dragon', 'Core'];
   for (var i = 0; i < NAMES.length; i++) {
     G[NAMES[i]] = G[NAMES[i]] || {};
+  }
+
+  G.Feedback = G.Feedback || {};
+  var F = G.Feedback;
+  function hud() { return win.UT && win.UT.GameplayHUD; }
+  if (typeof F.short !== 'function') {
+    F.short = function (key, name, who) {
+      var H = hud();
+      return H && typeof H.showPower === 'function' ? H.showPower(key, name, who) : false;
+    };
+  }
+  if (typeof F.event !== 'function') {
+    F.event = function (kind, text, opts) {
+      var H = hud();
+      return H && typeof H.showEvent === 'function' ? H.showEvent(kind, text, opts) : false;
+    };
+  }
+  if (typeof F.setRewardPresenter !== 'function') {
+    var rewardPresenter = null;
+    F.setRewardPresenter = function (fn) {
+      if (typeof fn !== 'function' || rewardPresenter) return false;
+      rewardPresenter = fn;
+      return true;
+    };
+    F.reward = function () {
+      return rewardPresenter ? rewardPresenter.apply(null, arguments) : false;
+    };
   }
 
   function isModuleName(name) {
