@@ -1380,6 +1380,7 @@ function noise(d,vol,when,freq){
 }
 const sfx={
   hop(){ try{ const a=new Audio('assets/sfx/jump.mp3'); a.volume=0.5; a.play().catch(()=>beep(480+Math.random()*120,0.08,'square',0.04)); }catch(e){ beep(480+Math.random()*120,0.08,'square',0.04); } },
+  hit(){ try{ const a=new Audio('assets/sfx/hit.mp3'); a.volume=0.6; a.play().catch(()=>beep(330,0.2,'triangle',0.07,0,140)); }catch(e){ beep(330,0.2,'triangle',0.07,0,140); } },
   roll(){ for(let i=0;i<7;i++) beep(180+Math.random()*320,0.05,'square',0.035,i*0.13); },
   ladder(){ [392,494,587,784].forEach((f,i)=>beep(f,0.14,'square',0.05,i*0.11)); },
   hiss(){ noise(0.55,0.09,0,4500); },
@@ -1764,7 +1765,7 @@ async function playTurn(p,v,gid,bn){
       await A(sleep(500)); await A(walk(p,p.pos,to)); p.pos=to;
     }else{
       const bk=MOBBACK[k],to=Math.max(1,p.pos-bk);
-      setMsg(MOBNAME[k]+' menghantam! '+p.name+' terpental mundur '+bk+' blok ke '+to+'.'); sfx.bounce();
+      setMsg(MOBNAME[k]+' menghantam! '+p.name+' terpental mundur '+bk+' blok ke '+to+'.'); sfx.hit();
       await A(sleep(450)); await A(fly(p,to,bk>3?0.8:0.45,bk>3?2.4:0.9)); p.pos=to;
     }
   }
