@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ular Tangga Blok — Memuat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Plus+Jakarta+Sans:wght@800&display=swap" rel="stylesheet">
+<style>
+:root{--lime:#7dff2e}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;overflow:hidden}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#1a62b8;color:#fff}
+
+/* warna kubus awan (sama dengan landing page) */
+.w{--t:#ffffff;--l:#dbe8f7;--r:#bcd0ea}
+
+.screen{position:relative;width:100%;height:100%;min-height:480px;overflow:hidden;isolation:isolate;background:radial-gradient(ellipse at 50% 60%,rgba(220,246,255,.7),transparent 55%),linear-gradient(180deg,#1357c4 0%,#3b92ee 40%,#8fd0ff 72%,#d4efff 100%)}
+.glow{position:absolute;width:640px;height:640px;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(255,255,255,.16);filter:blur(70px);z-index:0}
+
+/* awan lembut di belakang */
+.puff{position:absolute;border-radius:50%;background:#fff;filter:blur(28px);opacity:.45;z-index:0}
+.pf1{width:360px;height:90px;left:3%;top:16%}
+.pf2{width:320px;height:80px;right:3%;top:30%}
+.pf3{width:540px;height:90px;left:50%;bottom:14%;transform:translateX(-50%)}
+
+/* awan voxel */
+.vx{display:block;width:100%;height:auto;overflow:visible}
+.cl{position:absolute;z-index:1;animation:drift var(--d,40s) ease-in-out infinite alternate;opacity:var(--o,1);filter:drop-shadow(0 10px 14px rgba(20,70,140,.12))}
+.cl1{top:10%;left:6%;width:min(22vw,230px);--d:46s}
+.cl2{top:22%;right:7%;width:min(16vw,170px);--d:38s}
+.cl3{top:12%;left:46%;width:min(10vw,110px);--d:54s;--o:.7}
+.cl4{top:38%;left:-3%;width:min(20vw,210px);--d:50s;--o:.9}
+.cl5{top:46%;right:-3%;width:min(23vw,240px);--d:44s}
+.cl6{bottom:24%;left:14%;width:min(14vw,150px);--d:58s;--o:.85}
+.cl7{bottom:10%;right:12%;width:min(18vw,190px);--d:42s}
+.cl8{bottom:6%;left:-2%;width:min(24vw,250px);--d:52s}
+@keyframes drift{from{translate:-30px 0}to{translate:40px 0}}
+
+/* progress */
+.ui{position:absolute;z-index:5;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,86vw);text-align:center}
+.status{font:400 26px 'Lilita One',sans-serif;letter-spacing:.04em;text-shadow:0 3px 8px rgba(6,36,74,.28);margin-bottom:16px}
+.track{height:16px;padding:3px;border-radius:99px;background:rgba(7,35,75,.3);border:1px solid rgba(255,255,255,.55);box-shadow:0 6px 18px rgba(8,37,76,.18);overflow:hidden}
+.fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#b8ff63,#65ed26);box-shadow:0 0 14px rgba(125,255,46,.7);transition:width .15s linear}
+.meta{display:flex;justify-content:space-between;margin-top:10px;font-size:11px;font-weight:800;letter-spacing:.12em;color:#eaf7ff;text-shadow:0 2px 5px rgba(6,36,74,.3)}
+
+@media(max-width:700px){
+  .cl1{width:120px;left:2%;top:12%}
+  .cl2{width:100px;right:1%;top:24%}
+  .cl3,.cl6{display:none}
+  .cl4{width:120px;top:62%}
+  .cl5{width:130px;top:36%}
+  .cl7{width:120px;bottom:12%}
+  .cl8{width:140px;bottom:4%}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:0.01ms!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+
+<!-- definisi kubus voxel -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <g id="c"><polygon points="0,0 24,12 0,24 -24,12" style="fill:var(--t)"/><polygon points="-24,12 0,24 0,48 -24,36" style="fill:var(--l)"/><polygon points="0,24 24,12 24,36 0,48" style="fill:var(--r)"/></g>
+  </defs>
+</svg>
+
+<main class="screen" aria-label="Memuat">
+  <div class="glow"></div>
+  <div class="puff pf1"></div><div class="puff pf2"></div><div class="puff pf3"></div>
+
+  <div class="cl cl1"><svg class="vx" data-shape="cloudA" data-s=".9" aria-hidden="true"></svg></div>
+  <div class="cl cl2"><svg class="vx" data-shape="cloudB" data-s=".9" aria-hidden="true"></svg></div>
+  <div class="cl cl3"><svg class="vx" data-shape="cloudC" data-s=".8" aria-hidden="true"></svg></div>
+  <div class="cl cl4"><svg class="vx" data-shape="cloudC" data-s=".9" aria-hidden="true"></svg></div>
+  <div class="cl cl5"><svg class="vx" data-shape="cloudA" data-s=".9" aria-hidden="true"></svg></div>
+  <div class="cl cl6"><svg class="vx" data-shape="cloudB" data-s=".8" aria-hidden="true"></svg></div>
+  <div class="cl cl7"><svg class="vx" data-shape="cloudC" data-s=".9" aria-hidden="true"></svg></div>
+  <div class="cl cl8"><svg class="vx" data-shape="cloudA" data-s=".9" aria-hidden="true"></svg></div>
+
+  <section class="ui">
+    <div class="status" id="status">Sedang Memuat...</div>
+    <div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="bar"><div class="fill" id="fill"></div></div>
+    <div class="meta"><span>MENYIAPKAN DUNIA</span><span id="percent">0%</span></div>
+  </section>
+</main>
+
+<script src="assets/js/preloader.js"></script>
+<script>
+(() => {
+  /* ---------- awan voxel dari kubus isometrik ---------- */
+  const NS = 'http://www.w3.org/2000/svg', XL = 'http://www.w3.org/1999/xlink';
+  const rect = (x0,x1,y0,y1,z,c) => { const a=[]; for(let x=x0;x<=x1;x++) for(let y=y0;y<=y1;y++) a.push([x,y,z,c]); return a; };
+  const SHAPES = {
+    cloudA: () => [...rect(0,3,0,1,0,'w'), ...rect(1,2,0,1,1,'w'), [2,-1,0,'w'], [1,2,0,'w'], [2,0,2,'w']],
+    cloudB: () => [...rect(0,2,0,1,0,'w'), [1,0,1,'w'], [1,1,1,'w'], [0,-1,0,'w']],
+    cloudC: () => [...rect(0,4,0,0,0,'w'), ...rect(1,3,1,1,0,'w'), ...rect(1,2,0,0,1,'w')]
+  };
+  document.querySelectorAll('svg.vx').forEach(svg => {
+    const s = parseFloat(svg.dataset.s || 1);
+    const cells = SHAPES[svg.dataset.shape]();
+    cells.sort((a,b) => (a[0]+a[1]) - (b[0]+b[1]) || a[2] - b[2]);
+    cells.forEach(([x,y,z,c]) => {
+      const u = document.createElementNS(NS, 'use');
+      u.setAttribute('href', '#c');
+      u.setAttributeNS(XL, 'xlink:href', '#c');
+      u.setAttribute('class', c);
+      u.setAttribute('transform', 'translate(' + ((x-y)*24*s) + ' ' + ((x+y)*12*s - z*24*s) + ') scale(' + s + ')');
+      svg.appendChild(u);
+    });
+    const b = svg.getBBox();
+    svg.setAttribute('viewBox', (b.x-6) + ' ' + (b.y-6) + ' ' + (b.width+12) + ' ' + (b.height+12));
+  });
+
+  /* ---------- transisi: lobby <-> gameplay ----------
+     loading.html?to=gameplay&mode=cpu&...  atau  loading.html?to=lobby
+     Sisa parameter diteruskan apa adanya ke halaman tujuan. */
+  const out = document.getElementById('percent'), bar = document.getElementById('bar'), st = document.getElementById('status'), fill = document.getElementById('fill');
+  const q = new URLSearchParams(location.search);
+  const to = q.get('to') === 'gameplay' ? 'gameplay' : 'lobby';
+  q.delete('to');
+  const dest = to + '.html' + (q.toString() ? '?' + q.toString() : '');
+  const THREE = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+  const list = to === 'gameplay'
+    ? ['gameplay.html', 'assets/js/game-integration.js', 'assets/sfx/button.mp3', 'assets/sfx/power.mp3', 'assets/sfx/kalah.mp3', 'assets/sfx/game_assets_sfx_chest.mp3', THREE]
+    : ['lobby.html', 'assets/js/item-art.js', 'assets/js/player-data.js', 'assets/sfx/button.mp3', THREE];
+  st.textContent = to === 'gameplay' ? 'Masuk ke Arena...' : 'Kembali ke Lobi...';
+  UT_Preload.run(list, p => {
+    out.textContent = p + '%'; fill.style.width = p + '%'; bar.setAttribute('aria-valuenow', p);
+  }, 1500).then(() => {
+    st.textContent = 'Siap Bertualang!';
+    try { sessionStorage.setItem('ut:booted', '1'); } catch (e) {}
+    setTimeout(() => location.replace(dest), 300);
+  });
+})();
+</script>
+</body>
+</html>
