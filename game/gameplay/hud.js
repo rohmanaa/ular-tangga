@@ -22,6 +22,8 @@
   var STYLE_ID = 'ut-ghud-css';
   var ICON = { turn: '🎲', extra: '✨', ladder: '🪜', snake: '🐍', mob: '👾', chest: '🎁', power: '⚡', three6: '🎲',
                bounce: '↩️', shield: '🛡️', dragon: '🐉', info: 'ℹ️' };
+  var POWER_SHORT = { sword: ['🗡️', 'Pedang +3'], feather: ['🪶', 'Bulu — Giliran Tambahan'], tnt: ['🧨', 'TNT — Pemimpin −6'],
+                      apple: ['🍎', 'Apel Emas — Kebal'], potion: ['🧪', 'Ramuan — Dadu 4–6'], grass: ['🟩', 'Blok Rumput — Tukar Posisi'] };
   var POWER_VERB = { sword: 'digunakan', feather: 'aktif', tnt: 'digunakan', apple: 'aktif', potion: 'aktif', grass: 'digunakan' };
   var cfg = { getGameId: null, isPaused: null };
   var root = null, banner = null, bIcon = null, bText = null, panel = null, pTitle = null, pText = null,
@@ -118,7 +120,7 @@
       if (!text || stale(o) || !build()) return H;
       var k = ICON[kind] ? kind : 'info';
       banner.setAttribute('data-k', k);
-      bIcon.textContent = ICON[k]; bText.textContent = String(text);
+      bIcon.textContent = (o && o.icon) || ICON[k]; bText.textContent = String(text);
       clearTimeout(tBanner); retrigger(banner);
       tBanner = setTimeout(hideBanner, ttlOf(o, 2000));
       return H;
@@ -129,8 +131,11 @@
       return H.showEvent('turn', p.cpu ? 'Giliran Computer' : 'Giliran ' + p.name, { ttl: 1200 });
     },
     showPower: function (key, name, who) {
+      /* Feedback ringkas "<ikon> Nama — efek". Bukan modal; modal hadiah khusus Chest (#puCard di gameplay.html). */
+      var s = POWER_SHORT[key], who_ = who ? ' (' + who + ')' : '';
+      if (s) return H.showEvent('power', s[1] + who_, { ttl: 1800, icon: s[0] });
       var v = POWER_VERB[key] || 'digunakan';
-      return H.showEvent('power', (name || key) + ' ' + v + '!' + (who ? ' (' + who + ')' : ''), { ttl: 1800 });
+      return H.showEvent('power', (name || key) + ' ' + v + '!' + who_, { ttl: 1800 });
     },
     showCombat: function (att, def, text, o) {
       if (stale(o) || !build()) return H;

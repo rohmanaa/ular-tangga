@@ -1615,17 +1615,16 @@ async function usePU(k,cpu){
   const gid=gameId,L=players.filter(q=>q!==p&&q.pos>0&&q.pos<100).sort((a,b)=>b.pos-a.pos)[0];
   if(k==='tnt'&&!L){ hud('showEvent','info','TNT belum punya target.'); return setMsg('TNT belum punya target.'); }
   if(k==='grass'&&(!L||L.pos<=p.pos)){ hud('showEvent','info','Tidak ada pemain di depanmu.'); return setMsg('Tidak ada pemain di depanmu.'); }
-  busy=true; setRoll(false); p.pu[k]--; sfx.pop(); setMsg(p.name+' memakai '+PUN[k][1]+': '+PUN[k][2]+'.'); hud('showPower',k,PUN[k][1],p.name);
+  busy=true; setRoll(false); p.pu[k]--; sfx.pop(); setMsg(p.name+' memakai '+PUN[k][1]+': '+PUN[k][2]+'.');
   if(k==='sword') p.bonus=3; if(k==='feather') p.extra=true; if(k==='potion') p.p4=true; if(k==='apple') p.shield=true;
   renderChips();
-  if((k==='sword'||k==='tnt'||k==='grass')&&L){
-    showAttackCard(p.name,L.name,k,PUN[k][2]);
-  }
   try{
     if(k==='tnt'){ const to=Math.max(1,L.pos-6); await teleport(L,to); L.pos=to; }
     if(k==='grass'){ const a=p.pos,b=L.pos; await teleport(p,b); p.pos=b; await teleport(L,a); L.pos=a; }
   }catch(e){ console.error(e); }
   if(gid!==gameId) return;
+  /* Power = feedback singkat (banner HUD), BUKAN kartu/modal hadiah Chest (#puCard). Urutan: pakai → terapkan efek → feedback → lanjut. */
+  hud('showPower',k,PUN[k][1],p.name);
   busy=false; if(!p.cpu) setRoll(true); focus=p.pawn; renderChips();
 }
 function renderChips(){
