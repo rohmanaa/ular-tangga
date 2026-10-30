@@ -301,10 +301,6 @@ body #pauseMenu,body #exitConfirm{background:rgba(18,51,127,.5);backdrop-filter:
     <h2 id="pmTitle">Menu</h2>
     <p id="pmCpu" hidden>Komputer menunggu sampai kamu melanjutkan.</p>
     <button class="btn big" type="button" id="pmResume">Lanjutkan</button>
-    <div class="pm-row">
-      <button class="btn light small" id="pmCam" type="button">Reset Kamera</button>
-      <button class="btn light small" id="pmSnd" type="button">Suara: nyala</button>
-    </div>
     <div class="pm-time">
       <button class="btn light small" id="pmDay" type="button" aria-pressed="true">Siang</button>
       <button class="btn light small" id="pmNight" type="button" aria-pressed="false">Malam</button>
@@ -1852,7 +1848,7 @@ $('btnTheme').addEventListener('click',()=>{
   const now=pendingTheme||themeKey,i=THEMES.findIndex(t=>t.key===now);
   chooseTheme(THEMES[(i+1)%THEMES.length].key);
 });
-$('btnSnd').addEventListener('click',()=>{ muted=!muted; ensureAudio(); const t=muted?'mati':'nyala'; $('btnSnd').innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 2a10 10 0 0 1 0 20"/></svg>Suara: '+t; });
+$('btnSnd').addEventListener('click',()=>{ muted=!muted; setMusicOn(!muted); ensureAudio(); const t=muted?'mati':'nyala'; $('btnSnd').innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 2a10 10 0 0 1 0 20"/></svg>Suara: '+t; });
 function syncMusicUI(){
   const v=$('pmVol'); if(v) v.value=musicVol;
 }
@@ -1864,15 +1860,11 @@ function syncPauseNight(){ $('pmDay').setAttribute('aria-pressed',String(!night)
 function openPause(){
   if(paused) return; paused=true;
   $('pmCpu').hidden=mode!=='cpu'; syncPauseNight(); syncMusicUI();
-  $('pmCam').textContent='Reset Kamera';
-  $('pmSnd').textContent='Suara: '+(muted?'mati':'nyala');
   $('pauseMenu').hidden=false; $('pmResume').focus();
 }
 function closePause(){ paused=false; $('exitConfirm').hidden=true; $('pauseMenu').hidden=true; $('btnMenu').focus(); }
 $('btnMenu').addEventListener('click',openPause);
 $('pmResume').addEventListener('click',closePause);
-$('pmCam').addEventListener('click',()=>{ closePause(); resetCam(); });
-$('pmSnd').addEventListener('click',()=>{ muted=!muted; ensureAudio(); $('pmSnd').textContent='Suara: '+(muted?'mati':'nyala'); });
 $('pmDay').addEventListener('click',()=>{ setNight(false); syncPauseNight(); setMusicOn(true); });
 $('pmNight').addEventListener('click',()=>{ setNight(true); syncPauseNight(); setMusicOn(true); });
 $('pmExit').addEventListener('click',()=>{ $('exitConfirm').hidden=false; $('ecNo').focus(); });
