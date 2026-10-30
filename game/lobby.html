@@ -177,7 +177,7 @@ let seed=11;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
 const V=[];
 const col=(h,j)=>{const c=new THREE.Color(h);return c.multiplyScalar(1+(rnd()-.5)*2*j)};
 const B=(x,y,z,c,sx=1,sy=1,sz=1,j=.07)=>V.push([x,y,z,sx,sy,sz,col(c,j)]);
-const GR=[0x5cc03e,0x52b538],DIRT=0x8d5b36;
+const GR=[0x5fae3e,0x5fae3e],DIRT=0x8d5b36;
 function isle(cx,cy,cz,rx,rz,depth,grass){const R=Math.ceil(Math.max(rx,rz));
  for(let ix=-Math.ceil(rx);ix<=Math.ceil(rx);ix++)for(let iz=-Math.ceil(rz);iz<=Math.ceil(rz);iz++)for(let d=0;d<depth;d++){
   const k=1-d/(depth+1.5),nx=ix/(rx*k),nz=iz/(rz*k);if(nx*nx+nz*nz+(rnd()-.5)*.25>1)continue;

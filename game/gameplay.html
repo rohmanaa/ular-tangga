@@ -1021,7 +1021,7 @@ const fontReady=(document.fonts&&document.fonts.load)
   ?Promise.race([document.fonts.load('700 40px Silkscreen'),new Promise(r=>setTimeout(r,2500))]).catch(()=>{})
   :Promise.resolve();
 
-let night=false,nightObjs=[];
+let night=false,nightObjs=[],torchMeshes=[];
 try{ night=localStorage.getItem('ut-malam')==='1'; }catch(e){}
 const mixHex=(a,b,k)=>'#'+new THREE.Color(a).lerp(new THREE.Color(b),k).getHexString();
 function tileBlock(n,t,th){
@@ -1053,6 +1053,9 @@ function applyLook(th){
     const mg=new THREE.Mesh(new THREE.BoxGeometry(5,5,1.4),new THREE.MeshBasicMaterial({color:0xF4F1D0,fog:false}));
     mg.position.set(-26,30,-38); mg.rotation.set(0.3,0.5,0.2);
     sky.add(st); sky.add(mg); nightObjs.push(st,mg);
+    torchMeshes.forEach(t=>{ t.mat.emissive.setHex(0xFFB020); t.mat.emissiveIntensity=2.5; });
+  }else{
+    torchMeshes.forEach(t=>{ t.mat.emissive.setHex(0x000000); t.mat.emissiveIntensity=0; });
   }
   document.body.classList.toggle('night',night); updateNightUI();
 }
@@ -1212,6 +1215,20 @@ function buildWorld(key){
   for(let c=0;c<4;c++) for(let r=0;r<2;r++) addBox(TB,G.x-0.36+0.22+c*0.22,G.h+2.05-r*0.22,G.z-0.36,0.22,0.22,0.05,(c+r)%2===0?th.flag:0xFFFFFF);
   world.add(buildBatch(TB));
   buildMobs(th);
+
+  /* torch di 4 sudut papan: tiang + nyala kuning (menyala otomatis di mode malam) */
+  torchMeshes.forEach(t=>{ scene.remove(t.g); if(t.mat) t.mat.dispose(); });
+  torchMeshes=[];
+  const torchMat=new THREE.MeshBasicMaterial({color:0xFFB020,emissive:0x000000,emissiveIntensity:0});
+  [[-5.25,5.25],[5.25,5.25],[-5.25,-5.25],[5.25,-5.25]].forEach(q=>{
+    const g=new THREE.Group();
+    const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.06,0.7,6),new THREE.MeshLambertMaterial({color:0x4E3118}));
+    pole.position.y=0.35; g.add(pole);
+    const flame=new THREE.Mesh(new THREE.SphereGeometry(0.11,8,6),torchMat);
+    flame.position.y=0.85; g.add(flame);
+    g.position.set(q[0],0,q[1]); scene.add(g);
+    torchMeshes.push({g,mat:torchMat});
+  });
 
   const DB=makeBatch();
   decorate(DB,th);
