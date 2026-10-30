@@ -24,11 +24,7 @@ button:hover{transform:scale(1.04);filter:brightness(1.08)}button:active{transfo
 #title>svg{width:5.4rem;height:5.4rem;flex:none;filter:drop-shadow(0 .3rem 0 rgba(18,51,127,.5))}
 #title h1{margin:0;font-size:4.2rem;line-height:1;text-shadow:0 .25rem 0 var(--bd)}
 #title small{display:block;font-size:1.25rem;font-weight:700;color:#e0f2ff;line-height:1.2;margin-top:.2rem}
-.cur{top:1.8rem;display:flex;align-items:center;height:4.2rem;padding:0 .5rem 0 4.8rem;border-radius:2.1rem;background:linear-gradient(#2d62c8,#173c94);box-shadow:0 .4rem 0 #0b2160,0 1rem 1.4rem rgba(18,51,127,.4),inset 0 .2rem .2rem rgba(255,255,255,.35);font-size:2.2rem;justify-content:space-between;gap:1rem;width:13.4rem}
-.cur>svg{position:absolute;left:-.5rem;top:50%;translate:0 -50%;width:5.2rem;height:5.2rem;filter:drop-shadow(0 .3rem .3rem rgba(0,0,0,.35))}
-.plus{width:3.2rem;height:3.2rem;border-radius:50%;background:radial-gradient(#7af07a,#2cb02c);border:.2rem solid #1c7d1c;display:grid;place-items:center;padding:0}.plus svg{width:1.9rem;height:1.9rem}
 .pulse{animation:pu .4s}@keyframes pu{50%{transform:scale(1.15)}}
-#gem{left:61rem}#coin{left:75.4rem}
 #home{right:1.6rem;top:1.5rem;width:5rem;height:5rem;border-radius:1.5rem;padding:0;display:grid;place-items:center}#home svg{width:3rem;height:3rem}
 /* left nav */
 #nav{left:1.8rem;top:9.6rem;width:16.2rem;display:flex;flex-direction:column;gap:.9rem}
@@ -114,14 +110,13 @@ button:hover{transform:scale(1.04);filter:brightness(1.08)}button:active{transfo
 #toast.on{opacity:1;translate:-50% 0}
 #rot{position:fixed;inset:0;z-index:200;display:none;place-items:center;background:#1f6fe0;font-size:5vw;text-align:center;padding:2rem}
 @media(max-aspect-ratio:1/1){#rot{display:grid}}
-</style></head>
+</style><style>:root{--curbar-right:11.2rem;--curbar-top:1.8rem;--cur-fs:2.2rem}</style><link rel="stylesheet" href="assets/css/shared-ui.css"></head>
 <body>
 <div id="sky"></div>
 <div id="stage">
  <button class="ab blue" id="back" aria-label="Kembali"><svg viewBox="0 0 24 24"><path d="M20 12H5m6-7-7 7 7 7" fill="none" stroke="#fff" stroke-width="4.500" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <div class="ab blue" id="title"><span id="tgift"></span><div><h1>Hadiah Harian</h1><small>Login setiap hari dan dapatkan hadiah menarik!</small></div></div>
- <div class="ab cur" id="gem"><span id="gemI"></span><span id="gemV"></span><button class="plus" data-buy="gem" aria-label="Tambah gem"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div>
- <div class="ab cur" id="coin"><span id="coinI"></span><span id="coinV"></span><button class="plus" data-buy="coin" aria-label="Tambah coin"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div>
+ <div class="ut-curbar"><div class="ab cur" id="gem"><span id="gemI"></span><span id="gemV"></span><button class="plus" data-buy="gem" aria-label="Tambah gem"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div><div class="ab cur" id="coin"><span id="coinI"></span><span id="coinV"></span><button class="plus" data-buy="coin" aria-label="Tambah coin"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></button></div></div>
  <button class="ab blue" id="home" aria-label="Beranda"><svg viewBox="0 0 24 24"><path d="M3 12 12 4l9 8M6 10v10h4v-6h4v6h4V10" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <nav class="ab" id="nav" aria-label="Menu"></nav>
 

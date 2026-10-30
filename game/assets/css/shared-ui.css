@@ -1,0 +1,59 @@
+/* Ular Tangga Blok — shared-ui.css
+   Gaya bersama yang dimuat TERAKHIR di semua halaman non-gameplay (setelah <style> halaman).
+   Isi: (1) bar currency gem+koin (satu komponen, tidak lagi tumpang tindih) dan (2) modal + tombol tutup.
+   Markup currency: <div class="ut-curbar"> <div class="ab cur" id="gem">…</div> <div class="ab cur" id="coin">…</div> </div>
+   Penyesuaian per halaman cukup lewat variabel di :root halaman: --curbar-right, --curbar-top, --cur-h, --cur-icon, --cur-plus, --cur-fs. */
+
+/* ---------- Currency bar ---------- */
+html body .ut-curbar {
+  position: absolute; z-index: 20;
+  top: var(--curbar-top, 1.8rem); right: var(--curbar-right, 7.6rem);
+  left: var(--curbar-left, auto); translate: var(--curbar-shift, 0 0); /* halaman berbasis 'left' (stage 100rem): --curbar-left + --curbar-shift:-100% 0 */
+  display: flex; align-items: center; gap: var(--cur-gap, 3.4rem); /* gap > tonjolan ikon => plus gem tidak tertutup koin */
+  pointer-events: none;
+}
+html body .ut-curbar .cur {
+  position: relative !important; left: auto !important; right: auto !important; top: auto !important;
+  width: auto !important; min-width: var(--cur-minw, 12.4rem); height: var(--cur-h, 4.2rem);
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 0 .5rem 0 calc(var(--cur-icon, 5.2rem) - .4rem); box-sizing: border-box;
+  border-radius: calc(var(--cur-h, 4.2rem) / 2);
+  background: linear-gradient(#2d62c8, #173c94);
+  box-shadow: 0 .4rem 0 #0b2160, 0 1rem 1.4rem rgba(18, 51, 127, .4), inset 0 .2rem .2rem rgba(255, 255, 255, .35);
+  font-size: var(--cur-fs, 2rem); white-space: nowrap; pointer-events: auto;
+}
+html body .ut-curbar .cur > svg {
+  position: absolute; left: -.5rem; top: 50%; translate: 0 -50%;
+  width: var(--cur-icon, 5.2rem); height: var(--cur-icon, 5.2rem);
+  filter: drop-shadow(0 .3rem .3rem rgba(0, 0, 0, .35)); pointer-events: none;
+}
+html body .ut-curbar .cur > span:not([id$="I"]) { flex: 1; text-align: center; padding-right: .2rem; }
+/* ikon yang disuntik lewat JS ke <span id="gemI"/"coinI"> (dailyreward) */
+html body .ut-curbar .cur > span[id$="I"] {
+  position: absolute; left: -.5rem; top: 50%; translate: 0 -50%; display: block;
+  width: var(--cur-icon, 5.2rem); height: var(--cur-icon, 5.2rem); pointer-events: none;
+  filter: drop-shadow(0 .3rem .3rem rgba(0, 0, 0, .35));
+}
+html body .ut-curbar .cur > span[id$="I"] svg { width: 100%; height: 100%; display: block; }
+html body .ut-curbar .plus {
+  position: relative; z-index: 2; flex: none;
+  width: var(--cur-plus, 3.2rem); height: var(--cur-plus, 3.2rem); padding: 0; border-radius: 50%;
+  background: radial-gradient(#7af07a, #2cb02c); border: .2rem solid #1c7d1c;
+  display: grid; place-items: center; cursor: pointer;
+}
+html body .ut-curbar .plus svg { width: 60%; height: 60%; }
+
+/* Portrait / layar sempit: bar ikut alur halaman, tidak melayang */
+@media (max-aspect-ratio: 1/1) {
+  html body .ut-curbar { position: relative; top: auto; right: auto; left: auto; translate: none; gap: 3rem; }
+}
+
+/* ---------- Modal: tombol tutup tidak lagi terpotong ---------- */
+html body .ov > .box { overflow: visible; max-height: none; }
+html body .ov > .box > #mb { max-height: calc(92vh - 6rem); overflow-y: auto; overflow-x: hidden; border-radius: 1.4rem; }
+html body .ov > .box > .x {
+  position: absolute; z-index: 5; top: -1.4rem; right: -1.4rem;
+  width: 4.6rem; height: 4.6rem; padding: 0; border-radius: 50%;
+  display: grid; place-items: center; line-height: 1;
+  background: #ee4a4a; box-shadow: 0 .3rem 0 #8e1d1d; color: #fff; font-size: 2.4rem; cursor: pointer;
+}
