@@ -39,3 +39,21 @@ lalu daftarkan di map `UT.Audio.sources`.
 Catatan:
 - Jangan menambahkan base64/dependency eksternal; cukup ganti file mp3 dengan nama yang sama.
 - Gameplay WebAudio (synth) tidak diubah di Tahap 3.
+
+## Power-Up SFX (referensi Tahap 3.1 — file BELUM ada, jangan buat audio palsu)
+
+Nama file maksimal 3 kata; taruh di `assets/sfx/` bila nanti file aslinya ditambahkan,
+lalu daftarkan di `UT.Audio.sources` (`assets/js/app.js`). Tidak ada base64/unduhan.
+
+| Filename          | Fungsi                          | Kapan dimainkan                     | Karakter suara yang disarankan      |
+|-------------------|---------------------------------|-------------------------------------|-------------------------------------|
+| `powerup_get.mp3` | Power-Up didapatkan             | Ambil power-up (peti / reward)      | Magical, short, satisfying          |
+| `sword_use.mp3`   | Sword digunakan                 | Efek +3 langkah aktif               | Quick sword slash                   |
+| `tnt_boom.mp3`    | TNT aktif                       | Pemain terdepan mundur 6            | Cartoon explosion                   |
+| `potion_use.mp3`  | Potion digunakan                | Dadu berikutnya 4-6 aktif           | Magical potion effect               |
+| `feather_use.mp3` | Feather (giliran tambahan)      | Extra turn aktif                    | Light magical chime                 |
+| `grass_swap.mp3`  | Posisi ditukar (Blok Rumput)    | Swap dengan pemain terdepan         | Short teleport/swap effect          |
+
+Catatan Tahap 3.1:
+- Empat file existing TIDAK diubah: `button.mp3`, `game_assets_sfx_chest.mp3`, `kalah.mp3`, `power.mp3`.
+- Gameplay power-up saat ini masih memakai `sfx.pop()` existing; tabel di atas hanya REFERENSI.

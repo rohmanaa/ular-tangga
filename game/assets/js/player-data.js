@@ -252,10 +252,12 @@
     },
     ownedCount: function () { return API.ownedItems().length; },
 
-    /* Pakai item yang dimiliki. Return {ok, reason?} */
+    /* Pakai item yang dimiliki. Return {ok, reason?}
+       Power-Up (slot null) adalah consumable: tidak di-equip, quantity-nya dibaca via qty(). */
     equip: function (id) {
       var it = C.byId(id);
       if (!it) return { ok: false, reason: 'tidak-dikenal' };
+      if (!it.slot) return { ok: false, reason: 'bukan-equipment', item: it };
       var st = load();
       if (!st.inventory[id]) return { ok: false, reason: 'belum-dimiliki' };
       st.equipped[it.slot] = id;

@@ -109,3 +109,50 @@ Akibat yang bisa dirasakan user (dilaporkan, bukan bug):
 
 Fresh / Legacy / Refresh / Multi-halaman / Purchase / Equip / Migrate-twice â€” dijalankan saat
 pengetesan Tahap 3 (hasil ada di STAGE 3 REPORT).
+
+---
+
+## Power-Up (Tahap 3.1)
+
+Source (audit gameplay.html, bukan asumsi):
+- `const PUN={sword,feather,tnt,apple,potion,grass}` — metadata (nama & deskripsi) power-up.
+- `startPU()` — setiap MATCH, pemain mulai dengan 2 power-up acak (qty 1). Per-match, bukan persisten.
+- `giveChest(p)` — petak peti memberi +1 power-up acak (`p.pu[k]++`).
+- `usePU(k)` — konsumsi qty (`p.pu[k]--`) lalu efek:
+  | Gameplay key | Efek aktual di kode | Implementasi |
+  |---|---|---|
+  | `sword`  | langkah berikutnya +3 | `p.bonus=3` |
+  | `feather`| giliran tambahan | `p.extra=true` |
+  | `tnt`    | pemain terdepan mundur 6 | `teleport(L, max(1,L.pos-6))` |
+  | `apple`  | kebal 1 ular/mob jahat | `p.shield=true` |
+  | `potion` | dadu berikutnya 4-6 | `p.p4=true` |
+  | `grass`  | tukar posisi dgn pemain terdepan | `teleport` dua arah |
+- CPU memakai power-up sendiri (`usePU(ks[0],true)`), hanya dari `['sword','feather','potion','apple','tnt']`.
+
+Canonical IDs: `sword`, `feather`, `tnt`, `apple`, `potion`, `grass`
+- PERSIS sama dengan key `p.pu` gameplay — TIDAK diberi prefiks (`powerup.sword` dsb. sengaja dihindari).
+
+Compatibility bridge (POWERUP_MAP): **TIDAK DIPERLUKAN** — ID gameplay === ID canonical (identitas).
+Karena tidak ada transformasi, tidak ada mapping yang ditulis; bila kelak gameplay
+mengganti key-nya, mapping kecil tinggal ditambahkan di satu tempat.
+
+Catalog: item `kind:'powerup'` di `assets/js/item-catalog.js` (SATU katalog, tanpa power-catalog terpisah).
+- `price: null` = ekonomi belum ditentukan ? `PlayerData.purchase()` menolak (`'tidak-tersedia'` ? `'tidak-tersedia'`), shop menampilkan "Segera hadir", tanpa harga karangan.
+- `stackable: true`, `slot: null` (bukan equipment — tidak masuk `equipped`).
+- `rarity:'common'` hanya default UI; gameplay tidak mengenal rarity power-up.
+
+Persistent state: PlayerData (`inventory[id] = {qty, acquiredAt, seq}`) — sistem inventory GENERIC existing,
+tanpa database power-up kedua dan tanpa storage terpisah (`dailyPowerups` dsb. tidak dibuat).
+
+Inventory: supported — kategori "Power-Up" menampilkan nama, deskripsi, quantity, dan ikon (`ItemArt.powerup`).
+Equip untuk power-up ditolak (`PlayerData.equip` ? `'bukan-equipment'`).
+
+Gameplay effect: tetap 100% logic existing di gameplay.html (TIDAK diubah di Tahap 3.1).
+Full PlayerData consumption (gameplay mengurangi qty PlayerData saat `usePU`): DEFERRED ke tahap integrasi berikutnya.
+
+Migration legacy power-up: TIDAK ditemukan storage power-up lama (key legacy hanya punya skin/dice/theme/
+currency/settings) ? tidak ada yang diimpor, tidak ada data palsu dibuat. Fresh user: tanpa power-up
+(`inventory` tanpa entri power-up) — sesuai desain "power-up didapat dari peti/reward".
+
+Events: memakai `inventoryChanged` existing (bridge app.js membandingkan snapshot inventory) —
+tidak ada event bus baru; `powerupChanged` belum dibuat karena belum ada pemakaian yang perlu event khusus.

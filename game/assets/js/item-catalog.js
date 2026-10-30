@@ -22,11 +22,13 @@
 
   var SKIN_GROUPS = ['Default', 'Adventure', 'Fantasy', 'Rare', 'Epic', 'Legendary'];
 
-  /* kind: skin -> bidak karakter | dice -> skin dadu | theme -> tema papan */
+  /* kind: skin -> bidak karakter | dice -> skin dadu | theme -> tema papan | powerup -> power-up gameplay
+     slot powerup = null: consumable (quantity), BUKAN equipment — tidak masuk defaultEquipped. */
   var KIND_META = {
-    skin:  { category: 'skin',     noun: 'Skin',       slot: 'skin' },
-    dice:  { category: 'aksesori', noun: 'Skin dadu',  slot: 'dice' },
-    theme: { category: 'lainnya',  noun: 'Tema papan', slot: 'theme' }
+    skin:    { category: 'skin',     noun: 'Skin',       slot: 'skin' },
+    dice:    { category: 'aksesori', noun: 'Skin dadu',  slot: 'dice' },
+    theme:   { category: 'lainnya',  noun: 'Tema papan', slot: 'theme' },
+    powerup: { category: 'efek',     noun: 'Power-Up',   slot: null }
   };
 
   function skin(gameKey, name, group, rarity, price, desc, extra) {
@@ -40,6 +42,15 @@
   function theme(gameKey, name, rarity, price, desc, art, extra) {
     return Object.assign({ id: 'theme.' + gameKey, kind: 'theme', gameKey: gameKey, name: 'Tema ' + name,
       rarity: rarity, price: price, desc: desc, starter: price === 0, art: art }, extra || {});
+  }
+  /* Power-Up (Tahap 3.1): consumable ber-quantity.
+     ID canonical = PERSIS key gameplay di gameplay.html (p.pu: sword/feather/tnt/apple/potion/grass)
+     — tanpa prefiks, agar tidak perlu bridge ID (lihat DATA_MIGRATION.md "Power-Up").
+     price: null = EKONOMI BELUM DITENTUKAN — tidak dijual di shop, tidak boleh diarang.
+     rarity 'common' = default netral untuk UI; gameplay sendiri tidak mengenal rarity power-up. */
+  function powerup(gameKey, name, rarity, desc, extra) {
+    return Object.assign({ id: gameKey, kind: 'powerup', gameKey: gameKey, name: name,
+      rarity: rarity, price: null, desc: desc, starter: false, stackable: true }, extra || {});
   }
 
   var ITEMS = [
@@ -79,7 +90,20 @@
     theme('hutan',     'Hutan',     'rare',   300, 'Rimbun, teduh, dan penuh pepohonan blok.',
           { skyTop: '#27B2B8', skyBot: '#C9F5E4', a: '#46C46E', b: '#1F5F4D' }),
     theme('nether',    'Nether',    'epic',   600, 'Dunia api dan batu merah yang berbahaya.',
-          { skyTop: '#2a0606', skyBot: '#8a2410', a: '#8A2B2B', b: '#3A0D0D' }, { featured: true })
+          { skyTop: '#2a0606', skyBot: '#8a2410', a: '#8A2B2B', b: '#3A0D0D' }, { featured: true }),
+
+    /* ---- Power-Up (Tahap 3.1) ----
+       Metadata & efek = hasil audit gameplay.html (PUN + usePU), TIDAK diarang:
+       sword  -> p.bonus=3 (langkah berikutnya +3)      feather -> p.extra=true (giliran tambahan)
+       tnt    -> pemain terdepan mundur 6 (teleport)    apple   -> p.shield=true (kebal 1 ular/mob)
+       potion -> p.p4=true (dadu berikutnya 4-6)        grass   -> tukar posisi dgn pemain terdepan
+       Pemakaian & pengurangan quantity tetap di gameplay (p.pu); integrasi PlayerData menyusul. */
+    powerup('sword',   'Pedang',     'common', 'Langkah berikutnya +3.'),
+    powerup('feather', 'Bulu',       'common', 'Giliran tambahan sekali lempar.'),
+    powerup('tnt',     'TNT',        'common', 'Pemain terdepan mundur 6 petak.'),
+    powerup('apple',   'Apel Emas',  'common', 'Kebal dari 1 ular atau mob jahat.'),
+    powerup('potion',  'Ramuan',     'common', 'Dadu berikutnya selalu 4 sampai 6.'),
+    powerup('grass',   'Blok Rumput','common', 'Tukar posisi dengan pemain terdepan.')
   ];
 
   var BY_ID = {};

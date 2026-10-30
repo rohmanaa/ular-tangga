@@ -80,12 +80,41 @@
     return '<svg class="art-theme" viewBox="0 0 96 64" preserveAspectRatio="xMidYMid slice" shape-rendering="crispEdges" role="img" aria-label="' + (label || it.name) + '">' + s + '</svg>';
   }
 
+  /* Power-Up (Tahap 3.1): ikon blok sederhana per gameplay key — satu sistem art, tanpa aset eksternal. */
+  function powerup(itemId, label) {
+    var it = C.byId(itemId); if (!it || it.kind !== 'powerup') return '';
+    var k = it.gameKey, s = '';
+    if (k === 'sword') {
+      s += rect(30, 6, 6, 34, '#cfd8e8') + rect(30, 6, 3, 34, '#f2f7ff') + rect(28, 4, 10, 4, '#e8eefc');
+      s += rect(22, 40, 22, 5, '#c9a227') + rect(29, 45, 8, 6, '#8a5a2b') + rect(27, 51, 12, 5, '#6b431c');
+    } else if (k === 'feather') {
+      s += rect(28, 6, 10, 34, '#f4f9ff') + rect(24, 14, 6, 26, '#e2ecfb') + rect(36, 10, 6, 26, '#e2ecfb');
+      s += rect(31, 40, 4, 18, '#b9c9e4') + rect(28, 6, 10, 6, '#cdddf5');
+    } else if (k === 'tnt') {
+      s += rect(10, 16, 44, 36, '#d63a2a') + rect(10, 16, 44, 8, '#e8564a') + rect(10, 30, 44, 8, '#ffffff');
+      s += rect(16, 32, 6, 4, '#4a0d07') + rect(24, 32, 5, 4, '#4a0d07') + rect(31, 32, 6, 4, '#4a0d07') + rect(40, 32, 5, 4, '#4a0d07');
+      s += rect(29, 8, 6, 8, '#8a5a2b') + rect(35, 4, 6, 4, '#ffb02e');
+    } else if (k === 'apple') {
+      s += rect(14, 20, 36, 32, '#ffc83a') + rect(10, 26, 44, 20, '#ffc83a') + rect(14, 20, 10, 6, '#ffe27a');
+      s += rect(30, 10, 5, 10, '#7a4a2a') + rect(35, 8, 12, 6, '#4fae3e');
+    } else if (k === 'potion') {
+      s += rect(26, 4, 12, 6, '#8a5a2b') + rect(24, 10, 16, 8, '#b9c9e4');
+      s += rect(14, 18, 36, 38, '#dff3ff') + rect(14, 36, 36, 20, '#c04fd0') + rect(18, 40, 8, 6, '#e08ae8');
+      s += rect(14, 18, 36, 4, '#f2fbff');
+    } else { /* grass */
+      s += rect(8, 24, 48, 32, '#9a6a3b') + rect(8, 24, 48, 12, '#5fae3e') + rect(8, 24, 48, 4, '#78d957');
+      s += rect(14, 44, 8, 6, '#7a5230') + rect(34, 38, 10, 6, '#7a5230') + rect(24, 50, 8, 6, '#7a5230');
+    }
+    return '<svg class="art-powerup" viewBox="0 0 64 64" shape-rendering="crispEdges" role="img" aria-label="' + (label || it.name) + '">' + s + '</svg>';
+  }
+
   /* Gambar utama kartu. variant: 'full' (karakter penuh) | 'face' */
   function forItem(itemId, variant) {
     var it = C.byId(itemId); if (!it) return '';
     if (it.kind === 'skin') return variant === 'face' ? face(itemId) : character(itemId);
     if (it.kind === 'dice') return dice(itemId);
     if (it.kind === 'theme') return theme(itemId);
+    if (it.kind === 'powerup') return powerup(itemId);
     return '';
   }
 
@@ -98,5 +127,5 @@
     return { gameKey: it.gameKey, hood: d.body.shirt, hair: d.p[hairKey] || d.body.shirt, pants: d.body.pants };
   }
 
-  g.ItemArt = { character: character, face: face, dice: dice, theme: theme, forItem: forItem, palette: palette };
+  g.ItemArt = { character: character, face: face, dice: dice, theme: theme, powerup: powerup, forItem: forItem, palette: palette };
 })(window);

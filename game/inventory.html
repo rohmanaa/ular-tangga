@@ -138,10 +138,10 @@ const $=s=>document.querySelector(s),fmt=n=>n.toLocaleString('id-ID');
 const PD=window.PlayerData,IC=window.ItemCatalog,AR=window.ItemArt;
 const RN={common:'COMMON',rare:'RARE',epic:'EPIC',legendary:'LEGENDARY'},RC={common:'var(--r0)',rare:'var(--r1)',epic:'var(--r2)',legendary:'var(--r3)'};
 const BG={common:['#5a8aa8','#2f5f80'],rare:['#3a8ff0','#1b55c0'],epic:['#8a4ae0','#4a2aa8'],legendary:['#f0c040','#b98020']};
-const KINDS=['skin','dice','theme'];
+const KINDS=['skin','dice','theme','powerup'];
 const CI={};KINDS.forEach(k=>CI[k]=IC.items.filter(i=>i.kind===k));
 const SOON={item:'Item',effect:'Efek',emote:'Emote'}; /* kategori mock lama tanpa item canonical */
-const CATS=[['skin','Skin','M8 3 2 6l2 5 3-1v11h10V10l3 1 2-5-6-3c-.5 1.700-2 2.600-4 2.600S8.500 4.700 8 3Z'],['dice','Dadu','M4 4h16v16H4zM8 8h.1M16 8h.1M12 12h.1M8 16h.1M16 16h.1'],['theme','Tema','M3 5h18v14H3zM3 15l5-5 4 4 3-3 6 6M15 9h.1'],['item','Item','M3 8h18v4H3zM5 12h14v9H5zM12 8v13'],['effect','Efek','M12 2l2.500 7.500L22 12l-7.500 2.500L12 22l-2.500-7.500L2 12l7.500-2.500z'],['emote','Emote','M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20ZM8 10h.1M16 10h.1M7 15c2 3 8 3 10 0']];
+const CATS=[['skin','Skin','M8 3 2 6l2 5 3-1v11h10V10l3 1 2-5-6-3c-.5 1.700-2 2.600-4 2.600S8.500 4.700 8 3Z'],['dice','Dadu','M4 4h16v16H4zM8 8h.1M16 8h.1M12 12h.1M8 16h.1M16 16h.1'],['theme','Tema','M3 5h18v14H3zM3 15l5-5 4 4 3-3 6 6M15 9h.1'],['powerup','Power-Up','M13 2 4 14h6l-1 8 9-12h-6l1-8z'],['item','Item','M3 8h18v4H3zM5 12h14v9H5zM12 8v13'],['effect','Efek','M12 2l2.500 7.500L22 12l-7.500 2.500L12 22l-2.500-7.500L2 12l7.500-2.500z'],['emote','Emote','M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20ZM8 10h.1M16 10h.1M7 15c2 3 8 3 10 0']];
 const icon=p=>`<svg viewBox="0 0 24 24"><path d="${p}" fill="#fff" stroke="#fff" stroke-width="1.800" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
 const DM='<svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z" fill="#4cc9ff" stroke="#1d7fd0" stroke-width="1.200"/><path d="M2 9h20M9 3l-2 6 5 12 5-12-2-6" fill="none" stroke="#bff0ff" stroke-width=".8"/></svg>';
 const CM='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffc83a" stroke="#c98a0c" stroke-width="1.500"/><text x="12" y="17" font-size="14" font-weight="900" text-anchor="middle" fill="#c98a0c">$</text></svg>';
@@ -163,6 +163,7 @@ function thumb(c,it){
  if(c==='skin')return AR.face(it.id);
  if(c==='dice')return AR.dice(it.id);
  if(c==='theme')return AR.theme(it.id);
+ if(c==='powerup')return AR.powerup(it.id);
  return `<svg viewBox="0 0 40 40"><rect x="5" y="5" width="30" height="30" rx="7" fill="rgba(255,255,255,.25)"/><path d="M12 21l6 6 11-13" fill="none" stroke="#fff" stroke-width="3.500" stroke-linecap="round" stroke-linejoin="round"/></svg>`}
 // ---- UI render
 const CK='<svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>',SH=icon(CATS[0][2]);
@@ -178,17 +179,22 @@ function pick(i){sel=i;renderGrid();renderInfo();renderRecent();buildModels();pl
 function renderGrid(){const g=$('#grid');g.innerHTML='';
  if(!CI[cat]){g.innerHTML=`<div style="grid-column:1/-1;display:grid;place-items:center;font-size:2.2rem;text-align:center">${SOON[cat]} — Segera hadir</div>`;return}
  ownedList(cat).forEach((o,n)=>{const i=o.item,eq=o.equipped,b=document.createElement('div');
-  b.className='card '+(i.rarity==='legendary'?'lg':'')+(i===sel?' sel':'');b.tabIndex=0;b.setAttribute('role','button');b.setAttribute('aria-label',i.name);b.style.animationDelay=n*25+'ms';
-  b.innerHTML=`${eq?`<span class="ck">${CK}</span>`:''}<div class="th">${thumb(cat,i)}</div><span class="nm">${i.name}</span>${badge(i.rarity)}<button class="bt ${eq?'own':i.rarity==='legendary'?'gd':''}">${eq?'Digunakan':'Gunakan'}</button>`;
+  const pw=i.kind==='powerup';
+  const btn=pw?`<button class="bt own">Dimiliki ×${PD.qty(i.id)}</button>`:`<button class="bt ${eq?'own':i.rarity==='legendary'?'gd':''}">${eq?'Digunakan':'Gunakan'}</button>`;
+  b.className='card '+(i.rarity==='legendary'?'lg':'')+(i===sel?' sel':'');b.tabIndex=0;b.setAttribute('role','button');b.setAttribute('aria-label',i.name+(pw?' ×'+PD.qty(i.id):''));b.style.animationDelay=n*25+'ms';
+  b.innerHTML=`${eq?`<span class="ck">${CK}</span>`:''}<div class="th">${thumb(cat,i)}</div><span class="nm">${i.name}</span>${badge(i.rarity)}${btn}`;
   b.addEventListener('click',e=>{pick(i);if(e.target.closest('.bt'))act(i)});b.addEventListener('keydown',e=>{if(e.key==='Enter')b.click()});g.appendChild(b)})}
 function renderRecent(){const l=ownedList(cat).map(o=>o.item);off=Math.max(0,Math.min(off,Math.max(0,l.length-5)));$('#rlist').innerHTML=l.length?l.slice(off,off+5).map(i=>`<button class="rt ${i===sel?'on':''}" data-id="${i.id}" aria-label="${i.name}">${thumb(cat,i)}</button>`).join(''):'<div style="align-self:center;font-size:1.4rem;width:100%;text-align:center">Belum ada item</div>';
  document.querySelectorAll('.rt').forEach(b=>b.addEventListener('click',()=>pick(l.find(i=>i.id===b.dataset.id))))}
-/* Equip lewat PlayerData; UI langsung di-refresh dan event inventory/skin/dice ikut dipancarkan oleh bridge. */
-function act(i){const r=PD.equip(i.id);
+/* Equip lewat PlayerData; UI langsung di-refresh dan event inventory/skin/dice ikut dipancarkan oleh bridge.
+   Power-Up = consumable (slot null): tidak di-equip; PlayerData.equip menolak dengan 'bukan-equipment'. */
+function act(i){if(i.kind==='powerup'){toast('Power-Up tersimpan — pemakaian di gameplay menyusul.');playSound('select');return}
+ const r=PD.equip(i.id);
  if(r.ok){toast('Berhasil digunakan!');playSound('select');buzz()}else{toast('Gagal memakai item.');playSound('error')}
  renderGrid();renderInfo();renderRecent();buildModels()}
 function renderInfo(){const i=sel,u=$('#use');
  if(!i){$('#irar').textContent='SOON';$('#irar').style.background=bg('common');$('#iname').textContent=SOON[cat];$('#idesc').textContent='Belum ada item canonical di kategori ini.';u.className='use no';u.innerHTML='Segera hadir';renderCurrency();return}
+ if(i.kind==='powerup'){const r=$('#irar');r.textContent=RN[i.rarity];r.style.background=bg(i.rarity);$('#iname').textContent=i.name;$('#idesc').textContent=i.desc+' (Dimiliki ×'+PD.qty(i.id)+')';u.className='use no';u.innerHTML='Dimiliki ×'+PD.qty(i.id);$('#info').animate([{transform:'translateY(.8rem)',opacity:.4},{transform:'none',opacity:1}],{duration:260,easing:'ease-out'});renderCurrency();return}
  const eq=PD.isEquipped(i.id),r=$('#irar');r.textContent=RN[i.rarity];r.style.background=bg(i.rarity);$('#iname').textContent=i.name;$('#idesc').textContent=i.desc;
  u.className='use'+(eq?' own':'');u.innerHTML=eq?CK+'Digunakan':SH+'Gunakan';
  $('#info').animate([{transform:'translateY(.8rem)',opacity:.4},{transform:'none',opacity:1}],{duration:260,easing:'ease-out'});
@@ -272,9 +278,9 @@ function rig(cv,withIsland,cy,dist,fov){if(!ok)return null;try{const r=new THREE
  rigs.push(R);return R}catch(e){ok=false;console.warn('WebGL unavailable',e);return null}}
 let main,pv,spin=0;
 function setModel(R,c,it,y){if(!R)return;if(R.cur)R.holder.remove(R.cur);const m=model(c,it);R.holder.add(m);R.cur=m;R.mc=c}
-function showThemeArt(on){const s=$('#show');const sv=on&&sel?AR.theme(sel.id):'';s.classList.toggle('art',!!sv);$('#art').innerHTML=sv}
+function showThemeArt(on){const s=$('#show');const sv=on&&sel?AR.forItem(sel.id):'';s.classList.toggle('art',!!sv);$('#art').innerHTML=sv}
 function buildModels(){if(!CI[cat]||!sel){showThemeArt(false);return}
- if(cat==='theme'){showThemeArt(true);return}
+ if(cat==='theme'||cat==='powerup'){showThemeArt(true);return}
  showThemeArt(false);setModel(main,cat,sel);spin=1}
 function fit(){const hi=SET().graphics==='high';rigs.forEach(R=>{const w=R.cv.clientWidth,h=R.cv.clientHeight;if(!w||!h)return;R.r.setPixelRatio(hi?Math.min(devicePixelRatio,1.5):1);R.r.setSize(w,h,false);R.cam.aspect=w/h;R.cam.fov=R.fov*(w/h<.8?1.15:1);R.cam.updateProjectionMatrix()})}
 const clock=typeof THREE!=='undefined'?new THREE.Clock():null;
