@@ -1219,7 +1219,7 @@ function buildWorld(key){
   /* torch di 4 sudut papan: tiang + nyala kuning (menyala otomatis di mode malam) */
   torchMeshes.forEach(t=>{ scene.remove(t.g); if(t.mat) t.mat.dispose(); });
   torchMeshes=[];
-  const torchMat=new THREE.MeshBasicMaterial({color:0xFFB020,emissive:0x000000,emissiveIntensity:0});
+  const torchMat=new THREE.MeshStandardMaterial({color:0xFFB020,emissive:0x000000,emissiveIntensity:0});
   [[-5.25,5.25],[5.25,5.25],[-5.25,-5.25],[5.25,-5.25]].forEach(q=>{
     const g=new THREE.Group();
     const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.06,0.7,6),new THREE.MeshLambertMaterial({color:0x4E3118}));
