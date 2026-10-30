@@ -303,7 +303,6 @@ body #pauseMenu,body #exitConfirm{background:rgba(18,51,127,.5);backdrop-filter:
     <button class="btn big" type="button" id="pmResume">Lanjutkan</button>
     <div class="pm-row">
       <button class="btn light small" id="pmCam" type="button">Reset Kamera</button>
-      <button class="btn light small" id="pmPov" type="button">POV: Atas</button>
       <button class="btn light small" id="pmSnd" type="button">Suara: nyala</button>
     </div>
     <div class="pm-time">
@@ -1683,7 +1682,6 @@ async function bite(p,from,to,gid){
   const S=SNAKEINFO[from],pts=S.path;
   const A=async pr=>{ await pr; if(gid!==gameId) throw STALE; };
   S.busy=true;
-  sfx.caplokular();
   await A(hopTo(p.pawn,S.bitePos.clone(),0.35,0.3));
   p.pawn.rotation.y=Math.atan2(-S.f[0],-S.f[1]);
   focus=p.pawn;
@@ -1713,7 +1711,7 @@ async function bite(p,from,to,gid){
   await A(Promise.all([back,trip]));
   const end=pts[total-1];
   scene.remove(lump); lump.visible=false;
-  sfx.pop();
+  sfx.pop(); sfx.caplokular();
   p.pawn.visible=true; p.pawn.scale.setScalar(0.2);
   p.pawn.position.set(end.x,end.y,end.z); focus=p.pawn;
   await A(Promise.all([
@@ -1753,7 +1751,7 @@ async function playTurn(p,v,gid,bn){
   }else if(p.shield&&(SNAKES[p.pos]||(mobOn(p.pos)&&mobOn(p.pos)!=='villager'))){
     p.shield=false; setMsg('Apel Emas melindungi '+p.name+'!'); sfx.pop(); await A(sleep(900));
   }else if(SNAKES[p.pos]){
-    const to=SNAKES[p.pos]; setMsg('Dicaplok ular! '+p.name+' turun dari '+p.pos+' ke '+to+'.');
+    const to=SNAKES[p.pos]; setMsg('Dicaplok ular! '+p.name+' turun dari '+p.pos+' ke '+to+'.'); sfx.naiktangga();
     await A(sleep(350)); await A(bite(p,p.pos,to,gid)); p.pos=to;
   }else if(mobOn(p.pos)){
     const k=mobOn(p.pos); mobReact(p.pos);
@@ -1867,7 +1865,6 @@ function openPause(){
   if(paused) return; paused=true;
   $('pmCpu').hidden=mode!=='cpu'; syncPauseNight(); syncMusicUI();
   $('pmCam').textContent='Reset Kamera';
-  $('pmPov').textContent='POV: '+(isTopDown?'3D':'Atas');
   $('pmSnd').textContent='Suara: '+(muted?'mati':'nyala');
   $('pauseMenu').hidden=false; $('pmResume').focus();
 }
@@ -1875,7 +1872,6 @@ function closePause(){ paused=false; $('exitConfirm').hidden=true; $('pauseMenu'
 $('btnMenu').addEventListener('click',openPause);
 $('pmResume').addEventListener('click',closePause);
 $('pmCam').addEventListener('click',()=>{ closePause(); resetCam(); });
-$('pmPov').addEventListener('click',()=>{ closePause(); togglePov(); });
 $('pmSnd').addEventListener('click',()=>{ muted=!muted; ensureAudio(); $('pmSnd').textContent='Suara: '+(muted?'mati':'nyala'); });
 $('pmDay').addEventListener('click',()=>{ setNight(false); syncPauseNight(); setMusicOn(true); });
 $('pmNight').addEventListener('click',()=>{ setNight(true); syncPauseNight(); setMusicOn(true); });
