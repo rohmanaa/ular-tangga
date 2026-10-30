@@ -200,6 +200,11 @@ body.playing .side{display:block}
 body{font-weight:800}
 /* panel */
 body .pnl{background:linear-gradient(#3b9cf8,#2a86ee);border:0;border-radius:22px;color:#fff;box-shadow:0 6px 0 var(--bd),0 14px 24px rgba(18,51,127,.35),inset 0 2px 3px rgba(255,255,255,.6),inset 0 0 0 3px #6cc0ff}
+  body .pm-vol{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+  body .pm-vol input[type=range]{width:100%;accent-color:#ffd23f}
+  body .pm-row{display:flex;gap:8px}
+  body .pm-row .btn{flex:1}
+  body .pm-time{display:flex;gap:8px;margin-top:10px}
 body .pnl h3{color:#fff;font-size:17px;font-weight:800;letter-spacing:0;text-transform:none;text-shadow:0 2px 0 var(--bd)}
 /* kartu pemain */
 body .pr{font-family:var(--font-display);font-size:15px;font-weight:800;text-transform:none;border:0;border-radius:16px;padding:7px 10px;opacity:1;color:#fff;text-shadow:0 2px 0 var(--bd);background:linear-gradient(#3f9bff,#1c55c0);box-shadow:0 3px 0 rgba(10,30,100,.5),inset 0 0 0 3px rgba(120,190,255,.55)}
@@ -250,13 +255,13 @@ body #pauseMenu,body #exitConfirm{background:rgba(18,51,127,.5);backdrop-filter:
 
 <header class="hud" id="hud">
   <div class="tools">
-    <button class="btn small light" id="btnCam" type="button">Reset Kamera</button>
-    <button class="btn small light" id="btnPov" type="button">POV: Atas</button>
+    <button class="btn small light" id="btnCam" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3 6 3h4a2 2 0 0 1 2 2z"/></svg>Reset Kamera</button>
+    <button class="btn small light" id="btnPov" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>POV: Atas</button>
     <button class="btn small light" id="btnTheme" type="button" hidden>Tema</button>
     <button class="btn small light" id="btnNight" type="button" hidden>Mode: Siang</button>
     <button class="btn small light" id="btnDice" type="button" hidden>Dadu</button>
-    <button class="btn small light" id="btnSnd" type="button">Suara: nyala</button>
-    <button class="btn small light" id="btnMenu" type="button">Menu</button>
+    <button class="btn small light" id="btnSnd" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 2a10 10 0 0 1 0 20"/></svg>Suara: nyala</button>
+    <button class="btn small light" id="btnMenu" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>Menu</button>
   </div>
 </header>
 
@@ -296,10 +301,17 @@ body #pauseMenu,body #exitConfirm{background:rgba(18,51,127,.5);backdrop-filter:
     <h2 id="pmTitle">Menu</h2>
     <p id="pmCpu" hidden>Komputer menunggu sampai kamu melanjutkan.</p>
     <button class="btn big" type="button" id="pmResume">Lanjutkan</button>
-    <p class="lbl">Waktu</p>
+    <div class="pm-row">
+      <button class="btn light small" id="pmCam" type="button">Reset Kamera</button>
+      <button class="btn light small" id="pmPov" type="button">POV: Atas</button>
+      <button class="btn light small" id="pmSnd" type="button">Suara: nyala</button>
+    </div>
     <div class="pm-time">
       <button class="btn light small" id="pmDay" type="button" aria-pressed="true">Siang</button>
       <button class="btn light small" id="pmNight" type="button" aria-pressed="false">Malam</button>
+    </div>
+    <div class="pm-vol">
+      <input type="range" id="pmVol" min="0" max="100" value="60" style="width:100%">
     </div>
     <button class="btn light" type="button" id="pmExit">Keluar</button>
   </div>
@@ -318,9 +330,11 @@ body #pauseMenu,body #exitConfirm{background:rgba(18,51,127,.5);backdrop-filter:
 
 <style>
 .pm-time{display:flex;gap:8px}.pm-time .btn{flex:1}
-.btn.light[aria-pressed=true]{background:var(--sun)}
-#pauseMenu,#exitConfirm{background:rgba(10,14,30,.55)}
-#pauseMenu .card h2,#exitConfirm .card h2{font-size:clamp(24px,7vw,32px)}
+  .btn.light[aria-pressed=true]{background:var(--sun)}
+  #pauseMenu,#exitConfirm{background:rgba(10,14,30,.55)}
+  #pauseMenu .card h2,#exitConfirm .card h2{font-size:clamp(24px,7vw,32px)}
+  .pm-vol{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+  .pm-vol input[type=range]{accent-color:#ffd23f}
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -362,7 +376,25 @@ function showBootErr(){
 }
 if(!window.THREE){ showBootErr(); return; }
 
-/*LOGIC-START*/
+/* ---------- Musik latar ---------- */
+let bgMusic=null,musicOn=true,musicVol=60;
+try{ musicVol=parseInt(localStorage.getItem('ut-musicvol')||'60',10)||60; musicOn=localStorage.getItem('ut-musicon')!=='0'; }catch(e){}
+const MUSIC=['assets/music/community.mp3','assets/music/rainy.mp3'];
+function ensureMusic(){
+  if(bgMusic) return;
+  try{ bgMusic=new Audio(); bgMusic.src=MUSIC[0]; bgMusic.loop=true; bgMusic.preload='auto'; }
+  catch(e){ bgMusic=null; }
+}
+function playMusic(){
+  ensureMusic(); if(!bgMusic||!musicOn) return;
+  try{ bgMusic.volume=musicVol/100; bgMusic.play().catch(()=>{}); }catch(e){}
+}
+function stopMusic(){
+  if(!bgMusic) return; try{ bgMusic.pause(); }catch(e){}
+}
+function setMusicVol(v){ musicVol=Math.max(0,Math.min(100,v)); try{ localStorage.setItem('ut-musicvol',String(musicVol)); }catch(e){} if(bgMusic) bgMusic.volume=musicVol/100; }
+function setMusicOn(v){ musicOn=!!v; try{ localStorage.setItem('ut-musicon',musicOn?'1':'0'); }catch(e){} if(musicOn) playMusic(); else stopMusic(); }
+
 /* ---------- Aturan papan ---------- */
 const ROW_H=0.8;
 const LADDERS={3:22,8:26,20:41,36:55,51:72,71:91};
@@ -1347,7 +1379,7 @@ function noise(d,vol,when,freq){
   }catch(e){}
 }
 const sfx={
-  hop(){ beep(480+Math.random()*120,0.08,'square',0.04); },
+  hop(){ try{ const a=new Audio('assets/sfx/jump.mp3'); a.volume=0.5; a.play().catch(()=>beep(480+Math.random()*120,0.08,'square',0.04)); }catch(e){ beep(480+Math.random()*120,0.08,'square',0.04); } },
   roll(){ for(let i=0;i<7;i++) beep(180+Math.random()*320,0.05,'square',0.035,i*0.13); },
   ladder(){ [392,494,587,784].forEach((f,i)=>beep(f,0.14,'square',0.05,i*0.11)); },
   hiss(){ noise(0.55,0.09,0,4500); },
@@ -1816,19 +1848,31 @@ $('btnTheme').addEventListener('click',()=>{
   const now=pendingTheme||themeKey,i=THEMES.findIndex(t=>t.key===now);
   chooseTheme(THEMES[(i+1)%THEMES.length].key);
 });
-$('btnSnd').addEventListener('click',()=>{ muted=!muted; ensureAudio(); $('btnSnd').textContent='Suara: '+(muted?'mati':'nyala'); });
+$('btnSnd').addEventListener('click',()=>{ muted=!muted; ensureAudio(); const t=muted?'mati':'nyala'; $('btnSnd').innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 2a10 10 0 0 1 0 20"/></svg>Suara: '+t; });
+function syncMusicUI(){
+  const v=$('pmVol'); if(v) v.value=musicVol;
+}
+$('pmVol')&&$('pmVol').addEventListener('input',e=>{ setMusicVol(+e.target.value); });
+$('pmDay').addEventListener('click',()=>{ setNight(false); syncPauseNight(); setMusicOn(true); });
+$('pmNight').addEventListener('click',()=>{ setNight(true); syncPauseNight(); setMusicOn(true); });
 /* ---------- Menu jeda: lanjutkan, siang/malam, keluar (dengan konfirmasi) ---------- */
 function syncPauseNight(){ $('pmDay').setAttribute('aria-pressed',String(!night)); $('pmNight').setAttribute('aria-pressed',String(night)); }
 function openPause(){
   if(paused) return; paused=true;
-  $('pmCpu').hidden=mode!=='cpu'; syncPauseNight();
+  $('pmCpu').hidden=mode!=='cpu'; syncPauseNight(); syncMusicUI();
+  $('pmCam').textContent='Reset Kamera';
+  $('pmPov').textContent='POV: '+(isTopDown?'3D':'Atas');
+  $('pmSnd').textContent='Suara: '+(muted?'mati':'nyala');
   $('pauseMenu').hidden=false; $('pmResume').focus();
 }
 function closePause(){ paused=false; $('exitConfirm').hidden=true; $('pauseMenu').hidden=true; $('btnMenu').focus(); }
 $('btnMenu').addEventListener('click',openPause);
 $('pmResume').addEventListener('click',closePause);
-$('pmDay').addEventListener('click',()=>{ setNight(false); syncPauseNight(); });
-$('pmNight').addEventListener('click',()=>{ setNight(true); syncPauseNight(); });
+$('pmCam').addEventListener('click',()=>{ closePause(); resetCam(); });
+$('pmPov').addEventListener('click',()=>{ closePause(); togglePov(); });
+$('pmSnd').addEventListener('click',()=>{ muted=!muted; ensureAudio(); $('pmSnd').textContent='Suara: '+(muted?'mati':'nyala'); });
+$('pmDay').addEventListener('click',()=>{ setNight(false); syncPauseNight(); setMusicOn(true); });
+$('pmNight').addEventListener('click',()=>{ setNight(true); syncPauseNight(); setMusicOn(true); });
 $('pmExit').addEventListener('click',()=>{ $('exitConfirm').hidden=false; $('ecNo').focus(); });
 $('ecNo').addEventListener('click',()=>{ $('exitConfirm').hidden=true; $('pmExit').focus(); });
 $('ecYes').addEventListener('click',()=>{ location.href=LOBBY_URL; });
@@ -1946,7 +1990,7 @@ let saved=null;
 try{ saved=localStorage.getItem('ut-tema2'); }catch(e){}
 buildWorld(CFG.theme||saved||THEMES[0].key);
 lastSkins=CFG.skins.slice();
-document.addEventListener('pointerdown',ensureAudio,{once:true});
+document.addEventListener('pointerdown',()=>{ ensureAudio(); ensureMusic(); if(musicOn) playMusic(); },{once:true});
 startGame(CFG.mode,CFG.skins.slice());
 /*TEST-HOOK*/
 requestAnimationFrame(frame);
