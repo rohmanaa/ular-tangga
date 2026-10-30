@@ -113,21 +113,24 @@ svg{display:block}
   grid-row: 2;
   display: flex;
   flex-direction: column;
-  gap: .7rem;
+  gap: max(.8rem, 8px);
   overflow-y: auto;
 }
 
 .cat{
+  min-height:44px;
   height:4.4rem;
   border-radius:1.5rem;
   display:flex;
   align-items:center;
-  gap:1rem;
-  padding:0 1.2rem;
+  gap:max(.8rem, 8px);
+  padding-block:10px;
+  padding-inline:max(1.2rem, 14px);
   font-size:2rem;
   text-shadow:0 .15rem 0 var(--bd);
   border:.25rem solid transparent;
   width: 100%;
+  white-space:nowrap;
 }
 .cat svg{width:2.6rem;height:2.6rem}
 .cat.on{border-color:#ffe36a;background:linear-gradient(#ffd24d,#f4a81f);box-shadow:0 .4rem 0 #b9740c,0 0 1.5rem #ffd24d;transform:scale(1.02);text-shadow:0 .2rem 0 #a35f08}
@@ -145,7 +148,7 @@ svg{display:block}
 /* Top Showcase & Info Area */
 .shop-top-panel{
   display: grid;
-  grid-template-columns: 26rem 1fr 14rem;
+  grid-template-columns: 26rem 1fr;
   gap: 1.2rem;
   height: 24rem;
   flex-shrink: 0;
@@ -205,24 +208,6 @@ svg{display:block}
 #gift{width:100%;height:3.6rem;border-radius:1.8rem;font-size:2.2rem;display:flex;align-items:center;justify-content:center;gap:.8rem;padding:0;background:linear-gradient(#4aa8ff,#1f78e8);box-shadow:0 .3rem 0 var(--bd),inset 0 .15rem .2rem rgba(255,255,255,.6)}
 #gift svg{width:2.2rem;height:2.2rem}
 
-#pv{
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 2rem;
-  background: linear-gradient(#4aa8ff,#1f6fe0);
-  box-shadow: 0 .5rem 0 var(--bd),0 1.2rem 2rem rgba(18,51,127,.4),inset 0 0 0 .25rem #7cc4ff;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-#pvc{width:100%;flex:1;display:block}
-#pv #art{display:none;position:absolute;inset:0 0 3.8rem 0;place-items:center}
-#pv #art svg{width:75%;height:75%}
-#pv.art canvas{display:none}#pv.art #art{display:grid}
-#pvbtn{position:relative;margin:0 .8rem .8rem;height:3.2rem;border-radius:1.6rem;background:rgba(18,51,127,.55);font-size:1.6rem;padding:0;display:flex;align-items:center;justify-content:center;gap:.5rem;flex-shrink:0}
-#pvbtn svg{width:1.8rem;height:1.8rem}
-
 .pulse{animation:pu .4s}@keyframes pu{50%{transform:scale(1.15)}}
 
 /* Bottom Shop Grid Panel */
@@ -239,10 +224,6 @@ svg{display:block}
   gap: .8rem;
   min-height: 0;
 }
-
-#tabs{display:flex;gap:1rem;justify-content:space-between;flex-shrink:0;overflow-x:auto}
-.tab{flex:1;height:3.8rem;border-radius:1.9rem;font-size:1.8rem;display:flex;align-items:center;justify-content:center;gap:.6rem;padding:0 1rem;background:linear-gradient(#2f94f0,#1766d8);box-shadow:0 .3rem 0 var(--bd);border:.2rem solid transparent;white-space:nowrap}
-.tab svg{width:2.2rem;height:2.2rem}.tab.on{border-color:#ffe36a;box-shadow:0 .3rem 0 #b9740c,0 0 1rem #ffd24d}
 
 #grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(2,1fr);gap:.8rem;overflow-y:auto}
 
@@ -273,7 +254,6 @@ svg{display:block}
 .tg{min-width:7rem;height:3.5rem;border-radius:1.8rem;background:#7b8aa8;box-shadow:inset 0 .2rem .4rem rgba(0,0,0,.3);font-size:1.8rem;padding:0 1rem}.tg.on{background:var(--g)}
 .pack,.mb{width:100%;display:flex;justify-content:space-between;align-items:center;margin:.6rem 0;padding:1rem 1.4rem;border-radius:1.2rem;background:linear-gradient(#ffd24d,#ff9a1f);box-shadow:0 .35rem 0 #c96a0c;font-size:2.2rem;text-shadow:0 .15rem 0 rgba(107,53,17,.7)}
 .mb{justify-content:center;width:48%;display:inline-flex;margin:1rem 1% 0}.mb.no{background:linear-gradient(#8ab4e8,#5a88c8);box-shadow:0 .35rem 0 #2f5090;text-shadow:none}
-#bigc{width:100%;aspect-ratio:1;border-radius:1.6rem;background:linear-gradient(#5db4f5,#a9dcf8);display:block;margin-bottom:1rem}
 
 #toast{position:fixed;left:50%;bottom:2.5rem;translate:-50% 2rem;background:var(--bd);padding:.7rem 2rem;border-radius:1.8rem;font-size:2.2rem;opacity:0;transition:opacity .3s,translate .35s cubic-bezier(.3,1.8,.5,1);z-index:99;pointer-events:none;white-space:nowrap}
 #toast.on{opacity:1;translate:-50% 0}
@@ -288,12 +268,12 @@ svg{display:block}
     gap:1.2rem;
     padding:1rem;
   }
-  #cats{display:none}
+  #cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px;overflow:visible;flex-shrink:0;padding-bottom:6px}
+  .cat{padding-inline:8px;justify-content:center;gap:6px;min-width:0}
   .right-section{width:100%}
   .shop-top-panel{grid-template-columns: 1fr; height: auto; gap: 1rem}
   #show{height:55vw}
   #info{height:auto}
-  #pv{height:45vw}
   #bot{height:auto;min-height:45rem}
   #grid{grid-template-columns:repeat(2,1fr);grid-template-rows:none;grid-auto-rows:18rem}
 }
@@ -326,7 +306,7 @@ svg{display:block}
 
   <!-- Konten Utama Kanan -->
   <div class="right-section">
-    <!-- Panel Atas: Showcase 3D, Info Detail, Preview -->
+    <!-- Panel Atas: Showcase 3D & Info Detail -->
     <div class="shop-top-panel">
       <div id="show">
         <canvas id="gl"></canvas>
@@ -345,17 +325,10 @@ svg{display:block}
         <button class="cta" id="buy"></button>
         <button id="gift"><svg viewBox="0 0 24 24"><path d="M3 8h18v4H3zM5 12h14v9H5z" fill="#fff"/><path d="M12 8v13" stroke="#2f8cf0" stroke-width="2"/><path d="M12 8C9 8 8 3 11 4c1 .5 1 4 1 4Zm0 0c3 0 4-5 1-4-1 .5-1 4-1 4Z" fill="#fff"/></svg>Hadiah</button>
       </section>
-
-      <section id="pv">
-        <canvas id="pvc"></canvas>
-        <div id="pvart"></div>
-        <button id="pvbtn" aria-label="Preview 360"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-3-6.200M20 3v5h-5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Preview 360°</button>
-      </section>
     </div>
 
-    <!-- Panel Bawah: Tabs Kategori & Grid Item -->
+    <!-- Panel Bawah: Grid Item (navigasi kategori ada di #cats) -->
     <section id="bot">
-      <div id="tabs"></div>
       <div id="grid"></div>
     </section>
   </div>
@@ -378,8 +351,8 @@ const PD=window.PlayerData,IC=window.ItemCatalog,AR=window.ItemArt;
 const RN={common:'COMMON',rare:'RARE',epic:'EPIC',legendary:'LEGENDARY'},RC={common:'var(--r0)',rare:'var(--r1)',epic:'var(--r2)',legendary:'var(--r3)'};
 const BG={common:['#5a8aa8','#2f5f80'],rare:['#3a8ff0','#1b55c0'],epic:['#8a4ae0','#4a2aa8'],legendary:['#f0c040','#b98020']};
 const CI={skin:IC.items.filter(i=>i.kind==='skin'),dice:IC.items.filter(i=>i.kind==='dice'),theme:IC.items.filter(i=>i.kind==='theme'),powerup:IC.items.filter(i=>i.kind==='powerup')};
-const SOON={item:'Item',effect:'Efek',emote:'Emote'};
-const CATS=[['skin','Skin','M8 3 2 6l2 5 3-1v11h10V10l3 1 2-5-6-3c-.5 1.700-2 2.600-4 2.600S8.500 4.700 8 3Z'],['dice','Dadu','M4 4h16v16H4zM8 8h.1M16 8h.1M12 12h.1M8 16h.1M16 16h.1'],['theme','Tema','M3 5h18v14H3zM3 15l5-5 4 4 3-3 6 6M15 9h.1'],['powerup','Power-Up','M13 2 4 14h6l-1 8 9-12h-6l1-8z'],['item','Item','M3 8h18v4H3zM5 12h14v9H5zM12 8v13'],['effect','Efek','M12 2l2.500 7.500L22 12l-7.500 2.500L12 22l-2.500-7.500L2 12l7.500-2.500z'],['emote','Emote','M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20ZM8 10h.1M16 10h.1M7 15c2 3 8 3 10 0']];
+const SOON={effect:'Efek',emote:'Emote'};
+const CATS=[['skin','Skin','M8 3 2 6l2 5 3-1v11h10V10l3 1 2-5-6-3c-.5 1.700-2 2.600-4 2.600S8.500 4.700 8 3Z'],['dice','Dadu','M4 4h16v16H4zM8 8h.1M16 8h.1M12 12h.1M8 16h.1M16 16h.1'],['theme','Tema','M3 5h18v14H3zM3 15l5-5 4 4 3-3 6 6M15 9h.1'],['powerup','Power','M13 2 4 14h6l-1 8 9-12h-6l1-8z'],['effect','Efek','M12 2l2.500 7.500L22 12l-7.500 2.500L12 22l-2.500-7.500L2 12l7.500-2.500z'],['emote','Emote','M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20ZM8 10h.1M16 10h.1M7 15c2 3 8 3 10 0']];
 const icon=p=>`<svg viewBox="0 0 24 24"><path d="${p}" fill="#fff" stroke="#fff" stroke-width="1.800" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
 const DM='<svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z" fill="#4cc9ff" stroke="#1d7fd0" stroke-width="1.200"/><path d="M2 9h20M9 3l-2 6 5 12 5-12-2-6" fill="none" stroke="#bff0ff" stroke-width=".8"/></svg>';
 const CM='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffc83a" stroke="#c98a0c" stroke-width="1.500"/><text x="12" y="17" font-size="14" font-weight="900" text-anchor="middle" fill="#c98a0c">$</text></svg>';
@@ -407,8 +380,7 @@ function thumb(c,it){
 
 function renderCats(){
   $('#cats').innerHTML=CATS.map(c=>`<button class="blue cat ${c[0]===cat?'on':''}" data-c="${c[0]}" aria-label="${c[1]}">${icon(c[2])}${c[1]}</button>`).join('');
-  $('#tabs').innerHTML=CATS.map(c=>`<button class="tab ${c[0]===cat?'on':''}" data-c="${c[0]}">${icon(c[2])}${c[1]}</button>`).join('');
-  document.querySelectorAll('[data-c]').forEach(b=>b.addEventListener('click',()=>{playSound('click');setCat(b.dataset.c)}))
+  document.querySelectorAll('#cats [data-c]').forEach(b=>b.addEventListener('click',()=>{playSound('click');setCat(b.dataset.c)}))
 }
 
 function setCat(c){cat=c;const l=list(c);sel=l?(l.find(i=>equipped(i))||l[0]):null;renderCats();renderGrid();renderInfo();buildModels();playSound('select')}
@@ -540,16 +512,15 @@ function rig(cv,withIsland,cy,dist,fov){if(!ok)return null;try{const r=new THREE
  const up=()=>R.drag=false;cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);cv.style.touchAction='pan-y';
  rigs.push(R);return R}catch(e){ok=false;console.warn('WebGL unavailable',e);return null}}
 
-let main,pv,spin=0;
+let main,spin=0;
 function setModel(R,c,it,y){if(!R)return;if(R.cur)R.holder.remove(R.cur);const m=model(c,it);R.holder.add(m);R.cur=m;R.mc=c}
 
-function showThemeArt(on){const s=$('#show'),p=$('#pv');const sv=on&&sel?AR.forItem(sel.id):'';
- s.classList.toggle('art',!!sv);$('#art').innerHTML=sv;
- p.classList.toggle('art',!!sv);$('#pvart').innerHTML=sv}
+function showThemeArt(on){const s=$('#show');const sv=on&&sel?AR.forItem(sel.id):'';
+ s.classList.toggle('art',!!sv);$('#art').innerHTML=sv}
 
 function buildModels(){if(!list(cat)){showThemeArt(false);return}
  if(cat==='theme'||cat==='powerup'||(cat==='skin'&&sel&&sel.renderer==='png')){showThemeArt(true);return}
- showThemeArt(false);setModel(main,cat,sel);setModel(pv,cat,sel);spin=1}
+ showThemeArt(false);setModel(main,cat,sel);spin=1}
 
 function fit(){const hi=SET().graphics==='high';rigs.forEach(R=>{const w=R.cv.clientWidth,h=R.cv.clientHeight;if(!w||!h)return;R.r.setPixelRatio(hi?Math.min(devicePixelRatio,1.5):1);R.r.setSize(w,h,false);R.cam.aspect=w/h;R.cam.fov=R.fov*(w/h<.8?1.15:1);R.cam.updateProjectionMatrix()})}
 
@@ -560,13 +531,9 @@ function loop(){requestAnimationFrame(loop);const t=clock.getElapsedTime();
   R.cur.userData.anim&&R.cur.userData.anim(t);R.cam.position.set(0,R.cy+1,R.dist);R.cam.lookAt(0,R.cy,0);R.r.render(R.scene,R.cam)});
  if(spin>0)spin=Math.max(0,spin-.025)}
 
-$('#pvbtn').addEventListener('click',()=>{if(!list(cat)||cat==='theme'||cat==='powerup')return;const cv=$('#pvc'),home=cv.parentElement;
- openModal(`<h2>Preview 360°</h2><div id="slot"></div><p style="margin:0;font-size:2rem">Geser untuk memutar</p>`,()=>{const s=$('#slot');s.appendChild(cv);cv.id='bigc';cv.style.height='';fit()},true);
- onClose=()=>{cv.id='pvc';home.insertBefore(cv,$('#pvbtn'));setTimeout(fit,50)}});
-
 if(typeof THREE==='undefined')ok=false;
 renderCats();renderGrid();renderInfo();
-if(ok){main=rig($('#gl'),true,3.4,17,36);pv=rig($('#pvc'),false,3.4,13,38);if(ok){buildModels();new ResizeObserver(fit).observe(document.body);document.querySelectorAll('#show,#pv').forEach(e=>new ResizeObserver(fit).observe(e));fit();requestAnimationFrame(loop)}}
+if(ok){main=rig($('#gl'),true,3.4,17,36);if(ok){buildModels();new ResizeObserver(fit).observe(document.body);new ResizeObserver(fit).observe($('#show'));fit();requestAnimationFrame(loop)}}
 if(!ok){$('#show').innerHTML='<div style="height:100%;display:grid;place-items:center;font-size:3rem">3D tidak tersedia</div>'}
 })();
 </script>
