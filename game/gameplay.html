@@ -1764,8 +1764,10 @@ async function playTurn(p,v,gid,bn){
   }else if(p.shield&&(SNAKES[p.pos]||(mobOn(p.pos)&&mobOn(p.pos)!=='villager'))){
     p.shield=false; setMsg('Apel Emas melindungi '+p.name+'!'); sfx.pop(); await A(sleep(900));
   }else if(SNAKES[p.pos]){
-    const to=SNAKES[p.pos]; setMsg('Dicaplok ular! '+p.name+' turun dari '+p.pos+' ke '+to+'.'); sfx.naiktangga();
-    await A(sleep(350)); await A(bite(p,p.pos,to,gid)); p.pos=to;
+    const to=SNAKES[p.pos];
+    if(!SNAKEINFO[p.pos]){ p.pos=to; setMsg('Ular! '+p.name+' turun ke '+to+'.'); await A(sleep(350)); await A(hopTo(p.pawn,slotPos(p.idx,to),0.5,0.8)); }
+    else{ setMsg('Dicaplok ular! '+p.name+' turun dari '+p.pos+' ke '+to+'.'); sfx.naiktangga(); await A(sleep(350)); await A(bite(p,p.pos,to,gid)); }
+    p.pos=to;
   }else if(mobOn(p.pos)){
     const k=mobOn(p.pos); mobReact(p.pos);
     if(k==='creeper'){
