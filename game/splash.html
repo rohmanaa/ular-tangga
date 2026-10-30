@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ular Tangga Blok</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--lime:#7dff2e;--navy:#09152b;--blue:#1763b9}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;overflow:hidden}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#1a62b8;color:#fff}
+
+/* warna kubus voxel (sama dengan landing page) */
+.g{--t:#9bec4f;--l:#58b02d;--r:#3f8a21}
+.d{--t:#9a6a3c;--l:#7a5230;--r:#5f3f25}
+.b{--t:#a9774a;--l:#8a5a33;--r:#6b4326}
+.l{--t:#6fd13a;--l:#3f9e2b;--r:#2d7a21}
+.s{--t:#c6ff5a;--l:#8ee03a;--r:#5fb82a}
+.s2{--t:#5ed63f;--l:#34a02a;--r:#237a1f}
+.w{--t:#ffffff;--l:#dbe8f7;--r:#bcd0ea}
+
+.splash{position:relative;width:100%;height:100%;min-height:560px;overflow:hidden;isolation:isolate;background:radial-gradient(ellipse at 50% 62%,rgba(220,246,255,.7),transparent 52%),linear-gradient(180deg,#1357c4 0%,#3b92ee 40%,#8fd0ff 72%,#d4efff 100%)}
+.sun-glow{position:absolute;width:640px;height:640px;border-radius:50%;left:50%;top:40%;transform:translate(-50%,-50%);background:rgba(255,255,255,.16);filter:blur(70px);z-index:0}
+
+/* awan lembut di belakang awan voxel */
+.puff{position:absolute;border-radius:50%;background:#fff;filter:blur(26px);opacity:.5;z-index:0}
+.pf1{width:340px;height:90px;left:2%;top:15%}
+.pf2{width:300px;height:80px;right:2%;top:24%;opacity:.42}
+.pf3{width:520px;height:90px;left:50%;bottom:20%;transform:translateX(-50%);opacity:.5}
+
+/* awan & pulau voxel */
+.vx{display:block;width:100%;height:auto;overflow:visible}
+.cl{position:absolute;z-index:1;animation:drift var(--d,40s) ease-in-out infinite alternate;opacity:var(--o,1);filter:drop-shadow(0 10px 14px rgba(20,70,140,.12))}
+.cl1{top:13%;left:5%;width:min(21vw,210px);--d:46s}
+.cl2{top:25%;right:5%;width:min(15vw,150px);--d:38s;--o:.95}
+.cl3{top:11%;right:29%;width:min(10vw,110px);--d:54s;--o:.75}
+.cl4{top:60%;left:-3%;width:min(24vw,240px);--d:52s;z-index:5}
+.cl5{bottom:20%;right:-2%;width:min(22vw,210px);--d:44s;z-index:5}
+.cl6{top:34%;left:22%;width:min(8vw,84px);--d:60s;--o:.65}
+@keyframes drift{from{translate:-26px 0}to{translate:34px 0}}
+
+.isl{position:absolute;z-index:2;animation:fl var(--d,9s) ease-in-out infinite;animation-delay:var(--dl,0s);filter:drop-shadow(0 22px 20px rgba(8,35,74,.22))}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.isl.a{left:6%;top:47%;width:min(16vw,170px);--d:10s;--dl:-3s}
+.isl.b{right:5%;top:33%;width:min(15vw,160px);--d:12s;--dl:-6s}
+.isl.c{right:19%;bottom:19%;width:min(8vw,92px);--d:11s;--dl:-1s}
+.isl.main{left:50%;top:44%;width:min(50vw,50vh,470px);z-index:3;filter:drop-shadow(0 28px 24px rgba(8,35,74,.25));animation:none}
+.isl.main .bob{animation:floatMain 8s ease-in-out infinite}
+@keyframes floatMain{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.isl.main{transform:translate(-50%,-50%)}
+.isl.main svg{width:100%;height:auto;display:block;overflow:visible}
+.deb{animation:fl 13s ease-in-out infinite reverse;animation-delay:-5s}
+
+.brand{position:absolute;top:5%;left:50%;transform:translateX(-50%);text-align:center;z-index:6;text-shadow:0 4px 12px rgba(5,29,67,.28);white-space:nowrap}
+.brand .small{font-size:12px;font-weight:800;letter-spacing:.28em;color:#e5f7ff}
+.brand h1{font:400 clamp(32px,4vw,54px)/.9 'Lilita One',sans-serif;margin:9px 0 0;letter-spacing:.03em}
+.brand h1 span{color:var(--lime)}
+
+.bottom-ui{position:absolute;z-index:7;left:50%;bottom:5.5%;transform:translateX(-50%);width:min(420px,88vw);text-align:center}
+.status{font:400 23px 'Lilita One',sans-serif;letter-spacing:.04em;text-shadow:0 3px 8px rgba(6,36,74,.25);margin-bottom:14px}
+.loading-track{height:13px;padding:3px;border-radius:99px;background:rgba(7,35,75,.28);border:1px solid rgba(255,255,255,.5);box-shadow:0 5px 16px rgba(8,37,76,.16);overflow:hidden}
+.loading-fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#b8ff63,#65ed26);box-shadow:0 0 14px rgba(125,255,46,.7);transition:width .15s linear}
+.load-meta{display:flex;justify-content:space-between;margin-top:9px;font-size:11px;font-weight:800;letter-spacing:.12em;color:#eaf7ff;text-shadow:0 2px 5px rgba(6,36,74,.3)}
+
+.dice-wrap{position:relative;width:74px;height:74px;margin:0 auto 17px;perspective:500px}
+.dice{position:absolute;inset:5px;transform-style:preserve-3d;animation:roll 2.1s cubic-bezier(.5,.05,.3,1) infinite}
+@keyframes roll{0%{transform:rotateX(-25deg) rotateY(-35deg) rotateZ(0)}50%{transform:rotateX(335deg) rotateY(325deg) rotateZ(18deg)}100%{transform:rotateX(695deg) rotateY(685deg) rotateZ(0)}}
+.face{position:absolute;inset:0;border:3px solid #193b55;border-radius:12px;background:linear-gradient(145deg,#fff,#dcecff);display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:8px;box-shadow:inset 0 0 8px rgba(31,75,110,.16)}
+.face i{width:10px;height:10px;border-radius:50%;background:#12324e;place-self:center}
+.f1{transform:translateZ(32px)}.f6{transform:rotateY(180deg) translateZ(32px)}.f2{transform:rotateY(90deg) translateZ(32px)}.f5{transform:rotateY(-90deg) translateZ(32px)}.f3{transform:rotateX(90deg) translateZ(32px)}.f4{transform:rotateX(-90deg) translateZ(32px)}
+.f1 i:nth-child(5){background:#f04d61;width:13px;height:13px}
+.spark{position:absolute;color:#edffb0;font-size:22px;animation:twinkle 2s ease-in-out infinite}
+.sp1{left:calc(50% - 72px);top:-8px}.sp2{right:calc(50% - 76px);top:16px;animation-delay:.7s}
+@keyframes twinkle{0%,100%{opacity:.25;transform:scale(.7) rotate(0)}50%{opacity:1;transform:scale(1.2) rotate(35deg)}}
+
+/* kilau di sekitar pulau */
+.star{position:absolute;z-index:4;color:#fff;font-size:18px;opacity:.8;animation:twinkle 3s ease-in-out infinite}
+.st1{left:30%;top:30%}.st2{right:28%;top:40%;animation-delay:1s}.st3{left:36%;top:62%;animation-delay:1.8s;font-size:14px}
+
+@media(max-width:700px){
+  .brand{top:7%}
+  .bottom-ui{bottom:6%}
+  .isl.main{width:min(88vw,380px);top:43%}
+  .isl.a{width:100px;left:-1%;top:50%}
+  .isl.b{width:100px;right:-1%;top:30%}
+  .isl.c{display:none}
+  .cl1{width:120px;left:2%;top:15%}
+  .cl2{width:96px;top:24%;right:1%}
+  .cl3,.cl6{display:none}
+  .cl4{width:140px;top:63%}
+  .cl5{width:130px;bottom:24%}
+  .st1,.st2,.st3{display:none}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:0.01ms!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+
+<!-- definisi kubus voxel (dipakai ulang) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <g id="c"><polygon points="0,0 24,12 0,24 -24,12" style="fill:var(--t)"/><polygon points="-24,12 0,24 0,48 -24,36" style="fill:var(--l)"/><polygon points="0,24 24,12 24,36 0,48" style="fill:var(--r)"/></g>
+  </defs>
+</svg>
+
+<main class="splash" aria-label="Layar memuat Ular Tangga Blok">
+  <div class="sun-glow"></div>
+  <div class="puff pf1"></div><div class="puff pf2"></div><div class="puff pf3"></div>
+
+  <!-- awan voxel -->
+  <div class="cl cl1"><svg class="vx" data-shape="cloudA" data-s=".9" aria-hidden="true"></svg></div>
+  <div class="cl cl2"><svg class="vx" data-shape="cloudB" data-s=".9" aria-hidden="true"></svg></div>
+  <div class="cl cl3"><svg class="vx" data-shape="cloudC" data-s=".8" aria-hidden="true"></svg></div>
+  <div class="cl cl6"><svg class="vx" data-shape="cloudB" data-s=".7" aria-hidden="true"></svg></div>
+
+  <div class="brand"><div class="small">DUNIA PETUALANGAN VOXEL</div><h1>ULAR TANGGA <span>BLOK</span></h1></div>
+
+  <span class="star st1">✦</span><span class="star st2">✧</span><span class="star st3">✦</span>
+
+  <!-- pulau kecil voxel -->
+  <div class="isl a"><svg class="vx" data-shape="islA" data-s=".8" aria-hidden="true"></svg></div>
+  <div class="isl b"><svg class="vx" data-shape="islB" data-s=".8" aria-hidden="true"></svg></div>
+  <div class="isl c"><svg class="vx" data-shape="islC" data-s=".8" aria-hidden="true"></svg></div>
+
+  <!-- pulau utama (sama dengan landing page) -->
+  <div class="isl main">
+    <div class="bob">
+    <svg viewBox="150 70 340 360" role="img" aria-label="Pulau blok melayang dengan pohon kubik, tangga kayu, dan ular voxel yang ramah">
+      <defs><filter id="bl" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur stdDeviation="14"/></filter></defs>
+
+      <g>
+        <!-- sisi tanah -->
+        <polygon points="176,222 320,294 320,330 296,330 296,350 272,350 272,366 248,366 248,350 224,350 224,330 200,330 200,300 176,300" fill="#7a5230"/>
+        <polygon points="464,222 320,294 320,330 344,330 344,350 368,350 368,366 392,366 392,350 416,350 416,330 440,330 440,300 464,300" fill="#5f3f25"/>
+        <g fill="#946238"><rect x="212" y="292" width="8" height="8"/><rect x="262" y="318" width="10" height="8"/><rect x="236" y="338" width="8" height="8"/></g>
+        <g fill="#4a301b"><rect x="420" y="296" width="8" height="8"/><rect x="368" y="322" width="10" height="8"/><rect x="396" y="338" width="8" height="8"/></g>
+        <polygon points="176,222 320,294 320,314 176,242" fill="#5fba31"/>
+        <polygon points="464,222 320,294 320,314 464,242" fill="#3f8a21"/>
+        <!-- permukaan -->
+        <polygon points="320,150 464,222 320,294 176,222" fill="#8be04e"/>
+        <path d="M344 162l24 12-24 12-24-12zM296 162l24 12-24 12-24-12zM392 186l24 12-24 12-24-12zM344 186l24 12-24 12-24-12zM296 186l24 12-24 12-24-12zM248 186l24 12-24 12-24-12zM440 210l24 12-24 12-24-12zM392 210l24 12-24 12-24-12zM344 210l24 12-24 12-24-12zM296 210l24 12-24 12-24-12zM248 210l24 12-24 12-24-12zM200 210l24 12-24 12-24-12zM392 234l24 12-24 12-24-12zM344 234l24 12-24 12-24-12zM296 234l24 12-24 12-24-12zM248 234l24 12-24 12-24-12zM344 258l24 12-24 12-24-12zM296 258l24 12-24 12-24-12z" fill="#74cc3c"/>
+        <path d="M320 150L464 222M296 162L440 234M272 174L416 246M248 186L392 258M224 198L368 270M200 210L344 282M176 222L320 294M320 150L176 222M344 162L200 234M368 174L224 246M392 186L248 258M416 198L272 270M440 210L296 282M464 222L320 294" stroke="#5fae2f" stroke-width="1" opacity=".5" fill="none"/>
+
+        <!-- tangga 1 -->
+        <g stroke-linecap="square" fill="none">
+          <path d="M288 205L360 241M304 197L376 233" stroke="#4d8a24" stroke-width="7" opacity=".5"/>
+          <path d="M288 202L360 238M304 194L376 230" stroke="#e0a053" stroke-width="5"/>
+          <path d="M288 202L304 194M302 209L318 201M317 216L333 208M331 224L347 216M346 231L362 223M360 238L376 230" stroke="#b9772f" stroke-width="4"/>
+        </g>
+        <!-- tangga 2 -->
+        <g stroke-linecap="square" fill="none">
+          <path d="M352 253L304 277M336 245L288 269" stroke="#4d8a24" stroke-width="7" opacity=".5"/>
+          <path d="M352 250L304 274M336 242L288 266" stroke="#e0a053" stroke-width="5"/>
+          <path d="M352 250L336 242M336 258L320 250M320 266L304 258M304 274L288 266" stroke="#b9772f" stroke-width="4"/>
+        </g>
+
+        <!-- pohon 1 -->
+        <use href="#c" class="b" transform="translate(296 156) scale(.5)"/><use href="#c" class="b" transform="translate(296 144) scale(.5)"/><use href="#c" class="b" transform="translate(296 132) scale(.5)"/>
+        <use href="#c" class="l" transform="translate(278 102) scale(.75)"/><use href="#c" class="l" transform="translate(314 102) scale(.75)"/><use href="#c" class="l" transform="translate(296 111) scale(.75)"/><use href="#c" class="l" transform="translate(278 120) scale(.75)"/><use href="#c" class="l" transform="translate(314 120) scale(.75)"/><use href="#c" class="g" transform="translate(296 93) scale(.75)"/><use href="#c" class="g" transform="translate(296 84) scale(.5)"/>
+        <!-- pohon 2 -->
+        <use href="#c" class="b" transform="translate(392 180) scale(.5)"/><use href="#c" class="b" transform="translate(392 168) scale(.5)"/><use href="#c" class="b" transform="translate(392 156) scale(.5)"/>
+        <use href="#c" class="l" transform="translate(374 126) scale(.75)"/><use href="#c" class="l" transform="translate(410 126) scale(.75)"/><use href="#c" class="l" transform="translate(392 135) scale(.75)"/><use href="#c" class="l" transform="translate(374 144) scale(.75)"/><use href="#c" class="l" transform="translate(410 144) scale(.75)"/><use href="#c" class="g" transform="translate(392 117) scale(.75)"/><use href="#c" class="g" transform="translate(392 108) scale(.5)"/>
+
+        <!-- badan ular -->
+        <use href="#c" class="s2" transform="translate(272 171) scale(.75)"/><use href="#c" class="s" transform="translate(248 183) scale(.75)"/><use href="#c" class="s2" transform="translate(272 195) scale(.75)"/><use href="#c" class="s" transform="translate(248 207) scale(.75)"/>
+
+        <!-- pohon 3 -->
+        <use href="#c" class="b" transform="translate(416 216) scale(.5)"/><use href="#c" class="b" transform="translate(416 204) scale(.5)"/><use href="#c" class="b" transform="translate(416 192) scale(.5)"/>
+        <use href="#c" class="l" transform="translate(398 162) scale(.75)"/><use href="#c" class="l" transform="translate(434 162) scale(.75)"/><use href="#c" class="l" transform="translate(416 171) scale(.75)"/><use href="#c" class="l" transform="translate(398 180) scale(.75)"/><use href="#c" class="l" transform="translate(434 180) scale(.75)"/><use href="#c" class="g" transform="translate(416 153) scale(.75)"/><use href="#c" class="g" transform="translate(416 144) scale(.5)"/>
+
+        <!-- kepala ular -->
+        <g transform="translate(272 214) scale(.9)"><use href="#c" class="s"/></g>
+        <g transform="translate(272 214)">
+          <path d="M-17 22l9 4.5v9l-9-4.5zM17 22l-9 4.5v9l9-4.5z" fill="#fff"/>
+          <path d="M-13 25l5 2.5v6l-5-2.5zM13 25l-5 2.5v6l5-2.5z" fill="#0b1a2e"/>
+          <path d="M-2 43h4v8h-4z" fill="#ff4d6a"/>
+        </g>
+      </g>
+
+      <!-- serpihan blok di bawah pulau -->
+      <g class="deb"><use href="#c" class="d" transform="translate(326 384) scale(.4)"/><use href="#c" class="d" transform="translate(290 404) scale(.3)"/><use href="#c" class="d" transform="translate(352 408) scale(.25)"/></g>
+    </svg>
+    </div>
+  </div>
+
+  <!-- awan depan -->
+  <div class="cl cl4"><svg class="vx" data-shape="cloudA" data-s=".9" aria-hidden="true"></svg></div>
+  <div class="cl cl5"><svg class="vx" data-shape="cloudC" data-s=".9" aria-hidden="true"></svg></div>
+
+  <section class="bottom-ui">
+    <div class="dice-wrap" aria-hidden="true">
+      <span class="spark sp1">✦</span><span class="spark sp2">✧</span>
+      <div class="dice">
+        <div class="face f1"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="face f2"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="face f3"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="face f4"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="face f5"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="face f6"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+    <div class="status">Sedang Memuat...</div>
+    <div class="loading-track"><div class="loading-fill" id="fill"></div></div>
+    <div class="load-meta"><span>MENYIAPKAN DUNIA</span><span id="percent">0%</span></div>
+  </section>
+</main>
+
+<script src="assets/js/preloader.js"></script>
+<script src="assets/js/item-catalog.js"></script>
+<script src="assets/js/player-data.js"></script>
+<script>
+(() => {
+  /* ---------- awan & pulau voxel (dibangun dari kubus isometrik) ---------- */
+  const NS = 'http://www.w3.org/2000/svg', XL = 'http://www.w3.org/1999/xlink';
+  const rect = (x0,x1,y0,y1,z,c) => { const a=[]; for(let x=x0;x<=x1;x++) for(let y=y0;y<=y1;y++) a.push([x,y,z,c]); return a; };
+  const blob = (r,z,c) => { const a=[]; for(let x=-r;x<=r;x++) for(let y=-r;y<=r;y++) if(Math.abs(x)+Math.abs(y)<=r+1) a.push([x,y,z,c]); return a; };
+  const leaf = (cx,cy,z) => [[cx,cy,z,'l'],[cx+1,cy,z,'l'],[cx-1,cy,z,'l'],[cx,cy+1,z,'l'],[cx,cy-1,z,'l'],[cx,cy,z+1,'g']];
+
+  const SHAPES = {
+    cloudA: () => [...rect(0,3,0,1,0,'w'), ...rect(1,2,0,1,1,'w'), [2,-1,0,'w'], [1,2,0,'w'], [2,0,2,'w']],
+    cloudB: () => [...rect(0,2,0,1,0,'w'), [1,0,1,'w'], [1,1,1,'w'], [0,-1,0,'w']],
+    cloudC: () => [...rect(0,4,0,0,0,'w'), ...rect(1,3,1,1,0,'w'), ...rect(1,2,0,0,1,'w')],
+    islA: () => [...blob(2,0,'g'), ...blob(1,-1,'d'), [0,0,-2,'d'], [0,0,1,'b'], [0,0,2,'b'], ...leaf(0,0,3)],
+    islB: () => [...blob(2,0,'g'), ...blob(2,-1,'d'), ...blob(1,-2,'d'), [0,0,-3,'d'], [1,0,1,'b'], [1,0,2,'b'], ...leaf(1,0,3), [-1,-1,1,'l']],
+    islC: () => [...blob(1,0,'g'), [0,0,-1,'d'], [0,0,1,'l'], [0,0,2,'g']]
+  };
+
+  document.querySelectorAll('svg.vx').forEach(svg => {
+    const s = parseFloat(svg.dataset.s || 1);
+    const cells = SHAPES[svg.dataset.shape]();
+    cells.sort((a,b) => (a[0]+a[1]) - (b[0]+b[1]) || a[2] - b[2]);
+    cells.forEach(([x,y,z,c]) => {
+      const u = document.createElementNS(NS, 'use');
+      u.setAttribute('href', '#c');
+      u.setAttributeNS(XL, 'xlink:href', '#c');
+      u.setAttribute('class', c);
+      u.setAttribute('transform', 'translate(' + ((x-y)*24*s) + ' ' + ((x+y)*12*s - z*24*s) + ') scale(' + s + ')');
+      svg.appendChild(u);
+    });
+    const b = svg.getBBox();
+    svg.setAttribute('viewBox', (b.x-6) + ' ' + (b.y-6) + ' ' + (b.width+12) + ' ' + (b.height+12));
+  });
+
+  /* ---------- preload data & aset, lalu masuk ke lobby ---------- */
+  const out = document.getElementById('percent'), fill = document.getElementById('fill'), st = document.querySelector('.status');
+  const ASSETS=[
+    'assets/css/base.css','assets/js/item-catalog.js','assets/js/item-art.js','assets/js/player-data.js','assets/js/app.js','assets/js/game-integration.js','hud/ui-core.js','hud/components/button.css','hud/components/button.js',
+    'assets/sfx/button.mp3','assets/sfx/game_assets_sfx_chest.mp3','assets/sfx/kalah.mp3','assets/sfx/power.mp3',
+    'data/skins/hero.png','data/skins/knight.png','data/skins/ninja_red.png','data/skins/pejabat.png','data/skins/sakura.png','data/skins/warden.png',
+    'data/dice/8301a59a-c606-46bb-bf0c-50203a8a407d.jpeg',
+    'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+    'https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap'
+  ];
+  /* tujuan: halaman yang sedang dibuka (guard) atau lobby; hanya file .html lokal yang diizinkan */
+  const nx = new URLSearchParams(location.search).get('next') || 'lobby.html';
+  const dest = /^[a-z0-9_-]+\.html(\?[^#]*)?$/i.test(nx) && !/^(splash|loading)\.html/i.test(nx) ? nx : 'lobby.html';
+  ASSETS.unshift(dest.split('?')[0]);
+  try { window.PlayerData && PlayerData.snapshot(); } catch (e) {} /* jalankan migrasi/muat state sekali sebelum halaman tampil */
+  UT_Preload.run(ASSETS, p => { out.textContent = p + '%'; fill.style.width = p + '%'; }, 1800).then(() => {
+    st.textContent = 'Siap Bertualang!';
+    try { sessionStorage.setItem('ut:booted', '1'); } catch (e) {}
+    setTimeout(() => location.replace(dest), 350);
+  });
+})();
+</script>
+</body>
+</html>

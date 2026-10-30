@@ -1,4 +1,4 @@
-<!doctype html><html lang="id"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="stylesheet" href="assets/css/base.css"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Ular Tangga Blok</title></head><body>
+<!doctype html><html lang="id"><head><script src="assets/js/boot-guard.js"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="stylesheet" href="assets/css/base.css"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Ular Tangga Blok</title></head><body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&family=Silkscreen:wght@400;700&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
@@ -1772,7 +1772,7 @@ function startGame(m,keys){
 }
 
 /* ---------- Kontrol antarmuka ---------- */
-const LOBBY_URL='lobby.html';
+const LOBBY_URL='loading.html?to=lobby'; /* keluar selalu lewat layar loading */
 function chooseTheme(key){
   if(busy){ pendingTheme=key; document.querySelectorAll('.tbtn').forEach(b=>b.setAttribute('aria-pressed',b.getAttribute('data-theme')===key?'true':'false')); const t=THEMES.find(x=>x.key===key); $('btnTheme').textContent='Tema: '+t.name; return; }
   pendingTheme=null; buildWorld(key);

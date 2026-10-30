@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id"><head><meta charset="utf-8">
+<html lang="id"><head><script src="assets/js/boot-guard.js"></script><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pilih Mode</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -228,7 +228,7 @@ const start=(mode,extra)=>{const p=Object.assign({mode},extra||{});if(typeof win
 /* Kirim mode ke gameplay.html. Validasi/normalisasi tetap oleh assets/js/game-integration.js */
 const GAME_MODE={'VS Komputer':'cpu','2 Player':'2','3 Player':'3','4 Player':'4'};
 function launchGame(v){const m=GAME_MODE[v];if(!m)return;const q=new URLSearchParams(location.search),p=new URLSearchParams({mode:m});
- ['skins','theme','dice','night'].forEach(k=>{if(q.get(k)!==null)p.set(k,q.get(k))});location.href='gameplay.html?'+p.toString()}
+ ['skins','theme','dice','night'].forEach(k=>{if(q.get(k)!==null)p.set(k,q.get(k))});p.set('to','gameplay');location.href='loading.html?'+p.toString()}
 function act(id){
  if(id==='classic')choose('Classic','Pilih lawan',[['VS Komputer','Lawan bot'],['2 Player','Duel'],['3 Player','Seru'],['4 Player','Penuh']],'Mulai',v=>{start('classic',{players:parseInt(v)});toast('Memulai Classic · '+v);launchGame(v)});
  if(id==='ranked')choose('Ranked','Pilih format pertandingan',[['Solo','1 vs 1'],['Duo','2 vs 2']],'Masuk',v=>{start('ranked',{format:v});toast('Mencari lawan · '+v+'…')});
