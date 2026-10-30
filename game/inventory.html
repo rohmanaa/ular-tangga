@@ -97,7 +97,7 @@ html{font-size:2.5vw}
 #info{order:3;width:auto!important;height:auto!important;margin-top:1.4rem}
 #rec{order:4;width:auto!important}
 #bot{order:5;width:auto!important;height:auto!important}
-#tabs{overflow-x:auto}.tab{flex:0 0 14rem}
+#tabs{overflow-x:auto}.tab{flex:0 0 14rem;min-height:44px}
 #gwrap,#grid{height:auto}#grid{grid-template-columns:repeat(2,1fr);grid-template-rows:none;grid-auto-rows:22rem}
 }
 </style><style>:root{--curbar-right:7.6rem;--curbar-top:1.8rem;}</style><link rel="stylesheet" href="assets/css/shared-ui.css">
@@ -164,12 +164,12 @@ html{font-size:2.5vw}
   }
   #tabs{
     display:grid;
-    grid-template-columns:repeat(7,minmax(0,1fr));
+    grid-template-columns:repeat(6,minmax(0,1fr));
     gap:.45rem;
     width:100%;
   }
   .tab{
-    min-width:0;width:100%;height:4rem;
+    min-width:0;width:100%;height:4rem;min-height:44px;
     flex:none;
     border-radius:1.2rem;
     padding:0 .25rem;
@@ -211,8 +211,8 @@ html{font-size:2.5vw}
 
 /* Keep the tabs readable on narrower landscape screens. */
 @media (min-aspect-ratio:1.35) and (max-width:1100px) {
-  #tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
-  .tab{height:3.4rem;font-size:1.15rem}
+  #tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .tab{height:3.4rem;min-height:44px;font-size:1.15rem}
   #bot{gap:.55rem}
 }
 </style>
@@ -251,8 +251,8 @@ const RN={common:'COMMON',rare:'RARE',epic:'EPIC',legendary:'LEGENDARY'},RC={com
 const BG={common:['#5a8aa8','#2f5f80'],rare:['#3a8ff0','#1b55c0'],epic:['#8a4ae0','#4a2aa8'],legendary:['#f0c040','#b98020']};
 const KINDS=['skin','dice','theme','powerup'];
 const CI={};KINDS.forEach(k=>CI[k]=IC.items.filter(i=>i.kind===k));
-const SOON={item:'Item',effect:'Efek',emote:'Emote'}; /* kategori mock lama tanpa item canonical */
-const CATS=[['skin','Skin','M8 3 2 6l2 5 3-1v11h10V10l3 1 2-5-6-3c-.5 1.700-2 2.600-4 2.600S8.500 4.700 8 3Z'],['dice','Dadu','M4 4h16v16H4zM8 8h.1M16 8h.1M12 12h.1M8 16h.1M16 16h.1'],['theme','Tema','M3 5h18v14H3zM3 15l5-5 4 4 3-3 6 6M15 9h.1'],['powerup','Power-Up','M13 2 4 14h6l-1 8 9-12h-6l1-8z'],['item','Item','M3 8h18v4H3zM5 12h14v9H5zM12 8v13'],['effect','Efek','M12 2l2.500 7.500L22 12l-7.500 2.500L12 22l-2.500-7.500L2 12l7.500-2.500z'],['emote','Emote','M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20ZM8 10h.1M16 10h.1M7 15c2 3 8 3 10 0']];
+const SOON={effect:'Efek',emote:'Emote'}; /* kategori mock lama tanpa item canonical */
+const CATS=[['skin','Skin','M8 3 2 6l2 5 3-1v11h10V10l3 1 2-5-6-3c-.5 1.700-2 2.600-4 2.600S8.500 4.700 8 3Z'],['dice','Dadu','M4 4h16v16H4zM8 8h.1M16 8h.1M12 12h.1M8 16h.1M16 16h.1'],['theme','Tema','M3 5h18v14H3zM3 15l5-5 4 4 3-3 6 6M15 9h.1'],['powerup','Power','M13 2 4 14h6l-1 8 9-12h-6l1-8z'],['effect','Efek','M12 2l2.500 7.500L22 12l-7.500 2.500L12 22l-2.500-7.500L2 12l7.500-2.500z'],['emote','Emote','M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20ZM8 10h.1M16 10h.1M7 15c2 3 8 3 10 0']];
 const icon=p=>`<svg viewBox="0 0 24 24"><path d="${p}" fill="#fff" stroke="#fff" stroke-width="1.800" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
 const DM='<svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z" fill="#4cc9ff" stroke="#1d7fd0" stroke-width="1.200"/><path d="M2 9h20M9 3l-2 6 5 12 5-12-2-6" fill="none" stroke="#bff0ff" stroke-width=".8"/></svg>';
 const CM='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffc83a" stroke="#c98a0c" stroke-width="1.500"/><text x="12" y="17" font-size="14" font-weight="900" text-anchor="middle" fill="#c98a0c">$</text></svg>';
@@ -299,7 +299,7 @@ function renderRecent(){const l=ownedList(cat).map(o=>o.item);off=Math.max(0,Mat
  document.querySelectorAll('.rt').forEach(b=>b.addEventListener('click',()=>pick(l.find(i=>i.id===b.dataset.id))))}
 /* Equip lewat PlayerData; UI langsung di-refresh dan event inventory/skin/dice ikut dipancarkan oleh bridge.
    Power-Up = consumable (slot null): tidak di-equip; PlayerData.equip menolak dengan 'bukan-equipment'. */
-function act(i){if(i.kind==='powerup'){toast('Power-Up tersimpan — pemakaian di gameplay menyusul.');playSound('select');return}
+function act(i){if(i.kind==='powerup'){toast('Power tersimpan — pemakaian di gameplay menyusul.');playSound('select');return}
  const r=PD.equip(i.id);
  if(r.ok){toast('Berhasil digunakan!');playSound('select');buzz()}else{toast('Gagal memakai item.');playSound('error')}
  renderGrid();renderInfo();renderRecent();buildModels()}

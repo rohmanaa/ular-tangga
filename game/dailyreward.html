@@ -220,7 +220,7 @@ function grant(r){let msg=r.t;
  else if(r.ty==='box'){BAG.box=(BAG.box||0)+1;save()}
  else if(r.ty==='dice'){const res=PD.grant({item:'dice.'+r.id,duplicateCoins:r.dup||300});if(res.duplicate)msg='Dadu (sudah punya) → +'+fmt(r.dup||300)+' Coin'}
  else if(r.ty==='skin'){const res=PD.grant({item:r.id,duplicateGems:100});if(res.duplicate)msg='Skin (sudah punya) → +100 Gem'}
- else if(r.ty==='powerup'){const res=PD.grant({item:r.id});if(res.ok)msg=r.t+' ×1 diterima (Power-Up)'}
+ else if(r.ty==='powerup'){const res=PD.grant({item:r.id});if(res.ok)msg=r.t+' ×1 diterima (Power)'}
  return msg}
 function claim(i,el){const r=R[i],msg=grant(r);D.claimed=i+1;D.last=key(now());save();
  playSound('purchase');buzz();sparkle(el,22);pulse(r.ty==='gem'?'#gem':'#coin');renderDays();
