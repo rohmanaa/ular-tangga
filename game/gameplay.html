@@ -1375,12 +1375,17 @@ function noise(d,vol,when,freq){
 }
 const sfx={
   hop(){ try{ const a=new Audio('assets/sfx/jump.mp3'); a.volume=0.5; a.play().catch(()=>beep(480+Math.random()*120,0.08,'square',0.04)); }catch(e){ beep(480+Math.random()*120,0.08,'square',0.04); } },
-  hit(){ try{ const a=new Audio('assets/sfx/hit.mp3'); a.volume=0.6; a.play().catch(()=>beep(330,0.2,'triangle',0.07,0,140)); }catch(e){ beep(330,0.2,'triangle',0.07,0,140); } },
-  enderman(){ try{ const a=new Audio('assets/sfx/enderman.ogg'); a.volume=0.7; a.play().catch(()=>beep(700,0.2,'square',0.05,0,1000)); }catch(e){ beep(700,0.2,'square',0.05,0,1000); } },
+  hit(){ try{ const a=new Audio('assets/sfx/Strong_attack5.ogg.mp3'); a.volume=0.7; a.play().catch(()=>beep(330,0.2,'triangle',0.07,0,140)); }catch(e){ beep(330,0.2,'triangle',0.07,0,140); } },
+  enderman(){ try{ const a=new Audio('assets/sfx/Teleport2.ogg'); a.volume=0.7; a.play().catch(()=>beep(700,0.2,'square',0.05,0,1000)); }catch(e){ beep(700,0.2,'square',0.05,0,1000); } },
   creeper(){ try{ const a=new Audio('assets/sfx/Creeper_fuse.ogg'); a.volume=0.7; a.play().catch(()=>beep(200,0.12,'square',0.09,0,60)); }catch(e){ beep(200,0.12,'square',0.09,0,60); } },
+  skeltonSh(){ try{ const a=new Audio('assets/sfx/skelton_shoot.ogg'); a.volume=0.7; a.play().catch(()=>beep(400,0.1,'square',0.05)); }catch(e){ beep(400,0.1,'square',0.05); } },
+  dragonHurt(){ try{ const a=new Audio('assets/sfx/Ender_dragon_hurt4.ogg'); a.volume=0.8; a.play().catch(()=>beep(523,0.2,'square',0.05)); }catch(e){ beep(523,0.2,'square',0.05); } },
+  dragonDeath(){ try{ const a=new Audio('assets/sfx/Ender_dragon_death.ogg'); a.volume=0.9; a.play().catch(()=>beep(1047,0.4,'square',0.08)); }catch(e){ beep(1047,0.4,'square',0.08); } },
+  dragonIdle(){ try{ const a=new Audio('assets/sfx/Ender_dragon_idle3.ogg'); a.volume=0.5; a.play().catch(()=>{}); }catch(e){} },
   hundred(){ try{ const a=new Audio('assets/sfx/100.mp3'); a.volume=0.7; a.play().catch(()=>beep(523,0.2,'square',0.05)); }catch(e){ beep(523,0.2,'square',0.05); } },
-  caplokular(){ try{ const a=new Audio('assets/sfx/caplokular.mp3'); a.volume=0.7; a.play().catch(()=>beep(200,0.12,'square',0.09,0,60)); }catch(e){ beep(200,0.12,'square',0.09,0,60); } },
-  chest(){ try{ const a=new Audio('assets/sfx/game_assets_sfx_chest.mp3'); a.volume=0.6; a.play().catch(()=>beep(300,0.12,'triangle',0.08,0,900)); }catch(e){ beep(300,0.12,'triangle',0.08,0,900); } },
+  caplokular(){ try{ const a=new Audio('assets/sfx/ularmakan.mp3'); a.volume=0.8; a.play().catch(()=>beep(200,0.12,'square',0.09,0,60)); }catch(e){ beep(200,0.12,'square',0.09,0,60); } },
+  chest(){ try{ const a=new Audio('assets/sfx/Chest_open.ogg'); a.volume=0.7; a.play().catch(()=>beep(300,0.12,'triangle',0.08,0,900)); }catch(e){ beep(300,0.12,'triangle',0.08,0,900); } },
+  chestClose(){ try{ const a=new Audio('assets/sfx/Chest_close2.ogg'); a.volume=0.6; a.play().catch(()=>beep(200,0.1,'square',0.05)); }catch(e){ beep(200,0.1,'square',0.05); } },
   rewardpower(){ try{ const a=new Audio('assets/sfx/rewardpower.mp3'); a.volume=0.6; a.play().catch(()=>beep(523,0.12,'square',0.05,0,784)); }catch(e){ beep(523,0.12,'square',0.05,0,784); } },
   naiktangga(){ try{ const a=new Audio('assets/sfx/naiktangga.mp3'); a.volume=0.7; a.play().catch(()=>[392,494,587,784].forEach((f,i)=>beep(f,0.14,'square',0.05,i*0.11))); }catch(e){ [392,494,587,784].forEach((f,i)=>beep(f,0.14,'square',0.05,i*0.11)); } },
   roll(){ for(let i=0;i<7;i++) beep(180+Math.random()*320,0.05,'square',0.035,i*0.13); },
@@ -1453,15 +1458,17 @@ async function hitDragon(p,v){
    const D=dragon.userData,dmg=v*DMG;
    setMsg(p.name+' menyerang Ender Dragon: '+v+' x '+DMG+' = '+dmg+' damage!');
    showAttackCard(p.name,'Ender Dragon','hit','Menyerang naga '+v+' x '+DMG+' = '+dmg+' damage!');
+   sfx.dragonHurt();
    await hopTo(p.pawn,p.pawn.position.clone(),0.38,0.6);
    sfx.hundred();
    await tween(0.5,k=>{ D.shk=Math.sin(k*40)*0.3*(1-k); D.mats.forEach(m=>m.color.setHex(k<0.6?0xFF5555:0xFFFFFF)); });
-  D.shk=0; D.mats.forEach(m=>m.color.setHex(0xFFFFFF));
-  p.dhp=Math.max(0,p.dhp-dmg); renderChips();
-  if(p.dhp>0){ setMsg('Naga '+p.name+' tersisa '+p.dhp+'/100.'); return; }
-  setMsg('Ender Dragon kalah!'); spawnConfetti(dragon.position);
-  await tween(1.3,k=>{ D.dy=-k*3; dragon.scale.setScalar(1.3*(1-k*0.85)); });
-  dragon.visible=false;
+   D.shk=0; D.mats.forEach(m=>m.color.setHex(0xFFFFFF));
+   p.dhp=Math.max(0,p.dhp-dmg); renderChips();
+   if(p.dhp>0){ setMsg('Naga '+p.name+' tersisa '+p.dhp+'/100.'); return; }
+   sfx.dragonDeath();
+   setMsg('Ender Dragon kalah!'); spawnConfetti(dragon.position);
+   await tween(1.3,k=>{ D.dy=-k*3; dragon.scale.setScalar(1.3*(1-k*0.85)); });
+   dragon.visible=false;
 }
 async function explode(p){
   const pos=p.pawn.position.clone(); pos.y+=0.5;
@@ -1577,6 +1584,7 @@ async function giveChest(p){
    const ks=Object.keys(p.pu),k=ks[Math.floor(Math.random()*ks.length)];
    p.pu[k]++; p.score+=5; sfx.chest(); setMsg(p.name+' membuka peti: '+PUN[k][1]+' '+PUN[k][0]); renderChips();
    await showPUCard(p,k);
+   sfx.chestClose();
 }
 async function showPUCard(p,k){
    const c=$('puCard'),em=$('pcEmoji'),keys=Object.keys(PUN);
@@ -1742,6 +1750,7 @@ async function playTurn(p,v,gid,bn){
   const A=async pr=>{ await pr; if(gid!==gameId) throw STALE; };
   focus=p.pawn;
   if(p.pos===100){
+    sfx.dragonIdle();
     await A(hitDragon(p,v));
     if(p.dhp<=0){ await A(celebrate(p)); finishGame(p); return; }
     if(v===6||p.extra){ p.extra=false; busy=false; beginTurn(true); } else nextTurn();
@@ -1783,6 +1792,10 @@ async function playTurn(p,v,gid,bn){
     }else if(k==='villager'){
       const to=Math.min(99,p.pos+5); setMsg('Villager membantu! '+p.name+' maju 5 blok ke '+to+'.'); sfx.pop(); p.score+=5;
       await A(sleep(500)); await A(walk(p,p.pos,to)); p.pos=to;
+}else if(k==='skeleton'){
+      setMsg('Skeleton menembak! '+p.name+' terpental mundur 1 blok.');
+      sfx.skeltonSh();
+      const to=Math.max(1,p.pos-1); await A(sleep(400)); await A(fly(p,to,0.45,0.9)); p.pos=to;
     }else{
       const bk=MOBBACK[k],to=Math.max(1,p.pos-bk);
       setMsg(MOBNAME[k]+' menghantam! '+p.name+' terpental mundur '+bk+' blok ke '+to+'.');
