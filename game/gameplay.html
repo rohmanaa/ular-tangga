@@ -1224,7 +1224,7 @@ function buildWorld(key){
     const g=new THREE.Group();
     const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.06,0.7,6),new THREE.MeshLambertMaterial({color:0x4E3118}));
     pole.position.y=0.35; g.add(pole);
-    const flame=new THREE.Mesh(new THREE.SphereGeometry(0.11,8,6),torchMat);
+    const flame=new THREE.Mesh(new THREE.BoxGeometry(0.2,0.2,0.2),torchMat);
     flame.position.y=0.85; g.add(flame);
     g.position.set(q[0],0,q[1]); scene.add(g);
     torchMeshes.push({g,mat:torchMat});
