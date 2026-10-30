@@ -9,6 +9,12 @@
 
   var MODES = ['cpu', '2', '3', '4'];
   function eqKey(slot) { var it = IC.byId(PD.equippedId(slot)); return it ? it.gameKey : null; }
+  /* Tahap 3.2: skin PNG belum punya renderer di gameplay.html (DEFERRED — tahap integrasi gameplay).
+     Hanya skin 'palette' (legacy) yang diteruskan; skin PNG yang dipakai/dimiliki jatuh ke skin cadangan,
+     TANPA mengubah kepemilikan atau skin terpasang di PlayerData. */
+  var FALLBACK_KEY = (IC.byId(IC.fallbackSkinId()) || {}).gameKey || 'steve';
+  function playable(k) { var it = IC.byGameKey('skin', k); return !!it && it.renderer === 'palette'; }
+  function eqSkinKey() { var it = IC.byId(PD.equippedId('skin')); return !it ? null : (it.renderer === 'palette' ? it.gameKey : FALLBACK_KEY); }
   function uniq(a) { return a.filter(function (x, i) { return a.indexOf(x) === i; }); }
 
   try {
@@ -19,11 +25,11 @@
     var mode = q.get('mode'); if (MODES.indexOf(mode) < 0) mode = ss && MODES.indexOf(ss.mode) > -1 ? ss.mode : 'cpu';
     var rawSkins = q.get('skins') !== null ? q.get('skins') : (ss && Array.isArray(ss.skins) ? ss.skins.join(',') : '');
     var skins = uniq(String(rawSkins).split(',').map(function (s) { return s.trim(); })
-      .filter(function (k) { return k && PD.owns('skin.' + k); }));
+      .filter(function (k) { return k && PD.owns('skin.' + k) && playable(k); }));
     var need = mode === 'cpu' ? 1 : +mode;
-    var ownedSkins = PD.ownedItems().filter(function (o) { return o.item.kind === 'skin'; })
+    var ownedSkins = PD.ownedItems().filter(function (o) { return o.item.kind === 'skin' && o.item.renderer === 'palette'; })
       .sort(function (a, b) { return a.seq - b.seq; }).map(function (o) { return o.item.gameKey; });
-    if (!skins.length && eqKey('skin')) skins.push(eqKey('skin'));       /* Pemain 1 = skin aktif */
+    if (!skins.length && eqSkinKey()) skins.push(eqSkinKey());           /* Pemain 1 = skin aktif (PNG -> skin cadangan) */
     /* Mode CPU: skin CPU (indeks 1) boleh bebas, jadi pertahankan apa yang dikirim lobi */
     if (mode === 'cpu') {
       var cpuSkin = String(rawSkins).split(',').map(function (s) { return s.trim(); })[1];

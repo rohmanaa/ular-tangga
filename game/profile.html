@@ -26,6 +26,9 @@ svg{display:block}
 .cat.on{border-color:#ffe36a;background:linear-gradient(#ffd24d,#f4a81f);box-shadow:0 .4rem 0 #b9740c,0 0 1.8rem #ffd24d;transform:scale(1.06);text-shadow:0 .2rem 0 #a35f08}
 #show{left:15.5rem;top:7.5rem;width:24rem;height:31rem}
 #show canvas{width:100%;height:100%;display:block}
+#show #art{display:none;position:absolute;inset:0;place-items:center}
+#show #art svg{width:82%;height:82%}
+#show.art canvas{display:none}#show.art #art{display:grid}
 #sbs{left:38.2rem;top:14.8rem;display:flex;flex-direction:column;gap:.9rem}
 #sbs button{width:4.4rem;height:3.5rem;border-radius:1.2rem;padding:0;display:grid;place-items:center;font-size:1.3rem;line-height:1}
 #sbs svg{width:2.4rem;height:2.4rem}
@@ -124,7 +127,7 @@ html{font-size:2.5vw}
  <button class="ab blue" id="gear" aria-label="Pengaturan"><svg viewBox="0 0 24 24"><path fill="#fff" d="M19.400 13c.1-.3.1-.7.1-1s0-.7-.1-1l2.100-1.600-2-3.500-2.500 1a7 7 0 0 0-1.700-1L15 3.200h-4L10.600 6a7 7 0 0 0-1.700 1l-2.500-1-2 3.500L6.600 11c-.1.300-.1.700-.1 1s0 .7.100 1l-2.100 1.600 2 3.500 2.500-1c.5.400 1.100.7 1.700 1l.4 2.800h4l.4-2.800c.6-.3 1.200-.6 1.700-1l2.500 1 2-3.500zM12 15.500a3.500 3.500 0 1 1 0-7 3.500 3.500 0 0 1 0 7Z"/></svg></button>
 </div>
 <nav class="ab" id="cats" aria-label="Menu profil"></nav>
-<div class="ab" id="show"><canvas id="gl"></canvas></div>
+<div class="ab" id="show"><canvas id="gl"></canvas><div id="art"></div></div>
 <div class="ab" id="sbs"><button class="blue" id="b0" aria-label="Simpan foto"></button><button class="blue" id="b1" aria-label="Ganti pose"></button><button class="blue" id="b3" aria-label="Putar 360">360&deg;</button></div>
 <section class="ab pn" id="pc"></section>
 <section class="ab pn" id="sk"></section>
@@ -290,7 +293,8 @@ function rig(cv,withIsland,cy,dist,fov){if(!ok)return null;try{const r=new THREE
  rigs.push(R);return R}catch(e){ok=false;console.warn('WebGL unavailable',e);return null}}
 let main,pv,spin=0;
 function setModel(R,c,it,y){if(!R)return;if(R.cur)R.holder.remove(R.cur);const m=model(c,it);R.holder.add(m);R.cur=m;R.mc=c}
-function buildModels(){setModel(main,'skin',sel);spin=1}
+function buildModels(){const png=!!sel&&sel.renderer==='png';$('#show').classList.toggle('art',png);$('#art').innerHTML=png?AR.forItem(sel.id):'';if(png)return; /* skin PNG: preview texture, bukan model 3D baru */
+ setModel(main,'skin',sel);spin=1}
 function fit(){const hi=SET().graphics==='high';rigs.forEach(R=>{const w=R.cv.clientWidth,h=R.cv.clientHeight;if(!w||!h)return;R.r.setPixelRatio(hi?Math.min(devicePixelRatio,1.5):1);R.r.setSize(w,h,false);R.cam.aspect=w/h;R.cam.fov=R.fov*(w/h<.8?1.15:1);R.cam.updateProjectionMatrix()})}
 const clock=typeof THREE!=='undefined'?new THREE.Clock():null;
 function loop(){requestAnimationFrame(loop);const t=clock.getElapsedTime();

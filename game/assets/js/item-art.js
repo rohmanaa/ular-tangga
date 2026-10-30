@@ -28,30 +28,132 @@
 
   function rect(x, y, w, h, fill) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + fill + '"/>'; }
 
+  /* ---------- Skin PNG (Tahap 3.2) ----------
+     PNG = TEXTURE template Minecraft 64x64, dipotong per bagian tubuh (crop) lalu digambar di atas
+     data skin cadangan. Jadi bila PNG hilang/rusak, yang tampil adalah skin cadangan — BUKAN karakter kosong.
+     Pixel-art: tanpa smoothing (image-rendering: pixelated + shape-rendering: crispEdges). */
+  var TEX = 64;
+  function isPng(it) { return !!it && it.kind === 'skin' && it.renderer === 'png'; }
+  function pngReady(it) { return isPng(it) && !!it.textureValid; }
+  function textureUrl(skinId) { return C.skinTexture(skinId); }
+
+  /* Data skin untuk gambar vektor: skin legacy -> FACES miliknya; skin PNG -> skin cadangan (default). */
+  function faceData(it) {
+    if (!it || it.kind !== 'skin') return null;
+    if (isPng(it)) { var fb = C.byId(C.fallbackSkinId()); return fb ? FACES[fb.gameKey] || null : null; }
+    return FACES[it.gameKey] || null;
+  }
+
+  /* Potongan texture (sx,sy,w,h) digambar di (dx,dy) berukuran sama. */
+  function crop(url, sx, sy, w, h, dx, dy) {
+    return '<svg x="' + dx + '" y="' + dy + '" width="' + w + '" height="' + h + '" viewBox="' + sx + ' ' + sy + ' ' + w + ' ' + h + '" preserveAspectRatio="none" overflow="hidden">' +
+      '<image href="' + url + '" width="' + TEX + '" height="' + TEX + '" preserveAspectRatio="none" style="image-rendering:crisp-edges;image-rendering:pixelated"/></svg>';
+  }
+  /* Layer texture wajah (8x8): kepala depan + overlay topi/rambut */
+  function pngFaceLayers(url, dx, dy) { return crop(url, 8, 8, 8, 8, dx, dy) + crop(url, 40, 8, 8, 8, dx, dy); }
+  /* Layer texture tubuh penuh (16x32): kaki, badan, lengan (classic 4 px / slim 3 px), kepala + semua overlay */
+  function pngBodyLayers(it, url) {
+    var aw = it.arms === 'slim' ? 3 : 4, ra = 4 - aw, s = '';
+    s += crop(url, 4, 20, 4, 12, 4, 20) + crop(url, 20, 52, 4, 12, 8, 20);          /* kaki kanan & kiri */
+    s += crop(url, 20, 20, 8, 12, 4, 8);                                             /* badan */
+    s += crop(url, 44, 20, aw, 12, ra, 8) + crop(url, 36, 52, aw, 12, 12, 8);        /* lengan kanan & kiri */
+    s += crop(url, 4, 36, 4, 12, 4, 20) + crop(url, 4, 52, 4, 12, 8, 20);           /* overlay celana */
+    s += crop(url, 20, 36, 8, 12, 4, 8);                                             /* overlay jaket */
+    s += crop(url, 44, 36, aw, 12, ra, 8) + crop(url, 52, 52, aw, 12, 12, 8);        /* overlay lengan */
+    s += pngFaceLayers(url, 4, 0);                                                    /* kepala + overlay */
+    return s;
+  }
+
+  /* slim: lengan 3 px (layer cadangan ikut selebar lengan texture agar tidak ada sisa 1 px yang mengintip) */
+  function bodyRects(d, slim) {
+    var b = d.body, s = '', aw = slim ? 3 : 4, ra = 4 - aw;
+    s += rect(4, 20, 4, 12, b.pants) + rect(8, 20, 4, 12, b.pants) + rect(4, 29, 4, 3, b.shoe) + rect(8, 29, 4, 3, b.shoe);
+    s += rect(4, 8, 8, 12, b.shirt) + rect(ra, 8, aw, 12, b.arm) + rect(12, 8, aw, 12, b.arm);
+    s += rect(4, 19, 8, 1, 'rgba(0,0,0,.22)') + rect(7.9, 20, .2, 12, 'rgba(0,0,0,.25)');
+    if (b.ribs) for (var r = 10; r < 19; r += 3) s += rect(5, r, 6, 1, b.ribs);
+    s += rect(ra, 8, 1, 12, 'rgba(255,255,255,.15)') + rect(11 + aw, 8, 1, 12, 'rgba(0,0,0,.18)');
+    return s;
+  }
+  function faceRects(d, ox) {
+    var s = '';
+    d.f.forEach(function (row, y) { for (var x = 0; x < 8; x++) s += rect((ox || 0) + x, y, 1, 1, d.p[row.charAt(x)] || '#000'); });
+    return s;
+  }
+
   /* Karakter voxel tampak depan (16x32 unit piksel) */
   function character(skinId, label) {
     var it = C.byId(skinId); if (!it || it.kind !== 'skin') return '';
-    var d = FACES[it.gameKey]; if (!d) return '';
-    var b = d.body, s = '';
-    s += rect(4, 20, 4, 12, b.pants) + rect(8, 20, 4, 12, b.pants) + rect(4, 29, 4, 3, b.shoe) + rect(8, 29, 4, 3, b.shoe);
-    s += rect(4, 8, 8, 12, b.shirt) + rect(0, 8, 4, 12, b.arm) + rect(12, 8, 4, 12, b.arm);
-    s += rect(4, 19, 8, 1, 'rgba(0,0,0,.22)') + rect(7.9, 20, .2, 12, 'rgba(0,0,0,.25)');
-    if (b.ribs) for (var r = 10; r < 19; r += 3) s += rect(5, r, 6, 1, b.ribs);
-    s += rect(0, 8, 1, 12, 'rgba(255,255,255,.15)') + rect(15, 8, 1, 12, 'rgba(0,0,0,.18)');
-    d.f.forEach(function (row, y) {
-      for (var x = 0; x < 8; x++) s += rect(4 + x, y, 1, 1, d.p[row.charAt(x)] || '#000');
-    });
+    var d = faceData(it); if (!d) return '';
+    var s = bodyRects(d, isPng(it) && it.arms === 'slim') + faceRects(d, 4);
     s += rect(4, 0, 8, 1, 'rgba(255,255,255,.18)') + rect(4, 7, 8, 1, 'rgba(0,0,0,.18)');
-    return '<svg class="art-char" viewBox="0 0 16 32" shape-rendering="crispEdges" role="img" aria-label="' + (label || it.name) + '">' + s + '</svg>';
+    if (pngReady(it)) s += pngBodyLayers(it, it.texture);
+    return '<svg class="art-char' + (isPng(it) ? ' art-png' : '') + '" viewBox="0 0 16 32" shape-rendering="crispEdges" role="img" aria-label="' + (label || it.name) + '">' + s + '</svg>';
   }
 
   /* Wajah saja (untuk thumbnail kecil) */
   function face(skinId, label) {
     var it = C.byId(skinId); if (!it || it.kind !== 'skin') return '';
-    var d = FACES[it.gameKey]; if (!d) return '';
-    var s = '';
-    d.f.forEach(function (row, y) { for (var x = 0; x < 8; x++) s += rect(x, y, 1, 1, d.p[row.charAt(x)] || '#000'); });
-    return '<svg class="art-face" viewBox="0 0 8 8" shape-rendering="crispEdges" role="img" aria-label="' + (label || it.name) + '">' + s + '</svg>';
+    var d = faceData(it); if (!d) return '';
+    var s = faceRects(d, 0);
+    if (pngReady(it)) s += pngFaceLayers(it.texture, 0, 0);
+    return '<svg class="art-face' + (isPng(it) ? ' art-png' : '') + '" viewBox="0 0 8 8" shape-rendering="crispEdges" role="img" aria-label="' + (label || it.name) + '">' + s + '</svg>';
+  }
+
+  /* ---------- Validasi texture skin PNG (ringan, tidak pernah melempar error) ----------
+     loadSkinTexture(id) -> Promise<{ok, id, usedId, fallback, reason?, texture?, image?, width?, height?}>
+       - skin legacy (tanpa PNG)      : ok, fallback=false, texture=null
+       - PNG ada, valid, dapat dimuat : ok, fallback=false, image = HTMLImageElement
+       - PNG hilang/rusak/bukan PNG   : ok=false, fallback=true, usedId = skin cadangan
+     Kepemilikan pemain TIDAK disentuh. Ukuran didukung: 64x64 (template Minecraft modern — satu-satunya hasil audit). */
+  var texCache = {};
+  var PNG_SIG = [137, 80, 78, 71, 13, 10, 26, 10];
+  function checkPngSignature(url) { /* true / false / null (tidak bisa dicek, mis. file://) */
+    if (typeof fetch !== 'function') return Promise.resolve(null);
+    return fetch(url).then(function (r) { return r.ok ? r.arrayBuffer() : null; }).then(function (buf) {
+      if (!buf) return null;
+      var b = new Uint8Array(buf, 0, Math.min(8, buf.byteLength));
+      if (b.length < 8) return false;
+      for (var i = 0; i < 8; i++) if (b[i] !== PNG_SIG[i]) return false;
+      return true;
+    }, function () { return null; });
+  }
+  function loadSkinTexture(skinId) {
+    var it = C.byId(skinId), fb = C.fallbackSkinId();
+    function bad(reason) {
+      if (g.console && g.console.warn) g.console.warn('[ItemArt] texture skin ' + skinId + ' dipakai fallback (' + reason + ')');
+      return { ok: false, id: skinId, usedId: fb, fallback: true, reason: reason };
+    }
+    if (!it || it.kind !== 'skin') return Promise.resolve(bad('bukan-skin'));
+    if (it.renderer !== 'png') return Promise.resolve({ ok: true, id: skinId, usedId: skinId, fallback: false, texture: null });
+    if (!it.textureValid) return Promise.resolve(bad('path-tidak-valid'));
+    if (texCache[skinId]) return texCache[skinId];
+    var p = new Promise(function (resolve) {
+      if (typeof g.Image !== 'function') { resolve(bad('tanpa-image')); return; }
+      var img = new g.Image(), done = false;
+      function fin(v) { if (!done) { done = true; resolve(v); } }
+      img.onload = function () {
+        var w = img.naturalWidth, h = img.naturalHeight;
+        if (w !== 64 || h !== 64) { fin(bad('ukuran-tidak-didukung')); return; }
+        checkPngSignature(it.texture).then(function (isPngFile) {
+          if (isPngFile === false) fin(bad('bukan-png'));
+          else fin({ ok: true, id: skinId, usedId: skinId, fallback: false, texture: it.texture, image: img, width: w, height: h });
+        });
+      };
+      img.onerror = function () { fin(bad('gagal-dimuat')); };
+      img.src = it.texture;
+    });
+    texCache[skinId] = p;
+    return p;
+  }
+  /* Skin yang BOLEH dipakai renderer: id itu sendiri bila texture OK, selain itu skin cadangan. */
+  function resolveSkinId(skinId) { return loadSkinTexture(skinId).then(function (r) { return r.usedId; }); }
+
+  /* Untuk renderer three.js di tahap integrasi gameplay: texture pixel-art (nearest, tanpa mipmap). */
+  function makeSkinTexture(THREE, image) {
+    var t = new THREE.Texture(image);
+    t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter;
+    t.generateMipmaps = false; t.needsUpdate = true;
+    return t;
   }
 
   /* Dadu: muka angka 5 */
@@ -122,10 +224,14 @@
      Satu sumber warna skin: dibaca dari FACES katalog, bukan database warna kedua. */
   function palette(skinId) {
     var it = C.byId(skinId); if (!it || it.kind !== 'skin') return null;
-    var d = FACES[it.gameKey]; if (!d) return null;
+    var d = faceData(it); if (!d) return null;
     var hairKey = d.f[0] ? d.f[0].charAt(0) : '';
-    return { gameKey: it.gameKey, hood: d.body.shirt, hair: d.p[hairKey] || d.body.shirt, pants: d.body.pants };
+    var pal = { gameKey: it.gameKey, hood: d.body.shirt, hair: d.p[hairKey] || d.body.shirt, pants: d.body.pants };
+    /* Skin PNG: renderer 3D belum memakai texture (DEFERRED) -> palet skin cadangan; texture disertakan utk tahap berikut. */
+    if (isPng(it)) { pal.png = true; pal.fallbackPalette = true; pal.texture = C.skinTexture(skinId); }
+    return pal;
   }
 
-  g.ItemArt = { character: character, face: face, dice: dice, theme: theme, powerup: powerup, forItem: forItem, palette: palette };
+  g.ItemArt = { character: character, face: face, dice: dice, theme: theme, powerup: powerup, forItem: forItem, palette: palette,
+                textureUrl: textureUrl, loadSkinTexture: loadSkinTexture, resolveSkinId: resolveSkinId, makeSkinTexture: makeSkinTexture };
 })(window);

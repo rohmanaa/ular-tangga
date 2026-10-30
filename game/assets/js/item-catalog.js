@@ -20,7 +20,10 @@
     { key: 'lainnya',  label: 'Lainnya' }
   ];
 
-  var SKIN_GROUPS = ['Default', 'Adventure', 'Fantasy', 'Rare', 'Epic', 'Legendary'];
+  var SKIN_GROUPS = ['Default', 'Adventure', 'Fantasy', 'Rare', 'Epic', 'Legendary', 'PNG'];
+
+  /* Folder texture skin PNG, RELATIF terhadap halaman di game/ (tanpa path absolut / URL eksternal). */
+  var SKIN_DIR = 'data/skins/';
 
   /* kind: skin -> bidak karakter | dice -> skin dadu | theme -> tema papan | powerup -> power-up gameplay
      slot powerup = null: consumable (quantity), BUKAN equipment — tidak masuk defaultEquipped. */
@@ -31,9 +34,27 @@
     powerup: { category: 'efek',     noun: 'Power-Up',   slot: null }
   };
 
+  /* Skin legacy (palet bawaan di item-art.js / gameplay.html): texture = null, renderer = 'palette'.
+     Tidak ada PNG palsu untuk skin ini. */
   function skin(gameKey, name, group, rarity, price, desc, extra) {
     return Object.assign({ id: 'skin.' + gameKey, kind: 'skin', gameKey: gameKey, name: name, group: group,
-      rarity: rarity, price: price, desc: desc, starter: price === 0 }, extra || {});
+      rarity: rarity, price: price, desc: desc, starter: price === 0,
+      texture: null, renderer: 'palette' }, extra || {});
+  }
+  /* Skin PNG (Tahap 3.2): PNG = TEXTURE untuk model voxel yang sama, BUKAN model 3D baru.
+     texture  = path relatif ke file PNG (template Minecraft 64x64, lihat SKIN_SYSTEM.md).
+     arms     = 'classic' (lengan 4 px) | 'slim' (lengan 3 px) — hasil audit piksel PNG, bukan karangan.
+     price: null = EKONOMI BELUM DITENTUKAN — tidak dijual di shop, tidak boleh diarang (sama seperti Power-Up).
+     rarity 'common' = default netral untuk UI, BUKAN rarity sungguhan.
+     Menambah skin baru = taruh PNG di data/skins/ + satu baris skinPng() di bawah + kepemilikan di PlayerData. */
+  function skinPng(gameKey, name, file, extra) {
+    return Object.assign({ id: 'skin.' + gameKey, kind: 'skin', gameKey: gameKey, name: name, group: 'PNG',
+      rarity: 'common', price: null, desc: 'Skin PNG bergaya Minecraft (64\u00d764).', starter: false,
+      texture: SKIN_DIR + file, renderer: 'png', arms: 'classic' }, extra || {});
+  }
+  /* Path texture harus relatif, berakhiran .png, tanpa skema/URL, drive Windows, '..' atau spasi. */
+  function validTexturePath(p) {
+    return typeof p === 'string' && /^[A-Za-z0-9_\-]+(\/[A-Za-z0-9_\-]+)*\.png$/.test(p);
   }
   function dice(gameKey, name, rarity, price, desc, art, extra) {
     return Object.assign({ id: 'dice.' + gameKey, kind: 'dice', gameKey: gameKey, name: 'Dadu ' + name,
@@ -61,6 +82,14 @@
     skin('zombie',   'Zombie',   'Adventure', 'common', 0,   'Berjalan lambat tapi pantang menyerah sampai petak 100.'),
     skin('skeleton', 'Skeleton', 'Rare',      'rare',   300, 'Tulang-belulang pemanah dari gua gelap. Dingin dan tajam.'),
     skin('ender',    'Enderman', 'Epic',      'epic',   700, 'Makhluk tinggi dari dimensi lain dengan mata ungu menyala.', { featured: true }),
+
+    /* ---- Skin PNG (Tahap 3.2) — hasil audit game/data/skins/*.png (semua 64x64, template Minecraft) ---- */
+    skinPng('hero',      'Hero',      'hero.png'),
+    skinPng('knight',    'Knight',    'knight.png',    { arms: 'slim' }),
+    skinPng('ninja_red', 'Ninja Red', 'ninja_red.png'),
+    skinPng('pejabat',   'Pejabat',   'pejabat.png'),
+    skinPng('sakura',    'Sakura',    'sakura.png',    { arms: 'slim' }),
+    skinPng('warden',    'Warden',    'warden.png'),
 
     /* ---- Skin dadu (Aksesori) ---- */
     /* legacyIds = metadata migrasi Tahap 3 (ID lama yang dipetakan eksplisit ke ID canonical ini).
@@ -106,6 +135,7 @@
     powerup('grass',   'Blok Rumput','common', 'Tukar posisi dengan pemain terdepan.')
   ];
 
+  var DEFAULT_EQUIPPED = Object.freeze({ skin: 'skin.steve', dice: 'dice.klasik', theme: 'theme.minecraft' });
   var BY_ID = {};
   ITEMS.forEach(function (it) {
     var meta = KIND_META[it.kind];
@@ -113,6 +143,10 @@
     it.slot = meta.slot;
     it.stackable = !!it.stackable;
     it.featured = !!it.featured;
+    if (it.kind === 'skin') { /* validasi texture ringan: path buruk TIDAK membuat halaman crash, skin tampil dgn fallback */
+      it.textureValid = it.renderer === 'png' && validTexturePath(it.texture);
+      if (it.renderer === 'png' && !it.textureValid && g.console) g.console.error('[ItemCatalog] path texture skin tidak valid: ' + it.id);
+    }
     if (it.art) Object.freeze(it.art);
     Object.freeze(it);
     if (BY_ID[it.id]) throw new Error('ID item ganda: ' + it.id);
@@ -128,9 +162,13 @@
     items: Object.freeze(ITEMS.slice()),
     byId: function (id) { return Object.prototype.hasOwnProperty.call(BY_ID, id) ? BY_ID[id] : null; },
     byGameKey: function (kind, gameKey) { return BY_ID[kind + '.' + gameKey] || null; },
+    /* Path texture PNG skin (relatif) atau null untuk skin legacy / path tidak valid */
+    skinTexture: function (id) { var it = BY_ID[id]; return it && it.kind === 'skin' && it.textureValid ? it.texture : null; },
+    /* Skin cadangan bila texture hilang/rusak (= skin default; selalu dimiliki sebagai starter) */
+    fallbackSkinId: function () { return DEFAULT_EQUIPPED.skin; },
     starters: function () { return ITEMS.filter(function (i) { return i.starter; }); },
     categoryLabel: function (key) { var c = CATEGORIES.filter(function (x) { return x.key === key; })[0]; return c ? c.label : key; },
     /* Item default tiap slot saat data pemain dibuat */
-    defaultEquipped: { skin: 'skin.steve', dice: 'dice.klasik', theme: 'theme.minecraft' }
+    defaultEquipped: DEFAULT_EQUIPPED
   });
 })(window);

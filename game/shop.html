@@ -291,7 +291,7 @@ function showThemeArt(on){const s=$('#show'),p=$('#pv');const sv=on&&sel?AR.forI
  s.classList.toggle('art',!!sv);$('#art').innerHTML=sv;
  p.classList.toggle('art',!!sv);$('#pvart').innerHTML=sv}
 function buildModels(){if(!list(cat)){showThemeArt(false);return}
- if(cat==='theme'||cat==='powerup'){showThemeArt(true);return}
+ if(cat==='theme'||cat==='powerup'||(cat==='skin'&&sel&&sel.renderer==='png')){showThemeArt(true);return} /* skin PNG: preview texture (pixel-art), bukan model 3D baru */
  showThemeArt(false);setModel(main,cat,sel);setModel(pv,cat,sel);spin=1}
 function fit(){const hi=SET().graphics==='high';rigs.forEach(R=>{const w=R.cv.clientWidth,h=R.cv.clientHeight;if(!w||!h)return;R.r.setPixelRatio(hi?Math.min(devicePixelRatio,1.5):1);R.r.setSize(w,h,false);R.cam.aspect=w/h;R.cam.fov=R.fov*(w/h<.8?1.15:1);R.cam.updateProjectionMatrix()})}
 const clock=typeof THREE!=='undefined'?new THREE.Clock():null;

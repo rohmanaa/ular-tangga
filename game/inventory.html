@@ -280,7 +280,7 @@ let main,pv,spin=0;
 function setModel(R,c,it,y){if(!R)return;if(R.cur)R.holder.remove(R.cur);const m=model(c,it);R.holder.add(m);R.cur=m;R.mc=c}
 function showThemeArt(on){const s=$('#show');const sv=on&&sel?AR.forItem(sel.id):'';s.classList.toggle('art',!!sv);$('#art').innerHTML=sv}
 function buildModels(){if(!CI[cat]||!sel){showThemeArt(false);return}
- if(cat==='theme'||cat==='powerup'){showThemeArt(true);return}
+ if(cat==='theme'||cat==='powerup'||(cat==='skin'&&sel&&sel.renderer==='png')){showThemeArt(true);return} /* skin PNG: preview texture (pixel-art), bukan model 3D baru */
  showThemeArt(false);setModel(main,cat,sel);spin=1}
 function fit(){const hi=SET().graphics==='high';rigs.forEach(R=>{const w=R.cv.clientWidth,h=R.cv.clientHeight;if(!w||!h)return;R.r.setPixelRatio(hi?Math.min(devicePixelRatio,1.5):1);R.r.setSize(w,h,false);R.cam.aspect=w/h;R.cam.fov=R.fov*(w/h<.8?1.15:1);R.cam.updateProjectionMatrix()})}
 const clock=typeof THREE!=='undefined'?new THREE.Clock():null;

@@ -239,6 +239,9 @@
     owns: function (id) { return !!load().inventory[id]; },
     qty: function (id) { var e = load().inventory[id]; return e ? e.qty : 0; },
     equippedId: function (slot) { return load().equipped[slot] || null; },
+    /* Skin yang sedang dipakai (ID canonical, mis. 'skin.hero'). Alias baca-saja dari equipped.skin —
+       BUKAN state kedua. Dipakai tahap integrasi gameplay: PlayerData.equippedSkin() -> config -> renderer -> texture PNG. */
+    equippedSkin: function () { return load().equipped.skin || null; },
     isEquipped: function (id) { var it = C.byId(id); return !!it && load().equipped[it.slot] === id; },
 
     /* Daftar item yang dimiliki: [{item, qty, acquiredAt, seq, equipped}] — hanya id yang ada di katalog */
