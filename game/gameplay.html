@@ -247,6 +247,16 @@ body .pucard p{font-weight:700}
 body .card{background:linear-gradient(#7cc2ff,#4a9ae8);border:0;border-radius:26px;color:#fff;box-shadow:0 10px 0 var(--bd),0 22px 30px rgba(0,0,0,.3),inset 0 3px 3px rgba(255,255,255,.55)}
 body .card h1,body .card h2,body #pauseMenu .card h2,body #exitConfirm .card h2{color:#fff;text-transform:none;letter-spacing:0;font-size:clamp(30px,8vw,42px);text-shadow:0 4px 0 var(--bd)}
 body .card p{color:#eaf6ff;font-weight:700}
+/* hasil: menang biru / kalah merah; mahkota di tengah garis atas card (tanpa chip) */
+#win .card{position:relative;padding-top:58px}
+#win .res-ico{position:absolute;top:0;left:50%;transform:translate(-50%,-50%);width:88px;height:88px;pointer-events:none;color:#ffc93c;filter:drop-shadow(0 4px 0 #b86a0b) drop-shadow(0 8px 8px rgba(0,0,0,.28))}
+#win .res-ico svg{display:block;width:100%;height:100%}
+#win .res-ico path{stroke:#fff3b0;stroke-width:.7;stroke-linejoin:round;paint-order:stroke}
+#win[data-state=lose] .card{background:linear-gradient(#ff9a9a,#e54848);box-shadow:0 10px 0 #8f1620,0 22px 30px rgba(0,0,0,.3),inset 0 3px 3px rgba(255,255,255,.55)}
+#win[data-state=lose] .card h2{text-shadow:0 4px 0 #8f1620}
+#win[data-state=lose] .res-ico{color:#8f1d2c;filter:drop-shadow(0 4px 0 #4a0b13) drop-shadow(0 8px 8px rgba(0,0,0,.28))}
+#win[data-state=lose] .res-ico path{stroke:#ffd0d0}
+#win[data-state=lose] .btn.light{background:linear-gradient(#ff8f8f,#d93434);text-shadow:0 2px 0 #8f1620;box-shadow:0 5px 0 #8f1620,0 10px 14px rgba(120,10,20,.35),inset 0 2px 2px rgba(255,255,255,.6)}
 body .eyebrow,body .lbl{color:#d7ecff;text-transform:none;letter-spacing:.02em;font-size:15px}
 body #pauseMenu,body #exitConfirm{background:rgba(18,51,127,.5);backdrop-filter:blur(6px)}
 @media(max-width:699px){body .tn .msg{font-size:12px}body .btn.small,body .hud .btn.small{font-size:12px;padding:6px 10px}}
@@ -283,9 +293,10 @@ body #pauseMenu,body #exitConfirm{background:rgba(18,51,127,.5);backdrop-filter:
 
 <div id="puCard" class="pucard" hidden role="status" aria-live="polite"><p id="pcWho"></p><div id="pcEmoji"></div><h4 id="pcName"></h4><p id="pcDesc"></p></div>
 
-<section class="overlay soft" id="win" role="dialog" aria-modal="true" aria-labelledby="winTitle" hidden>
+<section class="overlay soft" id="win" data-state="win" role="dialog" aria-modal="true" aria-labelledby="winTitle" hidden>
   <div class="card center">
-    <p class="eyebrow">Sampai di petak 100</p>
+    <div class="res-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M14 5C14 5.5303 13.7936 6.0124 13.4568 6.37035L16.0807 9.65021C16.1543 9.74226 16.2822 9.77036 16.3877 9.71764L19.0385 8.39226C19.0132 8.26542 19 8.13425 19 8C19 6.89543 19.8954 6 21 6C22.1046 6 23 6.89543 23 8C23 8.95189 22.335 9.74845 21.4443 9.95048L19.6401 19.5725C19.4849 20.4002 18.7622 21 17.9201 21H6.07995C5.23782 21 4.51512 20.4002 4.35992 19.5725L2.5558 9.9505C1.66501 9.74848 1 8.9519 1 8C1 6.89543 1.89543 6 3 6C4.10457 6 5 6.89543 5 8C5 8.13425 4.98677 8.2654 4.96155 8.39224L7.61236 9.71764C7.7178 9.77036 7.84574 9.74226 7.91939 9.65021L10.5433 6.37037C10.2064 6.01242 10 5.53032 10 5C10 3.89543 10.8954 3 12 3C13.1046 3 14 3.89543 14 5ZM12 17C13.1046 17 14 16.1046 14 15C14 13.8954 13.1046 13 12 13C10.8954 13 10 13.8954 10 15C10 16.1046 10.8954 17 12 17Z" fill="currentColor"/></svg></div>
+    <p class="eyebrow" id="winEyebrow">Sampai di petak 100</p>
     <h2 id="winTitle">Merah menang</h2>
     <p id="winText"></p>
     <div class="modes">
@@ -1840,7 +1851,10 @@ async function doRoll(){
 function finishGame(p){
   gameOver=true; p.score+=50; renderChips(); p.pawn.userData.marker.visible=false;
   setMsg(p.name+' mengalahkan Ender Dragon!'); setRoll(false);
-  $('winTitle').textContent=(mode==='cpu'&&!p.cpu)?'Kamu menang':p.name+' menang';
+  const lost=(mode==='cpu'&&p.cpu);
+  $('win').dataset.state=lost?'lose':'win';
+  $('winEyebrow').textContent=lost?'Level gagal':'Sampai di petak 100';
+  $('winTitle').textContent=lost?'Kamu kalah':(mode==='cpu'&&!p.cpu)?'Kamu menang':p.name+' menang';
   $('winText').textContent=p.cpu?'Komputer lebih beruntung kali ini. Coba lagi?':'Pionmu lebih dulu sampai di puncak. Mau main lagi?';
   setTimeout(()=>{ if(gameOver) $('win').hidden=false; },500);
 }
