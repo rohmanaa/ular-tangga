@@ -590,6 +590,7 @@ const PNG_DEFS=[
   {name:'Sakura',key:'sakura',hex:0xFF8FB8,css:'#d9709a',png:true},
   {name:'Warden',key:'warden',hex:0x2AA5A0,css:'#1f7f7a',png:true}
 ];
+const VILLAGER_DEF={name:'Villager',key:'villager',hex:0xC9A24A,css:'#a8832f'}; /* khusus Computer; tidak masuk PLAYER_DEFS (urutan default tetap) */
 const SKIN3D={},SKIN_IMG={};
 function refreshFaces(){ try{ if(typeof renderChips==='function'&&players&&players.length) renderChips(); }catch(e){} }
 /* Muat texture PNG (ItemArt.loadSkinTexture + makeSkinTexture). Gagal -> null (pawn tetap palette/Steve). */
@@ -1748,6 +1749,15 @@ function makePawn(d){
     [-1,1].forEach(a=>{ bx(a*0.04,0.25,0,0.06,0.5,0.06,0x15121C); bx(a*0.1,0.6,0,0.045,0.56,0.045,0x15121C); });
     bx(0,0.65,0,0.16,0.3,0.1,0x1B1824); head(0x15121C,0.97);
     [-1,1].forEach(a=>{ bx(a*0.07,0.98,0.152,0.07,0.035,0.02,0xE879F9,F); bx(a*0.07,0.98,0.162,0.03,0.035,0.01,0xA21CAF,F); });
+  }else if(k==='villager'){ /* 4.1.14.10: karakter Computer = Villager humanoid (bukan Mob). Proporsi sama dgn Steve/Alex -> hop/glide/kamera tetap. */
+    const rb=0x7A5A3A,sk=0xD9A77A;
+    [-1,1].forEach(a=>{ bx(a*0.07,0.11,0,0.13,0.22,0.13,0x5E4328); bx(a*0.07,0.025,0.012,0.13,0.05,0.15,0x3B2A18,F); });
+    bx(0,0.36,0,0.28,0.28,0.15,rb); bx(0,0.2,0,0.3,0.12,0.17,0x6B4B2A);
+    bx(0,0.34,0.1,0.32,0.1,0.1,0x6B4B2A); /* tangan bersilang khas Villager */
+    head(sk,0.64);
+    bx(0,0.7,0.152,0.24,0.03,0.02,0x4A3A2A,F);
+    [-1,1].forEach(a=>{ bx(a*0.065,0.66,0.152,0.06,0.045,0.02,0xFFFFFF,F); bx(a*0.065,0.66,0.162,0.03,0.045,0.01,0x2E8B2E,F); });
+    bx(0,0.6,0.17,0.07,0.13,0.07,0xC08A5F,F);
   }else{
     const PP={alex:{skin:0xE8B48A,hair:0xD4701C,top:0x4FA84A,pants:0x6B4B2A,eye:0x2F8F3F},zombie:{skin:0x5E9E4A,hair:0x2F5F2A,top:0x1CA8B8,pants:0x3B3F9E,eye:0x1D1D6A},skeleton:{skin:0xE8E8E8,hair:0xCFCFCF,top:0xD6D6D6,pants:0xBDBDBD,eye:0x111111},steve:{skin:0xC58C62,hair:0x4A2E13,top:0x1CA8B8,pants:0x3B3F9E,eye:0x3B4FD8}},P=PP[k]||PP.steve;
     [-1,1].forEach(a=>{ bx(a*0.07,0.11,0,0.13,0.22,0.13,P.pants); bx(a*0.07,0.025,0.012,0.13,0.05,0.15,0x555560,F); bx(a*0.2,0.42,0,0.1,0.17,0.11,P.top); bx(a*0.2,0.27,0,0.1,0.12,0.11,P.skin); });
@@ -1959,6 +1969,7 @@ const FC={
  ender:{p:{b:'#141414',B:'#222',p:'#e879f9',q:'#a21caf'},f:['bbbbbbbb','bBbbbbBb','bbbbbbbb','bbbbbbbb','pqpbbpqp','bbbbbbbb','bBbbbbBb','bbbbbbbb']}};
 FC.zombie={p:{h:'#2f5f2a',s:'#5e9e4a',S:'#4c8a3b',w:'#fff',b:'#2a2a8a',m:'#1d3d18'},f:['hhhhhhhh','hsssssSh','ssssssss','swbssbws','sssSsSss','ssmmmmss','smmmmmms','ssmsmsss']};
 FC.skeleton={p:{k:'#e8e8e8',K:'#c4c4c4',d:'#222',m:'#8a8a8a'},f:['kkkkkkkk','kKkkkkKk','kkkkkkkk','kddkkddk','kddkkddk','kkkddkkk','kmdmdmkk','kkkkkkkk']};
+FC.villager={p:{s:'#d9a77a',b:'#4a3a2a',w:'#fff',g:'#2e8b2e',n:'#c08a5f',m:'#8a5b3a'},f:['ssssssss','ssssssss','bbbbbbbb','swgssgws','sssnnsss','sssnnsss','sssmmsss','ssssssss']};
 const FURL={};
 function faceURL(k){
   if(FURL[k]) return FURL[k];
@@ -2250,8 +2261,9 @@ function startGame(m,keys){
   players.forEach(p=>scene.remove(p.pawn)); players=[]; clearConfetti();
   applyPendingTheme(); resetSnakes(); resetDragon();
   let defs;
-  keys=keys||(m==='cpu'?['steve','alex']:PLAYER_DEFS.slice(0,+m).map(d=>d.key));
-  defs=keys.map((k,i)=>{ const d=Object.assign({},PLAYER_DEFS.find(x=>x.key===k)||PNG_DEFS.find(x=>x.key===k)); if(m==='cpu'&&i===1){ d.cpu=true; d.name+=' CPU'; } return d; });
+  keys=keys||(m==='cpu'?['steve','villager']:PLAYER_DEFS.slice(0,+m).map(d=>d.key));
+  if(m==='cpu') keys=[keys[0]||'steve','villager']; /* 4.1.14.10: Computer selalu Villager, bukan Mob/skin acak */
+  defs=keys.map((k,i)=>{ const d=Object.assign({},PLAYER_DEFS.find(x=>x.key===k)||PNG_DEFS.find(x=>x.key===k)||(k==='villager'?VILLAGER_DEF:null)||PLAYER_DEFS[0]); if(m==='cpu'&&i===1){ d.cpu=true; d.name+=' CPU'; } return d; });
   defs.forEach((d,i)=>{
     const pawn=makePawn(d); pawn.position.copy(slotPos(i,0)); pawn.rotation.y=Math.atan2(-SLOT[i][0],-SLOT[i][1]); scene.add(pawn); /* duduk menghadap api */
     players.push({idx:i,name:d.name,key:d.key,css:d.css,hex:d.hex,cpu:!!d.cpu,pos:0,sixes:0,dhp:100,pawn,score:0,bonus:0,extra:false,p4:false,shield:false,pu:startPU()});
@@ -2395,8 +2407,7 @@ function readLobbyConfig(){
   if(!mode) mode='cpu';
   if(mode==='cpu'){
     if(!skins.length) skins=['steve'];
-    if(skins.length===1){ const rest=PLAYER_DEFS.filter(d=>d.key!==skins[0]); skins.push(rest[Math.floor(Math.random()*rest.length)].key); }
-    skins=skins.slice(0,2);
+    skins=[skins[0],'villager']; /* Computer = Villager (4.1.14.10) */
   }else{
     const n=+mode;
     if(skins.length<n) skins=PLAYER_DEFS.slice(0,n).map(d=>d.key);
