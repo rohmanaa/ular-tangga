@@ -1640,13 +1640,20 @@ async function usePU(k,cpu){
   busy=true; setRoll(false); p.pu[k]--; sfx.pop(); setMsg(p.name+' memakai '+PUN[k][1]+': '+PUN[k][2]+'.');
   if(k==='sword') p.bonus=3; if(k==='feather') p.extra=true; if(k==='potion') p.p4=true; if(k==='apple') p.shield=true;
   renderChips();
+  const oldL=L?L.pos:0; /* posisi sebelum efek, untuk feedback target (TNT/Grass) */
   try{
     if(k==='tnt'){ const to=Math.max(1,L.pos-6); await teleport(L,to); L.pos=to; }
     if(k==='grass'){ const a=p.pos,b=L.pos; await teleport(p,b); p.pos=b; await teleport(L,a); L.pos=a; }
   }catch(e){ console.error(e); }
   if(gid!==gameId) return;
-  /* Power = feedback singkat (banner HUD), BUKAN kartu/modal hadiah Chest (#puCard). Urutan: pakai → terapkan efek → feedback → lanjut. */
-  fb('short',k,PUN[k][1],p.name)||hud('showPower',k,PUN[k][1],p.name);
+  /* Power = feedback singkat (banner HUD), BUKAN kartu/modal hadiah Chest (#puCard). Urutan: pakai → terapkan efek → feedback → lanjut.
+     Self-power → Feedback.short. Power bertarget (TNT/Grass) → Feedback.event: pelaku → target → efek → hasil aktual. */
+  if(k==='tnt'||k==='grass'){
+    let t;
+    if(k==='tnt'){ const d=oldL-L.pos; t=p.name+' → TNT → '+L.name+(d>0?' mundur '+d+' petak':' tidak bergerak')+' ('+oldL+' → '+L.pos+')'; }
+    else t=p.name+' bertukar posisi dengan '+L.name+' — '+p.name+' '+p.pos+', '+L.name+' '+L.pos;
+    setMsg(t); fb('event','power',t,{gid,icon:PUN[k][0]});
+  }else fb('short',k,PUN[k][1],p.name)||hud('showPower',k,PUN[k][1],p.name);
   busy=false; if(!p.cpu) setRoll(true); focus=p.pawn; renderChips();
 }
 function renderChips(){
