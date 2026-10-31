@@ -29,11 +29,13 @@
     var need = mode === 'cpu' ? 1 : +mode;
     var ownedSkins = PD.ownedItems().filter(function (o) { return o.item.kind === 'skin' && (o.item.renderer === 'palette' || o.item.renderer === 'png'); })
       .sort(function (a, b) { return a.seq - b.seq; }).map(function (o) { return o.item.gameKey; });
-    if (!skins.length && eqSkinKey()) skins.push(eqSkinKey());           /* Pemain 1 = skin aktif (PNG -> skin cadangan) */
-    /* Mode CPU: skin CPU (indeks 1) boleh bebas, jadi pertahankan apa yang dikirim lobi */
+    /* 4.1.14.10: Pemain 1 SELALU skin yang sedang equipped (equipped.skin). Sebelumnya 'ut-config' lama di sessionStorage
+       (skins yang disimpan sesi sebelumnya) menimpa skin baru -> pemain tetap Steve walau sudah memakai PNG. */
+    var eqk = eqSkinKey();
+    if (eqk) skins = [eqk].concat(skins.filter(function (k) { return k !== eqk; }));
+    /* Mode CPU: Computer BUKAN dari daftar skin lobi/sesi; karakter Computer ditentukan gameplay.html (Villager). Kirim hanya skin Player. */
     if (mode === 'cpu') {
-      var cpuSkin = String(rawSkins).split(',').map(function (s) { return s.trim(); })[1];
-      if (cpuSkin && cpuSkin !== skins[0] && ['steve','alex','creeper','ender','zombie','skeleton'].indexOf(cpuSkin) > -1) skins = [skins[0], cpuSkin];
+      skins = skins.slice(0, 1);
     } else {
       ownedSkins.forEach(function (k) { if (skins.length < need && skins.indexOf(k) < 0) skins.push(k); });
       skins = skins.slice(0, need);
