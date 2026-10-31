@@ -2078,6 +2078,11 @@ function beginTurn(extra){
   setRoll(!p.cpu);
   if(p.cpu){ const gid=gameId; setTimeout(async()=>{ if(gid!==gameId||gameOver) return; const ks=['sword','feather','potion','apple','tnt'].filter(k=>cpuPUValid(p,k)); const go=()=>{ if(gid!==gameId||gameOver) return; if(busy||paused){ setTimeout(go,paused?250:500); return; } doRoll(); }; if(paused){ go(); return; } if(ks.length&&Math.random()<0.6) await usePU(ks[0],true); go(); },950); }
 }
+/* 4.1.15.6: snapshot state giliran (baca-saja) agar modul lain/uji bisa membaca tanpa mengekspos players. Sumber kebenaran tetap players[]+cur. */
+function publishTurnState(){
+  players.forEach((q,i)=>{ if(!q.turnOrder) q.turnOrder=i+1; }); /* tanpa shuffle (?ready=0): urutan awal */
+  try{ const C=UT.Gameplay.Core; C.turn={ turnOrder:players.map(q=>({id:q.idx,name:q.name,turnOrder:q.turnOrder||0,cpu:!!q.cpu})), get currentTurnIndex(){ return cur; }, get currentPlayerId(){ return players[cur]?players[cur].idx:null; } }; }catch(e){}
+}
 function nextTurn(){ cur=(cur+1)%players.length; busy=false; beginTurn(); }
 
 async function walk(p,from,to){
@@ -2276,11 +2281,14 @@ function startGame(m,keys){
   document.body.classList.add('playing');
   showDie(1,false);
   /* 4.1.15: Ready Screen sebelum giliran pertama. ?ready=0 / modul tak termuat -> langsung main seperti sebelumnya. */
-  const gidR=gameId,goPlay=()=>{ if(gidR!==gameId) return; beginTurn(); },RD=window.UT&&UT.GameplayReady;
+  const gidR=gameId,goPlay=()=>{ if(gidR!==gameId) return; publishTurnState(); beginTurn(); },RD=window.UT&&UT.GameplayReady;
   if(RD&&RD.show&&UT.GameplayAFK&&new URLSearchParams(location.search).get('ready')!=='0'){
     setRoll(false); setMsg('Tekan READY untuk mulai.'); focus=players[0].pawn; renderChips();
     const pre=players.filter(q=>PNG_DEFS.some(d=>d.key===q.key)).map(q=>loadSkin3D(q.key)); /* tunggu wajah PNG (maks 1,5 dtk) */
-    Promise.race([Promise.all(pre),sleep(1500)]).catch(()=>{}).then(()=>{ if(gidR!==gameId) return; return RD.show(players,{face:q=>faceURL(q.key),sfx:n=>{ try{ sfx[n]&&sfx[n](); }catch(e){} }}); }).then(r=>{ if(r) goPlay(); }).catch(e=>{ console.error(e); goPlay(); });
+    Promise.race([Promise.all(pre),sleep(1500)]).catch(()=>{}).then(()=>{ if(gidR!==gameId) return; return RD.show(players,{face:q=>faceURL(q.key),sfx:n=>{ try{ sfx[n]&&sfx[n](); }catch(e){} }}); }).then(r=>{ if(!r) return; if(gidR!==gameId) return;
+      /* 4.1.15.6: hasil shuffle = sumber giliran. Urutkan ulang players[] (nextTurn/cur existing dipakai apa adanya); p.idx (slot api unggun) tidak berubah. */
+      if(Array.isArray(r)&&r.length===players.length&&r.every(q=>players.indexOf(q)>-1)){ players.length=0; r.forEach(q=>players.push(q)); }
+      cur=0; goPlay(); }).catch(e=>{ console.error(e); goPlay(); });
   }else goPlay();
 }
 

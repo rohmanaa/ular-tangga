@@ -3,7 +3,8 @@
      UT.GameplayReady.show(players, opts) -> Promise
         players: array objek pemain existing ({name,key,css,cpu,...}); modul menulis p.ready / p.autoReady.
         opts.face(p) -> url wajah (faceURL existing) ; opts.sfx(name) opsional ; opts.seconds (default 10)
-        Promise selesai saat SEMUA pemain READY (manual atau auto setelah 10 dtk) dan layar ditutup.
+        Promise selesai saat SEMUA pemain READY (manual atau auto setelah 10 dtk), urutan diacak (p.turnOrder 1..n),
+        dan layar ditutup; resolve(array pemain berurutan sesuai giliran). opts.rng(): pengganti Math.random untuk uji.
      UT.GameplayReady.cancel() — tutup + bersihkan semua timer (restart/unload). */
 (function (win, doc) {
   'use strict';
@@ -39,7 +40,7 @@
   function el(tag, cls, txt) { var e = doc.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
 
   function cancel() {
-    if (run) { try { if (A()) run.ids.forEach(A().clear); } catch (e) {} var r = run; run = null; r.cancelled = true; }
+    if (run) { try { if (A()) run.ids.forEach(A().clear); } catch (e) {} if (run.anim) clearInterval(run.anim); var r = run; run = null; r.cancelled = true; }
     if (root && root.parentNode) root.parentNode.removeChild(root);
     root = null;
   }
@@ -53,8 +54,8 @@
       players.forEach(function (p) { p.ready = false; p.autoReady = false; });
       root = el('section'); root.id = 'readyScreen'; root.setAttribute('role', 'dialog'); root.setAttribute('aria-modal', 'true'); root.setAttribute('aria-label', 'Siap bermain');
       var box = el('div', 'rd-box'); root.appendChild(box);
-      box.appendChild(el('h2', '', 'Siap main?'));
-      box.appendChild(el('p', 'rd-sub', 'Tekan READY. Otomatis siap dalam ' + secs + ' detik.'));
+      var title = el('h2', '', 'Siap main?'); box.appendChild(title);
+      var sub = el('p', 'rd-sub', 'Tekan READY. Otomatis siap dalam ' + secs + ' detik.'); box.appendChild(sub);
       var time = el('div', 'rd-time', String(secs)); box.appendChild(time);
       var grid = el('div', 'rd-grid' + (n === 4 ? ' n4' : '')); grid.style.setProperty('--cols', n >= 3 ? (n === 3 ? 3 : 2) : 2); box.appendChild(grid);
 
@@ -79,8 +80,28 @@
       function check() {
         if (finished || !players.every(function (p) { return p.ready; })) return;
         finished = true; A().clear('ready'); A().clear('ready-go');
-        A().start('ready-go', 600, function () { if (ctx.cancelled) return; cancel(); resolve(players); });
+        A().start('ready-go', 600, function () { if (ctx.cancelled) return; shuffle(); }); /* jeda singkat: semua READY terlihat dulu */
         ids.push('ready-go');
+      }
+      /* 4.1.15.5: animasi SHUFFLING singkat -> urutan final acak (Fisher-Yates). Hasil: p.turnOrder (1..n), dikembalikan sebagai array urut giliran. */
+      function shuffle() {
+        title.textContent = 'Shuffling...'; sub.textContent = 'Mengacak urutan giliran'; time.style.display = 'none';
+        var perm = players.map(function (p, i) { return i + 1; });
+        function scramble() {
+          for (var j = perm.length - 1; j > 0; j--) { var r = Math.floor(Math.random() * (j + 1)), t = perm[j]; perm[j] = perm[r]; perm[r] = t; }
+          cards.forEach(function (k, i) { k.ord.textContent = String(perm[i]); k.ord.classList.add('set'); k.c.style.order = String(perm[i]); });
+        }
+        scramble(); ctx.anim = setInterval(scramble, 120);
+        A().start('ready-shuffle', 1500, function () {
+          if (ctx.cancelled) return; clearInterval(ctx.anim); ctx.anim = null;
+          var rng = opts.rng || Math.random, idx = players.map(function (p, i) { return i; });
+          for (var j = idx.length - 1; j > 0; j--) { var r = Math.floor(rng() * (j + 1)), t = idx[j]; idx[j] = idx[r]; idx[r] = t; }
+          var ordered = idx.map(function (pi, n) { var p = players[pi]; p.turnOrder = n + 1; return p; }); /* idx[n] = pemain yang main ke-(n+1) */
+          cards.forEach(function (k) { k.ord.textContent = String(k.p.turnOrder); k.ord.classList.add('set'); k.c.style.order = String(k.p.turnOrder); });
+          title.textContent = 'Urutan giliran'; sub.textContent = ordered.map(function (p, n) { return (n + 1) + '. ' + p.name; }).join('  ');
+          A().start('ready-done', 1500, function () { if (ctx.cancelled) return; cancel(); resolve(ordered); });
+        });
+        ids.push('ready-shuffle'); ids.push('ready-done');
       }
 
       doc.body.appendChild(root);
