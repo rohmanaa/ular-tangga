@@ -517,6 +517,7 @@ if (typeof THREE === 'undefined') {
 <script src="gameplay/module-bridge.js"></script>
 <script src="gameplay/themes.js"></script>
 <script src="gameplay/config.js"></script>
+<script src="gameplay/biomes.js"></script>
 <script src="gameplay/hud.js"></script>
 <script src="gameplay/dice-ui.js"></script>
 <script src="gameplay/audio.js"></script>
@@ -1079,7 +1080,7 @@ function lift(B,fn,h){
 }
 function buildMcTerrain(TB,th){
   const mc=th.key==='minecraft',G=mc?0x4F9A34:th.ground,W=mc?0x8A5B33:th.wall[0],S=mc?0x7A7A7A:th.deep[0],M=mc?0x8A8F86:th.deep[1];
-  const PK=mc?0xEEF4F4:({gurun:0xF6DDA0,salju:0xFFFFFF,hutan:0x2E7D4F,nether:0x2E2E36}[th.key]||0xEEF4F4),R=mc?0x3F76E4:({gurun:0x3FB6D0,salju:0x9AD7F0,hutan:0x2E8FBF,nether:0xFF6A1A}[th.key]||0x3F76E4);
+  const BM=UT.Gameplay.Biomes,PK=mc?BM.MC.PK:(BM.PK[th.key]||BM.FALLBACK.PK),R=mc?BM.MC.R:(BM.R[th.key]||BM.FALLBACK.R);
   for(let ix=-7.5;ix<=7.5;ix+=1) for(let iz=-6.5;iz<=6.5;iz+=1){
     if(Math.abs(ix)<5&&Math.abs(iz)<5) continue;
     addBox(TB,ix,-0.1,iz,1,0.2,1,jit(G,0.08));
@@ -1109,7 +1110,7 @@ function buildMcTerrain(TB,th){
     addTorch(TB,x0-0.2,0,bz-0.75); addTorch(TB,x0-0.2,0,bz+0.75); addTorch(TB,x1+0.2,0,bz-0.75); addTorch(TB,x1+0.2,0,bz+0.75);
   }
 }
-const BIO={rumput:[[0xF0A8A8,0xD98888],[0xF2F2F2,0x3A2A22]],gurun:[[0xD9B26A,0x9A7A3A],[0xC99A52,0x7A5A2A]],salju:[[0xF4F8FA,0xB8C8D0],[0xDDE6EA,0x6A7A82]],hutan:[[0xE6B84A,0x8A6A1E],[0x6FBF4A,0x2E6B1E]],nether:[[0xD98A7A,0x8A4A3A],[0xC9703A,0x6A3A1A]]};
+const BIO=UT.Gameplay.Biomes.BIO;
 function addWideFar(DB,th){
   const d=th.decor,A=({oak:[addOak,addOak],desert:[addCactus,addPalm],snow:[addPine,addPine],jungle:[addJungleTree,addJungleTree],nether:[addNetherTree,addNetherTree]})[d]||[addOak,addOak];
   const cnt=d==='desert'?80:150; let n=0,t=0;
@@ -1656,7 +1657,7 @@ function buildWorld(key){
     [[-5.25,5.25],[5.25,5.25],[-5.25,-5.25],[5.25,-5.25]].forEach(q=>{ addBox(TB,q[0],0.75,q[1],0.1,0.5,0.1,0x4E3118); addBox(TB,q[0],1.03,q[1],0.18,0.06,0.18,0x2E2E2E); });
   }
   // area mulai
-  const sandy=th.key==='salju'?0xCFE9F5:0xE8D7A0,sandy2=th.key==='salju'?0xB4D6E8:0xCDB878;
+  const SP=UT.Gameplay.Biomes.PALETTES.sandy,SPK=th.key==='salju'?SP.salju:SP.default,sandy=SPK[0],sandy2=SPK[1];
   /* blok Start: hanya border (tanpa isi warna) + api unggun & 4 kayu duduk di dalamnya */
   [[0,-0.95,2.04,0.14],[0,0.95,2.04,0.14],[-0.95,0,0.14,1.9],[0.95,0,0.14,1.9]].forEach(f=>addBox(TB,PAD.x+f[0],0.04,PAD.z+f[1],f[2],0.08,f[3],sandy2));
   addCampfire(TB,PAD.x,PAD.z);
