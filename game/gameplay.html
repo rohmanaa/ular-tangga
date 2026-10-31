@@ -568,7 +568,7 @@ const MOBCOL=UT.Gameplay.Config.MOB_COLOR;
 const MOBNAME=UT.Gameplay.Config.MOB_NAME;
 const MOBBACK=UT.Gameplay.Config.MOB_BACK;
 const MOBTHEME=UT.Gameplay.Config.MOB_THEME_ONLY;
-function mobOn(n){ const k=MOBT[n]; return (k&&(!MOBTHEME[k]||(typeof theme!=='undefined'&&theme.key===MOBTHEME[k])))?k:null; }
+function mobOn(n,themeKey){ const k=MOBT[n]; return (k&&(!MOBTHEME[k]||themeKey===MOBTHEME[k]))?k:null; }
 const CHESTS=UT.Gameplay.Config.CHESTS;
 const PLAYER_DEFS=[
   {name:'Steve',key:'steve',hex:0x2F80FF,css:'#2a78d6'},
@@ -583,9 +583,9 @@ const GV=UT.GameplayVoxelGeom;
 const TILES=GV.buildTiles();
 function terrainTop(x,z){ return GV.terrainTop(TILES,x,z); }
 function topAt(x,z,r){ return GV.topAt(TILES,x,z,r); }
-function mcBlock(n){
+function mcBlock(n,themeKey){
   if(n>=99) return 0xE6E3A6;
-  if(mobOn(n)) return MOBCOL[mobOn(n)];
+  if(mobOn(n,themeKey)) return MOBCOL[mobOn(n,themeKey)];
   if(LADDERS[n]) return 0xE2BE3C;
   if(SNAKES[n]) return 0xD9577A;
   const r=Math.random();
@@ -1477,8 +1477,8 @@ const skyDome=new THREE.Group(); scene.add(skyDome); /* ikut posisi kamera, jadi
 try{ night=localStorage.getItem('ut-malam')==='1'; }catch(e){}
 const mixHex=(a,b,k)=>'#'+new THREE.Color(a).lerp(new THREE.Color(b),k).getHexString();
 /* corak papan: petak genap = bingkai gelap + inti terang, petak ganjil = papan catur kecil */
-function tileShade(bc,n,t,i,j){
-  const k=(n===100||LADDERS[n]||SNAKES[n]||mobOn(n))?0.6:1;
+function tileShade(bc,n,t,i,j,themeKey){
+  const k=(n===100||LADDERS[n]||SNAKES[n]||mobOn(n,themeKey))?0.6:1;
   const corner=(i%3===0&&j%3===0),inner=(i===1||i===2)&&(j===1||j===2),ring=(i===0||i===3||j===0||j===3);
   let d;
   if((t.col+t.row)%2===0) d=corner?-0.11:(inner?0.07:(ring?-0.02:0));
@@ -1487,7 +1487,7 @@ function tileShade(bc,n,t,i,j){
 }
 function tileBlock(n,t,th){
   if(n===100) return th.goalTile;
-  if(mobOn(n)) return MOBCOL[mobOn(n)];
+  if(mobOn(n,th.key)) return MOBCOL[mobOn(n,th.key)];
   if(LADDERS[n]) return th.ladderTile;
   if(SNAKES[n]) return th.snakeTile;
   const r=rnd(); return r<0.22?th.wall[0]:(r<0.6?th.tileB:th.tileA);
@@ -1578,7 +1578,7 @@ function buildMobs(th){
   MOBOBJ={}; CHESTOBJ={};
   const mk={creeper:addCreeper,ender:addEnderman,skeleton:addSkeleton,zombie:addZombie,warden:addWarden,villager:addVillager};
   for(let n=1;n<=100;n++){
-    const t=TILES[n],k=mobOn(n);
+    const t=TILES[n],k=mobOn(n,th.key);
     if(k){
       const B=makeBatch(),g=new THREE.Group(); let rods=null;
       if(k==='blaze'){ const R=makeBatch(); addBlaze(B,R); g.add(buildBatch(B)); rods=new THREE.Group(); rods.add(buildBatch(R)); g.add(rods); }
@@ -1642,8 +1642,8 @@ function buildWorld(key){
     const t=TILES[n],colTop=t.h-0.2,hh=colTop+0.5;
     addBox(TB,t.x,-0.5+hh/2,t.z,1,hh,1,jit(pick(th.wall),0.06));
     {
-      const bc=th.key==='minecraft'?mcBlock(n):tileBlock(n,t,th);
-      for(let i=0;i<4;i++) for(let j=0;j<4;j++) addBox(TB,t.x+(i-1.5)*0.235,t.h-0.1,t.z+(j-1.5)*0.235,0.235,0.2,0.235,tileShade(bc,n,t,i,j),{edge:false});
+      const bc=th.key==='minecraft'?mcBlock(n,th.key):tileBlock(n,t,th);
+      for(let i=0;i<4;i++) for(let j=0;j<4;j++) addBox(TB,t.x+(i-1.5)*0.235,t.h-0.1,t.z+(j-1.5)*0.235,0.235,0.2,0.235,tileShade(bc,n,t,i,j,th.key),{edge:false});
       const cx=()=>t.x+(rnd()<0.5?-0.34:0.34),cz=()=>t.z+(rnd()<0.5?-0.34:0.34);
       if(bc===0x5FAE3E&&rnd()<0.6) addBox(TB,cx(),t.h+0.08,cz(),0.1,0.16,0.1,pick([0xF0453A,0xFFD23F,0xFF7EB6,0xFFFFFF,0x6AA8FF]),{edge:false});
       if(bc===0x8E8E8E) for(let k=0;k<3;k++) addBox(TB,cx(),t.h+0.04,cz(),0.12,0.08,0.12,pick([0x222222,0x4AEDD9,0xFFD23F,0xD8AF93]),{edge:false});
@@ -2132,15 +2132,15 @@ async function playTurn(p,v,gid,bn){
   if(LADDERS[p.pos]){
     const to=LADDERS[p.pos]; setMsg('Tangga! '+p.name+' naik dari '+p.pos+' ke '+to+'.'); fb('event','ladder','Naik Tangga! +'+(to-p.pos)+' langkah',{gid}); sfx.naiktangga();
     await A(sleep(350)); await A(climb(p,p.pos,to)); p.pos=to; p.score+=10;
-  }else if(p.shield&&(SNAKES[p.pos]||(mobOn(p.pos)&&mobOn(p.pos)!=='villager'))){
+  }else if(p.shield&&(SNAKES[p.pos]||(mobOn(p.pos,themeKey)&&mobOn(p.pos,themeKey)!=='villager'))){
     p.shield=false; setMsg(PUN.apple[1]+' melindungi '+p.name+'!'); fb('event','shield',PUN.apple[1]+' melindungi '+p.name+'!',{gid}); sfx.pop(); await A(sleep(900));
   }else if(SNAKES[p.pos]){
     const to=SNAKES[p.pos];
     if(!SNAKEINFO[p.pos]){ p.pos=to; setMsg('Ular! '+p.name+' turun ke '+to+'.'); fb('event','snake','Kena Ular! Turun ke '+to,{gid}); await A(sleep(350)); await A(hopTo(p.pawn,slotPos(p.idx,to),0.5,0.8)); }
     else{ setMsg('Dicaplok ular! '+p.name+' turun dari '+p.pos+' ke '+to+'.'); fb('event','snake','Kena Ular! Turun ke '+to,{gid}); sfx.naiktangga(); await A(sleep(350)); await A(bite(p,p.pos,to,gid)); }
     p.pos=to;
-  }else if(mobOn(p.pos)){
-    const k=mobOn(p.pos); mobReact(p.pos);
+  }else if(mobOn(p.pos,themeKey)){
+    const k=mobOn(p.pos,themeKey); mobReact(p.pos);
     if(k==='creeper'){
       setMsg('Creeper meledak! '+p.name+' terlempar mundur 2 blok.'); fb('event','mob','Creeper! Meledak, mundur 2 blok',{gid});
       sfx.creeper();
