@@ -266,12 +266,25 @@ body .card p{color:#eaf6ff;font-weight:700}
 body .eyebrow,body .lbl{color:#d7ecff;text-transform:none;letter-spacing:.02em;font-size:15px}
 body #pauseMenu,body #exitConfirm{background:rgba(18,51,127,.5);backdrop-filter:blur(6px)}
 @media(max-width:699px){body .tn .msg{font-size:12px}body .btn.small,body .hud .btn.small{font-size:12px;padding:6px 10px}}
+/* 4.2.1 Camera Part 1: grup kontrol ANGLE (satu baris, compact) */
+.camgrp{display:inline-flex;align-items:center;gap:6px;flex-wrap:nowrap}.camgrp[hidden]{display:none}
+/* ANGLE ON: tiga kontrol tambahan di baris sendiri di bawah toolbar (toolbar lama tidak melebar/terpotong) */
+body.cam-angle #hud .tools{flex-wrap:wrap}
+body.cam-angle #hud .camgrp{order:10;flex:0 0 100%;justify-content:inherit}
+body .hud select.camsel{appearance:none;-webkit-appearance:none;font-family:inherit;line-height:1.2;cursor:pointer;padding-right:24px;max-width:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M1 3l4 4 4-4' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 8px center/10px 10px,linear-gradient(#4aa8ff,#1f6fe0)}
+body .hud select.camsel option{color:#12337f;background:#fff;text-shadow:none}
 </style>
 <canvas id="c" aria-label="Papan ular tangga 3D"></canvas>
 
 <header class="hud" id="hud">
   <div class="tools">
-    <button class="btn small light" id="btnCam" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3 6 3h4a2 2 0 0 1 2 2z"/></svg>Reset Kamera</button>
+    <button class="btn small light" id="btnAngle" type="button" aria-pressed="false">ANGLE: OFF</button>
+    <span class="camgrp" id="camGrp" hidden>
+    <select class="btn small light camsel" id="camPreset" aria-label="Preset kamera"><option value="free">Free Camera</option><option value="front">Front</option><option value="back">Back</option><option value="left">Left</option><option value="right">Right</option><option value="iso">Isometric</option><option value="top">Top Angle</option></select>
+    <button class="btn small light" id="btnFollow" type="button" aria-pressed="true">FOLLOW: ON</button>
+    <button class="btn small light" id="btnCam" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3 6 3h4a2 2 0 0 1 2 2z"/></svg>Reset</button>
+    </span>
     <button class="btn small light" id="btnPov" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>POV: Atas</button>
     <button class="btn small light" id="btnTheme" type="button" hidden>Tema</button>
     <button class="btn small light" id="btnNight" type="button" hidden>Mode: Siang</button>
@@ -1897,11 +1910,53 @@ function onResize(){
   camera.updateProjectionMatrix();
 }
 window.addEventListener('resize',onResize); onResize();
-function resetCam(){
+/* Stage 4.2.1 (Camera Part 1): mode ANGLE / kamera kustom. Memakai ulang cam/goal/pan/focus + resetCam; TIDAK ada engine kamera kedua.
+   ANGLE ON = preset + follow + reset aktif. ANGLE OFF = perilaku kamera lama tidak berubah (mode LOCK dikerjakan di Part 2). */
+const CAM_KEY='ut-cam';
+const CAM_PRESETS={
+  free:{yaw:0,pitch:0.62,zoom:1},          /* sudut default existing; diatur manual */
+  front:{yaw:0,pitch:0.62,zoom:1},
+  back:{yaw:Math.PI,pitch:0.62,zoom:1},
+  left:{yaw:-Math.PI/2,pitch:0.62,zoom:1},
+  right:{yaw:Math.PI/2,pitch:0.62,zoom:1},
+  iso:{yaw:Math.PI/4,pitch:0.615,zoom:1},  /* isometrik 35,26 derajat */
+  top:{yaw:0,pitch:1.2,zoom:1}             /* sudut atas curam (POV: Atas existing = top-down murni) */
+};
+const camCfg={angle:false,preset:'free',follow:true},camHold={x:0,y:2.8,z:-0.2};
+const camFollowing=()=>!camCfg.angle||camCfg.follow;
+function camSave(){ try{ localStorage.setItem(CAM_KEY,JSON.stringify({angle:camCfg.angle,preset:camCfg.preset,follow:camCfg.follow})); }catch(e){} }
+function camLoad(){ try{ const o=JSON.parse(localStorage.getItem(CAM_KEY)||'null'); if(o&&typeof o==='object'){ camCfg.angle=o.angle===true; camCfg.preset=CAM_PRESETS[o.preset]?o.preset:'free'; camCfg.follow=o.follow!==false; } }catch(e){} }
+function camHoldHere(){ camHold.x=camTarget.x-pan.x; camHold.y=camTarget.y; camHold.z=camTarget.z-pan.z; } /* bekukan titik pandang saat FOLLOW dimatikan (tanpa loncat) */
+function resetCam(P){
+  if(!(P&&typeof P.yaw==='number')) P=camCfg.angle?CAM_PRESETS[camCfg.preset]:CAM_PRESETS.free;
   isTopDown=false;
   if($('btnPov')) $('btnPov').textContent='POV: Atas';
   const k=Math.round(cam.yaw/(Math.PI*2)); cam.yaw-=k*Math.PI*2;
-  goal.yaw=0; goal.pitch=0.62; goal.zoom=1; panGoal.x=0; panGoal.z=0;
+  goal.yaw=P.yaw+Math.PI*2*Math.round((cam.yaw-P.yaw)/(Math.PI*2)); /* putar lewat jalur terpendek */
+  goal.pitch=P.pitch; goal.zoom=P.zoom; panGoal.x=0; panGoal.z=0;
+  camHold.x=0; camHold.y=2.8; camHold.z=-0.2;
+}
+function camUI(){
+  const a=$('btnAngle'); if(!a) return;
+  a.textContent='ANGLE: '+(camCfg.angle?'ON':'OFF'); a.setAttribute('aria-pressed',String(camCfg.angle));
+  $('camGrp').hidden=!camCfg.angle; document.body.classList.toggle('cam-angle',camCfg.angle); $('camPreset').value=camCfg.preset;
+  const f=$('btnFollow'); f.textContent='FOLLOW: '+(camCfg.follow?'ON':'OFF'); f.setAttribute('aria-pressed',String(camCfg.follow));
+}
+function camSetAngle(v){
+  const was=camFollowing(); camCfg.angle=!!v;
+  if(was&&!camFollowing()) camHoldHere();
+  if(camCfg.angle&&camCfg.preset!=='free') resetCam(); /* pulihkan preset terakhir; Free = tetap di sudut sekarang */
+  camSave(); camUI();
+}
+function camSetFollow(v){
+  const was=camFollowing(); camCfg.follow=!!v;
+  if(was&&!camFollowing()) camHoldHere();
+  camSave(); camUI();
+}
+function camSetPreset(k){
+  camCfg.preset=CAM_PRESETS[k]?k:'free';
+  if(camCfg.angle&&camCfg.preset!=='free') resetCam();
+  camSave(); camUI();
 }
 function togglePov(){
   isTopDown=!isTopDown;
@@ -2326,8 +2381,12 @@ $('btnDice').addEventListener('click',()=>applyDice(DICE[(DICE.findIndex(x=>x.ke
 applyDice(diceKey);
 updateNightUI();
 $('btnRoll').addEventListener('click',()=>{ ensureAudio(); doRoll(); });
-$('btnCam').addEventListener('click',resetCam);
+$('btnCam').addEventListener('click',()=>resetCam());
 $('btnPov').addEventListener('click',togglePov);
+camLoad(); camUI();
+$('btnAngle').addEventListener('click',()=>camSetAngle(!camCfg.angle));
+$('camPreset').addEventListener('change',e=>camSetPreset(e.target.value));
+$('btnFollow').addEventListener('click',()=>camSetFollow(!camCfg.follow));
 $('btnTheme').addEventListener('click',()=>{
   const now=pendingTheme||themeKey,i=THEMES.findIndex(t=>t.key===now);
   chooseTheme(THEMES[(i+1)%THEMES.length].key);
@@ -2376,6 +2435,8 @@ function frame(now){
   let tx=0,ty=2.8,tz=-0.2;
   if(isTopDown){
     tx=0; tz=0; ty=3.5;
+  }else if(!camFollowing()){
+    tx=camHold.x; ty=camHold.y; tz=camHold.z; /* ANGLE ON + FOLLOW OFF: kamera diam, tidak ikut giliran/bidak */
   }else if(focus){
     tx+=focus.position.x*0.35; tz+=focus.position.z*0.35; ty+=(focus.position.y-3.2)*0.45;
   }
