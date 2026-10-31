@@ -381,6 +381,7 @@ if (typeof THREE === 'undefined') {
 <script src="gameplay/dice-ui.js"></script>
 <script src="gameplay/audio.js"></script>
 <script src="gameplay/voxel-geom.js"></script>
+<script src="gameplay/fx.js"></script>
 <script>
     if (window.__NO_THREE) { throw new Error('Three.js tidak dimuat'); }
 (function(){
@@ -515,6 +516,8 @@ renderer.shadowMap.enabled=true;
 renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.setClearColor(0x000000,0);
 const scene=new THREE.Scene();
+const FX=(window.UT&&UT.GameplayFX)||null; /* modul tak termuat -> efek visual dilewati, gameplay tetap jalan */
+if(FX) FX.init(scene);
 const camera=new THREE.PerspectiveCamera(38,1,0.1,250);
 
 const hemi=new THREE.HemisphereLight(0xFFFFFF,0xB9D7A0,0.9);
@@ -1118,15 +1121,7 @@ function buildMobs(th){
     }
   }
 }
-const sparks=[],SPARK_GEO=new THREE.BoxGeometry(0.06,0.06,0.06);
-function sparkle(pos){
-  for(let i=0;i<14;i++){
-    const m=new THREE.Mesh(SPARK_GEO,new THREE.MeshBasicMaterial({color:i%3?0xFFE58A:0xFFFFFF,transparent:true,fog:false}));
-    m.position.set(pos.x+(Math.random()-0.5)*0.3,pos.y,pos.z+(Math.random()-0.5)*0.3); scene.add(m);
-    sparks.push({m,v:new THREE.Vector3((Math.random()-0.5)*0.9,0.7+Math.random()*0.9,(Math.random()-0.5)*0.9),life:1,max:1});
-    sparks[sparks.length-1].life=sparks[sparks.length-1].max=0.8+Math.random()*0.5;
-  }
-}
+function sparkle(pos){ if(FX) FX.sparkle(pos); } /* visual: UT.GameplayFX */
 function mobReact(n){ if(MOBOBJ[n]) MOBOBJ[n].react=1.6; }
 function openChest(n){ const c=CHESTOBJ[n]; if(!c) return; c.open=1.6; sparkle(new THREE.Vector3(c.x,c.y+0.35,c.z)); }
 function updateMobs(dt,t){
@@ -1146,10 +1141,7 @@ function updateMobs(dt,t){
     g.position.set(m.x+jx,m.y+y,m.z); g.scale.setScalar(m.s*sc);
     if(m.rods) m.rods.rotation.y+=dt*(near?6:2.2);
   }
-  for(let i=sparks.length-1;i>=0;i--){
-    const q=sparks[i]; q.life-=dt; q.m.position.addScaledVector(q.v,dt); q.v.y-=0.5*dt; q.m.material.opacity=Math.max(0,q.life/q.max);
-    if(q.life<=0){ scene.remove(q.m); q.m.material.dispose(); sparks.splice(i,1); }
-  }
+  if(FX) FX.updateSparks(dt);
   for(const n in CHESTOBJ){
     const c=CHESTOBJ[n]; c.open=Math.max(0,c.open-dt);
     const a=c.open>0?Math.max(0,Math.min(1,Math.min((1.6-c.open)*6,c.open*3))):0;
@@ -1320,18 +1312,8 @@ try{ const D=window.UT&&UT.GameplayDiceUI; if(D) D.init(); }catch(e){ console.er
 showDie(1,false);
 
 /* ---------- Konfeti ---------- */
-const confetti=[];
-const CONF_GEO=new THREE.BoxGeometry(0.14,0.14,0.14);
-const CONF_MATS=[0xF0453A,0x2F80FF,0xFFC21A,0xA855F7,0x45C94B,0xFFFFFF].map(c=>new THREE.MeshLambertMaterial({color:c}));
-function spawnConfetti(pos){
-  for(let i=0;i<110;i++){
-    const m=new THREE.Mesh(CONF_GEO,CONF_MATS[i%CONF_MATS.length]);
-    m.position.set(pos.x,pos.y+0.8,pos.z);
-    scene.add(m);
-    confetti.push({m,v:new THREE.Vector3((Math.random()-0.5)*6,4+Math.random()*5,(Math.random()-0.5)*6),r:new THREE.Vector3(Math.random()*6,Math.random()*6,Math.random()*6),life:2.6+Math.random()*1.4});
-  }
-}
-function clearConfetti(){ confetti.forEach(c=>scene.remove(c.m)); confetti.length=0; }
+function spawnConfetti(pos){ if(FX) FX.spawnConfetti(pos); } /* visual: UT.GameplayFX */
+function clearConfetti(){ if(FX) FX.clearConfetti(); }
 
 /* ---------- Ender Dragon ---------- */
 function wingMesh(sg){
@@ -1892,12 +1874,7 @@ function frame(now){
     const mk=p.pawn.userData.marker;
     if(mk.visible){ mk.position.y=1.22+Math.sin(now*0.004)*0.08; mk.rotation.y+=dt*2; }
   });
-  for(let i=confetti.length-1;i>=0;i--){
-    const c=confetti[i]; c.life-=dt; c.v.y-=14*dt;
-    c.m.position.addScaledVector(c.v,dt);
-    c.m.rotation.x+=c.r.x*dt; c.m.rotation.y+=c.r.y*dt; c.m.rotation.z+=c.r.z*dt;
-    if(c.life<=0){ scene.remove(c.m); confetti.splice(i,1); }
-  }
+  if(FX) FX.updateConfetti(dt);
   const watch=[camTarget];
   if(focus) watch.push(focus.position);
   players.forEach(p=>watch.push(p.pawn.position));
