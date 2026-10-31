@@ -896,7 +896,7 @@ const ROAM=[],ROAMQ=[],NOWALK=[];
 function blockRect(cx,cz,hx,hz){ NOWALK.push([cx-hx,cx+hx,cz-hz,cz+hz]); }
 function walkBlocked(x,z){
   if(Math.abs(x)<5.9&&Math.abs(z)<5.9) return true;
-  if(x>5.6&&x<8.6&&z>-5.2) return true;
+  if(x>4.9&&x<9.1&&z>-13) return true; /* air sungai kanan (termasuk hilir yang melebar) */
   if(hAt(x,z)>0) return true;
   for(let i=0;i<NOWALK.length;i++){ const r=NOWALK[i]; if(x>r[0]&&x<r[1]&&z>r[2]&&z<r[3]) return true; }
   return false;
@@ -1097,7 +1097,8 @@ function addAnimal(B,x,z,yaw,cow,cc,dd){
 }
 function addBamboo(B,x,z){ for(let i=0;i<5;i++){ const h=1.2+rnd()*1.4,bx=x+(rnd()-0.5)*0.7,bz=z+(rnd()-0.5)*0.7; for(let y=0;y<h;y+=0.3) addBox(B,bx,y+0.15,bz,0.09,0.3,0.09,jit(0x6FBF3A,0.08),{edge:false}); } }
 function mcH(x,z){
-  if(x>5.2&&x<9.8&&z>-4.8) return 0;
+  if(x>4.8&&x<9.8&&z>-13) return 0; /* koridor sungai kanan sampai hulu (gunung mundur ke belakang) */
+  if(x>-16.6&&x<-7.4&&z>-4.6&&z<4.6) return 0; /* gunung + sungai kiri di dekat hutan */
   const d=Math.max(Math.abs(x)-8,Math.abs(z)-7); if(d<=0) return 0;
   const n=Math.sin(x*0.22)+Math.cos(z*0.27)+Math.sin((x+z)*0.13)*1.2+0.4;
   return Math.max(0,Math.round(n*Math.min(1,d/14)*3.2)/2);
@@ -1122,6 +1123,12 @@ function buildMcTerrain(TB,th){
     addBox(TB,gx,h-0.1,gz,2,0.2,2,jit(h>=3.5?PK:(h>=2.5?M:G),0.08));
   }
   for(let z=7;z<=28;z+=1) addBox(TB,7+0.5*Math.sin(z*0.7),-0.04,z,1.8+z*0.04,0.16,1,jit(R,0.06),{edge:false});
+  /* jembatan kayu di sungai kanan: di bawah board (z=9, ~3.5 dari tepi board) agar tidak menempel board */
+  { const bz=9,bxc=7+0.5*Math.sin(bz*0.7),half=(1.8+bz*0.04)/2+0.7,x0=bxc-half,x1=bxc+half,len=x1-x0,Wd=0.9;
+    for(let i=0,n=Math.round(len/0.4);i<n;i++) addBox(TB,x0+len/n*(i+0.5),0.2,bz,len/n,0.08,Wd,jit(i%2?0x9A6B3A:0xB07A42,0.05));
+    [x0-0.2,x1+0.2].forEach(sx=>addBox(TB,sx,0.08,bz,0.4,0.16,Wd,jit(0x8A5B33,0.05)));
+    [-1,1].forEach(sd=>{ addBox(TB,bxc,0.52,bz+sd*0.43,len,0.07,0.07,jit(0x6B4423,0.05)); [x0+0.08,bxc,x1-0.08].forEach(px=>addBox(TB,px,0.36,bz+sd*0.43,0.09,0.34,0.09,jit(0x5A3A1E,0.05))); });
+  }
 }
 const BIO={rumput:[[0xF0A8A8,0xD98888],[0xF2F2F2,0x3A2A22]],gurun:[[0xD9B26A,0x9A7A3A],[0xC99A52,0x7A5A2A]],salju:[[0xF4F8FA,0xB8C8D0],[0xDDE6EA,0x6A7A82]],hutan:[[0xE6B84A,0x8A6A1E],[0x6FBF4A,0x2E6B1E]],nether:[[0xD98A7A,0x8A4A3A],[0xC9703A,0x6A3A1A]]};
 function addWideFar(DB,th){
@@ -1153,22 +1160,27 @@ function addMcFar(DB){
   while(n<150&&t++<1200){
     const x=(rnd()-0.5)*64,z=(rnd()-0.5)*56;
     if(Math.abs(x)<14&&Math.abs(z)<12) continue;
-    const s=0.8+rnd()*0.7; lift(DB,()=>addOak(DB,x,z,s),hAt(x,z)); n++;
+    const s=0.8+rnd()*0.7;
+    if((x>-17&&x<-7.5&&z>-4&&z<4)||(x>4.4&&x<9.8&&z>-13)) continue; /* area gunung/sungai */
+    lift(DB,()=>addOak(DB,x,z,s),hAt(x,z)); n++;
   }
   [[-13,-10],[12,-12],[16,10],[-15,9],[22,-4]].forEach(q=>{ lift(DB,()=>addMcHouse(DB,q[0],q[1]),hAt(q[0],q[1])); addHouseExtras(DB,q[0],q[1],hAt(q[0],q[1])); });
   for(let i=0,k=0;i<300&&k<10;i++){
     const x=(rnd()-0.5)*50,z=(rnd()-0.5)*44;
-    if(Math.abs(x)<9&&Math.abs(z)<8||hAt(x,z)>0||(x>5&&x<10&&z>-5)) continue; queueAnimal(x,z,rnd()*6.28,['sheep','cow','pig','sheep','chicken','cow','pig','sheep','pig','cow'][k%10]); k++;
+    if(Math.abs(x)<9&&Math.abs(z)<8||hAt(x,z)>0||(x>4.8&&x<9.2&&z>-13)||(x>-17&&x<-7.5&&z>-4&&z<4)) continue; queueAnimal(x,z,rnd()*6.28,['sheep','cow','pig','sheep','chicken','cow','pig','sheep','pig','cow'][k%10]); k++;
   }
 }
 function addMcEnv(DB){
   addMcFar(DB);
-  cascadeHill(DB,'e',-9.2,-6.3,-1.8,1.4,true);
-  cascadeHill(DB,'s',-7.6,-4.7,5.2,8.8,false);
-  for(let z=-4.4;z<=6.5;z+=1) addBox(DB,7+0.5*Math.sin(z*0.7),-0.04,z,1.6,0.16,1,jit(0x3F76E4,0.06),{edge:false});
-  for(let x=-6.0;x<=-5.4;x+=0.5) addBox(DB,x,-0.04,-0.2+0.1*Math.sin(x*3),0.7,0.16,1.7,ljit(0x3F76E4,0.06),{edge:false});
-  blockRect(-5.75,-0.2,1.0,1.1);
-  const blocked=(x,z)=>(Math.abs(x)<5.4&&Math.abs(z)<5.4)||(Math.abs(x-PAD.x)<1.4&&Math.abs(z-PAD.z)<1.4)||(x>5.3&&z<-4.5)||(x<-5.3&&x>-7.6&&z>-2.3&&z<1.9)||(x>6&&x<8.1&&z>-4.6)||(z<-5.5&&x>-6.4&&x<2)||(Math.abs(x+6.9)<1.2&&Math.abs(z+3.6)<1.2)||(Math.abs(x-4.2)<1.2&&Math.abs(z+6.3)<1.2);
+  /* gunung hulu dimundurkan: kiri ke arah hutan, kanan ke belakang (utara). Sungai menyambung tanpa celah dari hulu sampai terrain z>=7. */
+  cascadeHill(DB,'e',-14.6,-11.7,-1.8,1.4,true);
+  cascadeHill(DB,'s',-11.4,-8.5,5.2,8.8,false);
+  for(let z=-8.0;z<=6.0;z+=1) addBox(DB,7+0.5*Math.sin(z*0.7),-0.04,z,1.6,0.16,1,jit(0x3F76E4,0.06),{edge:false}); /* menutup -8.5..6.5; terrain mulai 6.5 */
+  /* sungai kiri: dari kaki gunung ke kolam di tengah, TIDAK menyentuh board (tepi board x=-5.5) */
+  for(let x=-11.35;x<=-9.0;x+=0.7) addBox(DB,x,-0.04,-0.2+0.12*Math.sin(x*1.3),0.7,0.16,1.2,ljit(0x3F76E4,0.06),{edge:false});
+  addBox(DB,-8.7,-0.04,-0.2,1.2,0.16,2.0,ljit(0x3F76E4,0.06),{edge:false});
+  blockRect(-10.3,-0.2,2.1,1.2); blockRect(-8.7,-0.2,1.1,1.5); /* hewan tidak masuk air kiri */
+  const blocked=(x,z)=>(Math.abs(x)<5.4&&Math.abs(z)<5.4)||(Math.abs(x-PAD.x)<1.4&&Math.abs(z-PAD.z)<1.4)||(x>5.3&&z<-4.5)||(x>6&&x<8.1&&z>-9)||(z<-5.5&&x>-6.4&&x<2)||(Math.abs(x+6.9)<1.2&&Math.abs(z+3.6)<1.2)||(Math.abs(x-4.2)<1.2&&Math.abs(z+6.3)<1.2);
   item(-6.9,-3.6,1.6,1.3,b=>addMcHouse(b,-6.9,-3.6)); item(4.2,-6.3,1.6,1.3,b=>addMcHouse(b,4.2,-6.3));
   item(0.2,-6.4,2.3,1.4,b=>addPortal(b,0.2,-6.4));
   blockRect(PAD.x,PAD.z,1.3,1.3); blockRect(0.2,-6.4,1.3,1.0);
