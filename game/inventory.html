@@ -45,9 +45,6 @@ svg{display:block}
 .pulse{animation:pu .4s}@keyframes pu{50%{transform:scale(1.15)}}
 #gear{right:1.4rem;top:1.7rem;width:4.4rem;height:4.4rem;border-radius:1.4rem;padding:0;display:grid;place-items:center}#gear svg{width:2.8rem;height:2.8rem}
 #bot{left:45.1rem;top:8rem;width:53.5rem;height:45.9rem;border-radius:2.6rem;padding:1rem 1.1rem;background:linear-gradient(#3b9cf8,#2a86ee);box-shadow:0 .6rem 0 var(--bd),0 1.4rem 2.4rem rgba(18,51,127,.35),inset 0 .2rem .3rem rgba(255,255,255,.6),inset 0 0 0 .3rem #6cc0ff;display:flex;flex-direction:column;gap:.9rem}
-#tabs{display:flex;gap:.6rem;flex:none}
-.tab{flex:1;height:3.9rem;border-radius:2rem;font-size:1.9rem;display:flex;align-items:center;justify-content:center;gap:.7rem;padding:0;background:linear-gradient(#2f94f0,#1766d8);box-shadow:0 .3rem 0 var(--bd);border:.25rem solid transparent}
-.tab svg{width:2.4rem;height:2.4rem}.tab.on{flex:1.1;border-color:#ffe36a;background:linear-gradient(#ffe36a,#f4b62a);box-shadow:0 .3rem 0 #b9740c,0 0 1.2rem #ffd24d}
 #gwrap{flex:1;min-height:0;border-radius:2rem;padding:.9rem;background:linear-gradient(#2a7ce0,#2f90f2);box-shadow:inset 0 .3rem .6rem rgba(10,40,120,.35)}
 #grid{height:100%;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;gap:1rem}
 .card{position:relative;border-radius:1.6rem;padding:.3rem .7rem .7rem;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:.3rem;min-height:0;background:linear-gradient(#3f9bff,#1c55c0);box-shadow:0 .25rem 0 rgba(10,30,100,.5),inset 0 0 0 .25rem rgba(120,190,255,.55);animation:pop .35s both;cursor:pointer}
@@ -91,129 +88,45 @@ html{font-size:2.5vw}
 #ui{position:fixed;inset:0;overflow:auto;display:flex;flex-direction:column;gap:1.4rem;padding:1.2rem}
 .ab{position:relative!important;left:auto!important;top:auto!important;right:auto!important;bottom:auto!important}
 #top{display:flex;flex-wrap:wrap;align-items:center;gap:1.2rem 3rem}
-#title{order:-1}#cats{display:none}
+#title{order:-1}#cats{order:1;flex-direction:row!important;overflow-x:auto;width:auto!important;padding-bottom:.6rem}.cat{flex:0 0 auto;height:4.4rem}
 #show{width:auto!important;height:75vw!important;order:1}
 #sbs{order:2;flex-direction:row!important;justify-content:center}
 #info{order:3;width:auto!important;height:auto!important;margin-top:1.4rem}
 #rec{order:4;width:auto!important}
 #bot{order:5;width:auto!important;height:auto!important}
-#tabs{overflow-x:auto}.tab{flex:0 0 14rem;min-height:44px}
 #gwrap,#grid{height:auto}#grid{grid-template-columns:repeat(2,1fr);grid-template-rows:none;grid-auto-rows:22rem}
 }
 </style><style>:root{--curbar-right:7.6rem;--curbar-top:1.8rem;}</style><link rel="stylesheet" href="assets/css/shared-ui.css">
 
-<style id="inventory-layout-fix">
-/* Desktop landscape: use the available width instead of shrinking the whole UI
-   to fit a short viewport. The 3D preview and its canvas are not modified. */
-@media (min-aspect-ratio: 1.35) and (max-height: 850px) {
-  #cats{
-    left:1vw; top:14vh; width:10.5vw;
-    gap:.45rem;
-  }
-  .cat{
-    height:6.7vh; min-height:3.8rem;
-    border-radius:1.15rem;
-    padding:0 .8rem;
-    gap:.65rem;
-    font-size:1.55rem;
-    white-space:nowrap;
-  }
-  .cat svg{width:2.3rem;height:2.3rem;flex:none}
-
-  #show{
-    left:12.5vw; top:17vh;
-    width:19vw; height:45vh;
-  }
-  #sbs{
-    left:32vw; top:25vh;
-    gap:.7rem;
-  }
-  #sbs button{
-    width:3.8rem;height:3.5rem;
-  }
-  #info{
-    left:12vw; top:64vh;
-    width:23vw;height:12vh;
-    min-height:6.8rem;
-    padding:1rem 1.2rem;
-    border-radius:1.5rem;
-  }
-  #iname{font-size:1.9rem}
-  #idesc{font-size:1rem;line-height:1.2}
-  #info .badge{top:-1.2rem;left:1rem}
-
-  #rec{
-    left:1vw;top:80vh;
-    width:34vw;height:17vh;
-    min-height:7.4rem;
-    padding:1rem 1.1rem .55rem;
-    gap:.7rem;
-    border-radius:1.6rem;
-  }
-  #rl{left:2.5rem;font-size:.95rem}
-  .rarr{width:3.1rem;height:4.2rem}
-  #rlist{gap:.7rem}
-  .rt{width:4.7rem;height:4.7rem;flex:none}
-
+<style id="inventory-fluid-layout">
+/* LANDSCAPE: stage dasar 100rem x 56.25rem menempel di kiri-atas. Panel kanan (#bot) sekarang
+   ditarik sampai tepi kanan layar, dan kolom kiri ditambatkan ke bawah layar, jadi tidak ada
+   ruang kosong di rasio layar apa pun (4:3, 16:9, 21:9). Portrait memakai aturan mobile di atas. */
+@media (min-aspect-ratio:1/1){
+  #show{height:auto;bottom:17.7rem}
+  #info{top:auto;bottom:10.6rem}
+  #rec{top:auto;bottom:1.6rem}
   #bot{
-    left:36.5vw;top:14vh;
-    width:62vw;height:82vh;
-    padding:.85rem;
-    gap:.8rem;
-    border-radius:2.1rem;
+    left:45.1rem;right:1.4rem;top:8rem;bottom:1.6rem;
+    width:auto;height:auto;
+    container-type:inline-size;
   }
-  #tabs{
-    display:grid;
-    grid-template-columns:repeat(6,minmax(0,1fr));
-    gap:.45rem;
-    width:100%;
-  }
-  .tab{
-    min-width:0;width:100%;height:4rem;min-height:44px;
-    flex:none;
-    border-radius:1.2rem;
-    padding:0 .25rem;
-    gap:.25rem;
-    font-size:1.28rem;
-    line-height:1;
-    white-space:nowrap;
-    overflow:hidden;
-  }
-  .tab.on{flex:none}
-  .tab svg{width:1.65rem;height:1.65rem;flex:none}
-  #gwrap{
-    flex:1;min-height:0;
-    padding:.75rem;
-    border-radius:1.5rem;
-  }
+  /* grid: jumlah kolom menyesuaikan lebar panel, kartu tetap proporsional, scroll bila item banyak */
+  #gwrap{overflow:hidden}
   #grid{
-    height:100%;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    grid-template-rows:repeat(2,minmax(0,1fr));
-    gap:.75rem;
+    height:100%;padding:.6rem;
+    overflow-x:hidden;overflow-y:auto;
+    grid-template-columns:repeat(auto-fill,minmax(11.4rem,1fr));
+    grid-template-rows:none;grid-auto-rows:16.4rem;align-content:start;
+    scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.5) transparent;
   }
-  .card{
-    min-width:0;
-    padding:.35rem .5rem .55rem;
-    border-radius:1.25rem;
-  }
-  .card .th{width:78%}
-  .card .nm{font-size:1.12rem;line-height:1.2rem}
-  .card .badge{font-size:.85rem;line-height:1.25rem}
-  .bt{height:2.35rem;font-size:1.12rem}
-  .use{
-    width:16rem;height:3.8rem;
-    font-size:1.8rem;
-    flex:none;
-  }
-  .use svg{width:2.2rem;height:2.2rem}
+  .card{min-width:0}
+  .card .nm{max-width:100%;overflow:hidden;text-overflow:ellipsis}
 }
-
-/* Keep the tabs readable on narrower landscape screens. */
-@media (min-aspect-ratio:1.35) and (max-width:1100px) {
-  #tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .tab{height:3.4rem;min-height:44px;font-size:1.15rem}
-  #bot{gap:.55rem}
+/* PORTRAIT: thumbnail "terbaru" menyusut agar panah kanan tidak terpotong */
+@media (max-aspect-ratio:1/1){
+  #rlist{min-width:0;gap:.6rem}
+  .rt{flex:1 1 0;min-width:0;max-width:5.3rem;height:auto;aspect-ratio:1}
 }
 </style>
 </head>
@@ -231,7 +144,7 @@ html{font-size:2.5vw}
 <div class="ab" id="sbs"><button class="blue" id="b1" aria-label="Ganti pose"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-3-6.200M20 3v5h-5M4 12a8 8 0 0 0 13 6.200" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="blue" id="b2" aria-label="Lihat yang dipakai"></button><button class="blue" id="b3" aria-label="Putar 360">360°</button></div>
 <section class="ab" id="info"><span class="badge" id="irar"></span><div id="iname"></div><div id="idesc"></div></section>
 <section class="ab" id="rec"><span id="rl"><svg viewBox="0 0 24 24"><path d="M3 18 2 7l5 4 5-7 5 7 5-4-1 11z" fill="#ffd24d"/></svg><b id="rlt"></b></span><button class="blue rarr" id="rp" aria-label="Sebelumnya"><svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div id="rlist"></div><button class="blue rarr" id="rn" aria-label="Berikutnya"><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></section>
-<section class="ab" id="bot"><div id="tabs"></div><div id="gwrap"><div id="grid"></div></div><button class="use" id="use"></button></section>
+<section class="ab" id="bot"><div id="gwrap"><div id="grid"></div></div><button class="use" id="use"></button></section>
 </div>
 <div class="ov" id="modal"><div class="box" id="box" role="dialog" aria-modal="true"><button class="x" id="mx" aria-label="Tutup">✕</button><div id="mb"></div></div></div>
 <div id="toast"></div>
@@ -282,7 +195,6 @@ const RB={common:['#4ad04a','#2a9a2a'],rare:['#4aa8ff','#2a78e0'],epic:['#b45cf0
 let off=0,pose='idle';
 const bg=r=>`linear-gradient(${RB[r][0]},${RB[r][1]})`,badge=r=>`<span class="badge" style="background:${bg(r)}">${RN[r]}</span>`;
 function renderCats(){$('#cats').innerHTML=CATS.map(c=>`<button class="blue cat ${c[0]===cat?'on':''}" data-c="${c[0]}" aria-label="${c[1]}">${icon(c[2])}${c[1]}</button>`).join('');
- $('#tabs').innerHTML=CATS.map(c=>`<button class="tab ${c[0]===cat?'on':''}" data-c="${c[0]}">${icon(c[2])}${c[1]}</button>`).join('');
  $('#rlt').textContent=CATS.find(c=>c[0]===cat)[1]+' Terbaru';
  document.querySelectorAll('[data-c]').forEach(b=>b.addEventListener('click',()=>{playSound('click');setCat(b.dataset.c)}))}
 function setCat(c){cat=c;const l=ownedList(c);sel=l?(l.find(o=>o.equipped)||l[0]||{}).item||null:null;off=0;pose='idle';renderCats();renderGrid();renderInfo();renderRecent();buildModels();playSound('select')}

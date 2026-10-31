@@ -115,7 +115,15 @@ svg{display:block}
   flex-direction: column;
   gap: max(.8rem, 8px);
   overflow-y: auto;
+  /* ruang untuk shadow/glow/scale tombol agar tidak terpotong oleh overflow;
+     margin negatif menjaga posisi & lebar tombol tetap sama */
+  padding: 1.4rem 1.4rem 1.8rem;
+  margin: -1.4rem -1.4rem -1.4rem;
+  pointer-events: none;
+  scrollbar-width: none;
 }
+#cats::-webkit-scrollbar{display:none}
+#cats .cat{pointer-events:auto}
 
 .cat{
   min-height:44px;
@@ -268,7 +276,7 @@ svg{display:block}
     gap:1.2rem;
     padding:1rem;
   }
-  #cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px;overflow:visible;flex-shrink:0;padding-bottom:6px}
+  #cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px;overflow:visible;flex-shrink:0;padding:0 0 6px;margin:0}
   .cat{padding-inline:8px;justify-content:center;gap:6px;min-width:0}
   .right-section{width:100%}
   .shop-top-panel{grid-template-columns: 1fr; height: auto; gap: 1rem}
