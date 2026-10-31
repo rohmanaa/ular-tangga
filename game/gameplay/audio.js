@@ -67,12 +67,16 @@
     win(){ [523,659,784,1047,784,1047].forEach((f,i)=>beep(f,0.2,'square',0.05,i*0.14)); }
   };
 
+  /* Gerbang urutan: SFX baru boleh bunyi setelah gameplay menandai audio siap (setelah percobaan BGM pada gesture pertama). */
+  var ready=false;
+  Object.keys(sfx).forEach(function(k){ var f=sfx[k]; sfx[k]=function(){ if(!ready) return; return f.apply(this,arguments); }; });
   try{ preload(); }catch(e){}
   UT.GameplayAudio = {
     ensure: ensureAudio,
     preload: preload,
     play: function (name) { try { if (typeof sfx[name] === 'function') sfx[name](); } catch (e) {} },
     setMuted: function (v) { muted = !!v; },
+    setReady: function (v) { ready = !!v; },
     sfx: sfx
   };
 })(window);

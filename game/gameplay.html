@@ -550,8 +550,8 @@ function ensureMusic(){
   catch(e){ bgMusic=null; }
 }
 function playMusic(){
-  ensureMusic(); if(!bgMusic||!musicOn) return;
-  try{ bgMusic.volume=musicVol/100; bgMusic.play().catch(()=>{}); }catch(e){}
+  ensureMusic(); if(!bgMusic||!musicOn) return null;
+  try{ bgMusic.volume=musicVol/100; const r=bgMusic.play(); if(r&&r.catch) r.catch(()=>{}); return r||null; }catch(e){ return null; }
 }
 function stopMusic(){
   if(!bgMusic) return; try{ bgMusic.pause(); }catch(e){}
@@ -2307,8 +2307,6 @@ function openPause(){
 function closePause(){ paused=false; $('exitConfirm').hidden=true; $('pauseMenu').hidden=true; $('btnMenu').focus(); }
 $('btnMenu').addEventListener('click',openPause);
 $('pmResume').addEventListener('click',closePause);
-$('pmDay').addEventListener('click',()=>{ setNight(false); syncPauseNight(); setMusicOn(true); });
-$('pmNight').addEventListener('click',()=>{ setNight(true); syncPauseNight(); setMusicOn(true); });
 $('pmExit').addEventListener('click',()=>{ $('exitConfirm').hidden=false; $('ecNo').focus(); });
 $('ecNo').addEventListener('click',()=>{ $('exitConfirm').hidden=true; $('pmExit').focus(); });
 $('ecYes').addEventListener('click',()=>{ location.href=LOBBY_URL; });
@@ -2420,7 +2418,21 @@ let saved=null;
 try{ saved=localStorage.getItem('ut-tema2'); }catch(e){}
 buildWorld(CFG.theme||saved||THEMES[0].key);
 lastSkins=CFG.skins.slice();
-document.addEventListener('pointerdown',()=>{ ensureAudio(); ensureMusic(); if(musicOn) playMusic(); },{once:true});
+/* Urutan audio Gameplay: init audio -> BGM -> SFX boleh. Browser (Android) hanya menganggap pointerup/touchend/click/keydown sebagai aktivasi untuk sentuhan,
+   jadi unlock diulang pada gesture valid sampai play() BGM berhasil. Fase capture: berjalan SEBELUM handler tombol (mis. Roll) sehingga SFX tidak mendahului BGM. */
+ensureMusic();
+(function(){
+  const EV=['pointerdown','pointerup','touchend','keydown','click']; let done=false;
+  const finish=()=>{ if(done) return; done=true; EV.forEach(e=>document.removeEventListener(e,unlock,true)); };
+  function unlock(){
+    if(done) return;
+    ensureAudio();
+    const r=playMusic();                 /* BGM dicoba lebih dulu (null bila dimatikan/tidak didukung) */
+    if(GA&&GA.setReady) GA.setReady(true); /* baru setelah itu SFX gameplay boleh bunyi; gagal BGM tidak menahan SFX/gameplay */
+    if(r&&r.then) r.then(finish,()=>{}); else finish();
+  }
+  EV.forEach(e=>document.addEventListener(e,unlock,true));
+})();
 startGame(CFG.mode,CFG.skins.slice());
 /*TEST-HOOK*/
 requestAnimationFrame(frame);
