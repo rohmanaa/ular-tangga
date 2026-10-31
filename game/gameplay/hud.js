@@ -13,6 +13,11 @@
      UT.GameplayHUD.showCombat(att, def, text, {hp,maxHp,ttl,gid}) — strip combat + bar HP naga (opsional)
      UT.GameplayHUD.showResult(title, text, {ttl, gid}) — LEVEL 2: panel penting non-blocking (role=status)
      UT.GameplayHUD.updatePlayer(player)                — sinkronkan bar HP naga bila sedang tampil
+   Prioritas banner (Stage 4.1.6, hanya presentasi, state ada di HUD ini):
+     NORMAL    = kind 'turn' / 'extra' (showTurn)         — tidak boleh menimpa banner IMPORTANT yang masih aktif;
+                                                            ditunda 1 slot (yang terbaru) lalu tampil saat IMPORTANT selesai
+     IMPORTANT = semua kind lain (ladder, snake, mob, power, shield, dragon, chest, bounce, info)
+                                                          — boleh menimpa NORMAL maupun IMPORTANT sebelumnya (event baru)
    Semua teks lewat textContent (tanpa HTML string). Elemen informasi tidak diberi role=button/tabindex. */
 (function (win, doc) {
   'use strict';
@@ -29,6 +34,8 @@
   var root = null, banner = null, bIcon = null, bText = null, panel = null, pTitle = null, pText = null,
       combat = null, cWho = null, cText = null, cBar = null, cFill = null, cHp = null;
   var tBanner = 0, tPanel = 0, tCombat = 0;
+  var NORMAL = { turn: 1, extra: 1 };
+  var bPrio = '', pend = null; /* prioritas banner yang tampil ('normal'|'important'|'') + 1 slot feedback NORMAL tertunda */
   var combatOwner = null;
 
   function injectStyle() {
@@ -98,7 +105,12 @@
   }
   function ttlOf(o, d) { var t = o && +o.ttl; return t > 0 ? t : d; }
 
-  function hideBanner() { clearTimeout(tBanner); tBanner = 0; if (banner) banner.hidden = true; }
+  function hideBanner() { clearTimeout(tBanner); tBanner = 0; bPrio = ''; if (banner) banner.hidden = true; }
+  /* Banner habis waktu: sembunyikan, lalu tampilkan feedback NORMAL yang tertunda (bila ada). */
+  function expireBanner() {
+    hideBanner();
+    if (pend) { var q = pend; pend = null; H.showEvent(q.kind, q.text, q.o); }
+  }
   function hidePanel() { clearTimeout(tPanel); tPanel = 0; if (panel) panel.hidden = true; }
   function hideCombat() { clearTimeout(tCombat); tCombat = 0; combatOwner = null; if (combat) combat.hidden = true; }
 
@@ -113,16 +125,18 @@
       return H;
     },
     reset: function () {
-      hideBanner(); hidePanel(); hideCombat();
+      pend = null; hideBanner(); hidePanel(); hideCombat();
       return H;
     },
     showEvent: function (kind, text, o) {
       if (!text || stale(o) || !build()) return H;
-      var k = ICON[kind] ? kind : 'info';
+      var k = ICON[kind] ? kind : 'info', normal = !!NORMAL[k];
+      if (normal && bPrio === 'important' && !banner.hidden) { pend = { kind: kind, text: text, o: o }; return H; } /* tunda, jangan timpa IMPORTANT */
+      bPrio = normal ? 'normal' : 'important';
       banner.setAttribute('data-k', k);
       bIcon.textContent = (o && o.icon) || ICON[k]; bText.textContent = String(text);
       clearTimeout(tBanner); retrigger(banner);
-      tBanner = setTimeout(hideBanner, ttlOf(o, 2000));
+      tBanner = setTimeout(expireBanner, ttlOf(o, 2000));
       return H;
     },
     showTurn: function (p, o) {
