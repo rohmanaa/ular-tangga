@@ -2125,7 +2125,9 @@ async function bite(p,from,to,gid){
   scene.add(lump); lump.visible=true; lump.material.color.setHex(p.hex); focus=lump;
   const back=tween(0.45,k=>poseHead(S,lerp(0.42,0,k),lerp(-0.52,0,k),lerp(0.9,0,k),0));
   const total=pts.length,dur=Math.max(1.0,total*0.036);
+  let ate=false; /* suara 'makan' dipicu dari progres animasi: saat benjolan mencapai tengah badan ular */
   const trip=tween(dur,k=>{
+    if(!ate&&k>=0.5&&gid===gameId){ ate=true; sfx.caplokular(); }
     const f=k*(total-1),i=Math.floor(f),j=Math.min(total-1,i+1),r=f-i,a=pts[i],b=pts[j];
     lump.position.set(lerp(a.x,b.x,r),lerp(a.y,b.y,r),lerp(a.z,b.z,r));
     lump.scale.setScalar(lerp(a.s,b.s,r)*1.75*(1+0.12*Math.sin(k*34)));
@@ -2133,7 +2135,7 @@ async function bite(p,from,to,gid){
   await A(Promise.all([back,trip]));
   const end=pts[total-1];
   scene.remove(lump); lump.visible=false;
-  sfx.pop(); sfx.caplokular();
+  sfx.pop();
   p.pawn.visible=true; p.pawn.scale.setScalar(0.2);
   p.pawn.position.set(end.x,end.y,end.z); focus=p.pawn;
   await A(Promise.all([

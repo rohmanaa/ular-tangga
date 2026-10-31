@@ -39,6 +39,9 @@
       src.connect(f); f.connect(g); g.connect(actx.destination); src.start(actx.currentTime+(when||0));
     }catch(e){}
   }
+  /* Warm-up: file SFX dimuat lebih awal (tanpa diputar, tanpa butuh gesture) agar pemutaran pertama tidak menunggu fetch/decode. */
+  var SFX_FILES=['jump.mp3','Strong_attack5.ogg.mp3','Teleport2.ogg','Creeper_fuse.ogg','skelton_shoot.ogg','Ender_dragon_hurt4.ogg','Ender_dragon_death.ogg','Ender_dragon_idle3.ogg','100.mp3','ularmakan.mp3','Chest_open.ogg','Chest_close2.ogg','rewardpower.mp3','naiktangga.mp3'],warm=[];
+  function preload(){ if(warm.length) return; SFX_FILES.forEach(function(f){ try{ var a=new Audio(); a.preload='auto'; a.src='assets/sfx/'+f; warm.push(a); }catch(e){} }); }
   const sfx={
     hop(){ try{ const a=new Audio('assets/sfx/jump.mp3'); a.volume=0.5; a.play().catch(()=>beep(480+Math.random()*120,0.08,'square',0.04)); }catch(e){ beep(480+Math.random()*120,0.08,'square',0.04); } },
     hit(){ try{ const a=new Audio('assets/sfx/Strong_attack5.ogg.mp3'); a.volume=0.7; a.play().catch(()=>beep(330,0.2,'triangle',0.07,0,140)); }catch(e){ beep(330,0.2,'triangle',0.07,0,140); } },
@@ -64,8 +67,10 @@
     win(){ [523,659,784,1047,784,1047].forEach((f,i)=>beep(f,0.2,'square',0.05,i*0.14)); }
   };
 
+  try{ preload(); }catch(e){}
   UT.GameplayAudio = {
     ensure: ensureAudio,
+    preload: preload,
     play: function (name) { try { if (typeof sfx[name] === 'function') sfx[name](); } catch (e) {} },
     setMuted: function (v) { muted = !!v; },
     sfx: sfx
