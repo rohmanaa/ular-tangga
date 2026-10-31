@@ -595,11 +595,11 @@ function mcBlock(n){
 }
 /*LOGIC-END*/
 
-const PAD={x:-6.5,y:0.14,z:4.5};
+const PAD={x:-7.2,y:0.03,z:4.5}; /* geser ke kiri agar tidak menempel board; y = pantat bidak duduk di kayu (lihat addCampfire) */
 const SLOT=[[-0.3,-0.3],[0.3,-0.3],[-0.3,0.3],[0.3,0.3]];
 function slotPos(pi,n){
   const o=SLOT[pi];
-  if(n===0) return new THREE.Vector3(PAD.x+o[0]*1.3,PAD.y,PAD.z+o[1]*1.3);
+  if(n===0) return new THREE.Vector3(PAD.x+o[0]*2.2,PAD.y,PAD.z+o[1]*2.2); /* duduk di 4 kayu mengelilingi api unggun */
   const t=TILES[n];
   return new THREE.Vector3(t.x+o[0],t.h,t.z+o[1]);
 }
@@ -772,6 +772,7 @@ for(let i=0;i<4;i++){ const L=new THREE.PointLight(0xFFE3A8,0,2.6,2); L.position
 function clearFX(){
   FIRES.length=0; WINS.length=0;
   SMOKE.forEach(s=>s.m.material.dispose()); SMOKE.length=0;
+  PORTALS.forEach(P=>{ P.planes.forEach(m=>m.material.dispose()); P.halo.material.dispose(); P.sparks.forEach(S=>S.m.material.dispose()); }); PORTALS.length=0;
   FLIGHTS.forEach(L=>{ L.intensity=0; L.position.set(0,-50,0); });
   ROAM.length=0; ROAMQ.length=0; NOWALK.length=0; lseed=7771;
 }
@@ -808,9 +809,12 @@ function addCampfire(B,x,z){
   for(let i=0;i<8;i++){ const a=i/8*Math.PI*2; addBox(B,x+Math.cos(a)*0.46,0.07,z+Math.sin(a)*0.46,0.15,0.14,0.15,ljit(0x8A8A8A,0.12)); }
   addBox(B,x,0.03,z,0.7,0.06,0.7,0x2A2522,F);
   [0.2,1.0,1.8,2.6].forEach(a=>addBox(B,x,0.16,z,0.62,0.1,0.1,ljit(0x6B4423,0.08),{yaw:a}));
-  /* bangku kayu */
-  addBox(B,x-1.0,0.12,z+0.2,0.24,0.24,0.9,ljit(0x7A4E2A,0.08)); addBox(B,x-1.0,0.26,z+0.2,0.26,0.04,0.92,ljit(0x8A5B33,0.06),F);
-  addBox(B,x+0.1,0.12,z+1.05,0.9,0.24,0.24,ljit(0x7A4E2A,0.08)); addBox(B,x+0.1,0.26,z+1.05,0.92,0.04,0.26,ljit(0x8A5B33,0.06),F);
+  /* 4 kayu duduk: satu per slot pemain (posisi = SLOT*2.2, sama dengan slotPos(…,0)); bidak duduk di sini sebelum mulai */
+  SLOT.forEach(o=>{
+    const sx=x+o[0]*2.2,sz=z+o[1]*2.2,yaw=(o[0]*o[1]>0)?Math.PI/4:-Math.PI/4;
+    addBox(B,sx,0.12,sz,0.62,0.24,0.28,ljit(0x7A4E2A,0.08),{yaw:yaw});
+    addBox(B,sx,0.245,sz,0.64,0.03,0.30,ljit(0x8A5B33,0.06),{yaw:yaw,edge:false});
+  });
   const f=addFlame(x,0.12,z,1.7,{halo:3.2,hal:0.6}); f.lt=FLIGHTS[4]; f.li=2.1; f.lt.position.set(x,0.8,z);
   addFlame(x+0.14,0.1,z-0.1,1.0,{halo:0,hal:0}); addFlame(x-0.12,0.1,z+0.12,1.15,{halo:0,hal:0});
   for(let i=0;i<6;i++){
@@ -1001,6 +1005,7 @@ function applyNightFX(){
   WINS.forEach(w=>{ w.m.material.color.setHex(night?0xFFD268:0x9ADFF5); w.halo.visible=night; w.halo.material.opacity=night?0.55:0; });
 }
 function updateFX(dt,t){
+  updatePortals(dt,t);
   if(skyStars) skyStars.material.opacity=0.8+0.2*Math.sin(t*2.1);
   for(let i=0;i<FIRES.length;i++){
     const f=FIRES[i],fl=0.86+0.14*Math.sin(t*13+f.ph)+0.07*Math.sin(t*29+f.ph*1.7);
@@ -1036,10 +1041,41 @@ function addMcHouse(B,x,z){
   addBox(B,x,0.45,z,1.5,0.9,1.2,jit(w,0.05)); addBox(B,x,1.0,z,1.7,0.2,1.4,r); addBox(B,x,1.2,z,1.3,0.2,1.0,r); addBox(B,x,1.4,z,0.9,0.2,0.6,r);
   addBox(B,x,0.3,z+0.61,0.3,0.6,0.04,0x5B3A1E); addBox(B,x+0.45,0.55,z+0.61,0.25,0.25,0.04,0x9ADFF5); addBox(B,x-0.45,0.55,z+0.61,0.25,0.25,0.04,0x9ADFF5); addBox(B,x+0.5,1.45,z-0.2,0.22,0.55,0.22,0x6E6E6E);
 }
-function addPortal(B,x,z){
+function addPortal(B,x,z,y0){
   for(let i=0;i<4;i++) for(let j=0;j<5;j++){
     const edge=(i===0||i===3||j===0||j===4);
     addBox(B,x+(i-1.5)*0.4,0.2+j*0.4,z,0.4,0.4,edge?0.4:0.12,edge?jit(0x1E1236,0.05):jit(0x9B30FF,0.1),{edge:edge});
+  }
+  addPortalFX(x,z,y0||0);
+}
+/* ---------- Portal Nether: bagian ungu menyala tipis (siang/malam) + sparkle kecil transparan. Murni visual. ---------- */
+const PORTALS=[],PORTAL_COL=0xB45CFF;
+const PORTAL_PLANE=new THREE.PlaneGeometry(0.76,1.16),PORTAL_SPARK=new THREE.BoxGeometry(0.05,0.05,0.05);
+function addPortalFX(x,z,y0){
+  const mk=()=>new THREE.MeshBasicMaterial({color:PORTAL_COL,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});
+  const planes=[0.07,-0.07].map(dz=>{ const m=new THREE.Mesh(PORTAL_PLANE,mk()); m.position.set(x,y0+1.0,z+dz); if(dz<0) m.rotation.y=Math.PI; m.renderOrder=3; world.add(m); return m; });
+  const halo=makeHalo(x,y0+1.0,z,2.6,PORTAL_COL); world.add(halo);
+  const sparks=[]; const n=coarse?5:9;
+  for(let i=0;i<n;i++){
+    const m=new THREE.Mesh(PORTAL_SPARK,mk()); m.renderOrder=4; world.add(m);
+    sparks.push({m,k:Math.random(),sp:0.22+Math.random()*0.25,ox:(Math.random()-0.5)*0.6,oz:(Math.random()<0.5?-1:1)*(0.1+Math.random()*0.12),ph:Math.random()*6.28});
+  }
+  PORTALS.push({planes,halo,sparks,x,z,y0,ph:Math.random()*6.28});
+}
+function updatePortals(dt,t){
+  for(let i=0;i<PORTALS.length;i++){
+    const P=PORTALS[i],pulse=reduce?0.5:0.5+0.5*Math.sin(t*1.8+P.ph);
+    const a=(night?0.3:0.13)+(night?0.12:0.06)*pulse;
+    P.planes.forEach(m=>{ m.material.opacity=a; });
+    P.halo.material.opacity=(night?0.45:0.14)*(0.75+0.25*pulse);
+    for(let j=0;j<P.sparks.length;j++){
+      const S=P.sparks[j];
+      if(reduce){ S.m.material.opacity=0; continue; }
+      S.k+=dt*S.sp; if(S.k>1) S.k-=1; const k=S.k;
+      S.m.position.set(P.x+S.ox+Math.sin(k*6+S.ph)*0.04,P.y0+0.45+k*1.1,P.z+S.oz);
+      S.m.rotation.y+=dt*2; S.m.scale.setScalar(0.7+0.5*Math.sin(t*7+S.ph));
+      S.m.material.opacity=(night?0.7:0.45)*Math.sin(k*Math.PI)*(0.6+0.4*Math.sin(t*9+S.ph));
+    }
   }
 }
 function addPillar(B,x,z,hgt){
@@ -1099,7 +1135,7 @@ function addWideFar(DB,th){
     if(d==='oak') addMcHouse(DB,q[0],q[1]);
     else if(d==='desert') addPyramid(DB,q[0],q[1],i%2?3:2.2,0.4);
     else if(d==='snow') (i%2?addSnowman:addIgloo)(DB,q[0],q[1]);
-    else if(d==='nether') (i%2?addPortal(DB,q[0],q[1]):addPillar(DB,q[0],q[1],3));
+    else if(d==='nether') (i%2?addPortal(DB,q[0],q[1],hAt(q[0],q[1])):addPillar(DB,q[0],q[1],3));
     else addCave(DB,q[0],q[1]);
   },hAt(q[0],q[1])));
   [[-13,-10],[12,-12],[16,10],[-15,9],[22,-4]].forEach(q=>{ blockRect(q[0],q[1],2.2,2.2); if(d==='oak') addHouseExtras(DB,q[0],q[1],hAt(q[0],q[1])); });
@@ -1137,7 +1173,7 @@ function addMcEnv(DB){
   item(0.2,-6.4,2.3,1.4,b=>addPortal(b,0.2,-6.4));
   blockRect(PAD.x,PAD.z,1.3,1.3); blockRect(0.2,-6.4,1.3,1.0);
   addHouseExtras(DB,-6.9,-3.6,0); addHouseExtras(DB,4.2,-6.3,0);
-  addFarm(DB); addCampfire(DB,-8.3,3.0);
+  addFarm(DB);
   [[-3.5,6.0,0.4,'sheep'],[-1,6.2,2,'pig'],[2.5,6.1,-0.8,'cow'],[6.6,-1.5,1.2,'chicken'],[-6.8,3.0,0.5,'sheep'],[-5.0,8.2,1,'pig'],[-7.6,7.6,2.2,'chicken'],[-9.6,5.2,0.3,'sheep'],[-2.5,8.6,3,'cow'],[-10.9,12.9,0.6,'chicken']].forEach(a=>{ if(!walkBlocked(a[0],a[1])||a[1]>5.4) queueAnimal(a[0],a[1],a[2],a[3]); });
   queueAnimal(-6.9,-2.0,0.4,'villager'); queueAnimal(4.0,-4.9,1.0,'villager');
   for(let i=0;i<90;i++){
@@ -1633,8 +1669,9 @@ function buildWorld(key){
   }
   // area mulai
   const sandy=th.key==='salju'?0xCFE9F5:0xE8D7A0,sandy2=th.key==='salju'?0xB4D6E8:0xCDB878;
-  addBox(TB,PAD.x,0.07,PAD.z,1.9,0.14,1.9,sandy);
-  [[-0.78,-0.78],[0.78,-0.78],[-0.78,0.78],[0.78,0.78]].forEach(o=>addBox(TB,PAD.x+o[0],0.17,PAD.z+o[1],0.2,0.06,0.2,sandy2,{edge:false}));
+  /* blok Start: hanya border (tanpa isi warna) + api unggun & 4 kayu duduk di dalamnya */
+  [[0,-0.95,2.04,0.14],[0,0.95,2.04,0.14],[-0.95,0,0.14,1.9],[0.95,0,0.14,1.9]].forEach(f=>addBox(TB,PAD.x+f[0],0.04,PAD.z+f[1],f[2],0.08,f[3],sandy2));
+  addCampfire(TB,PAD.x,PAD.z);
   // bendera di petak 100
   const G=TILES[100];
   for(let y=0;y<2.2;y+=0.4) addBox(TB,G.x-0.36,G.h+0.2+y,G.z-0.36,0.12,0.4,0.12,0xE9E4D4);
@@ -2186,7 +2223,7 @@ function startGame(m,keys){
   keys=keys||(m==='cpu'?['steve','alex']:PLAYER_DEFS.slice(0,+m).map(d=>d.key));
   defs=keys.map((k,i)=>{ const d=Object.assign({},PLAYER_DEFS.find(x=>x.key===k)); if(m==='cpu'&&i===1){ d.cpu=true; d.name+=' CPU'; } return d; });
   defs.forEach((d,i)=>{
-    const pawn=makePawn(d); pawn.position.copy(slotPos(i,0)); scene.add(pawn);
+    const pawn=makePawn(d); pawn.position.copy(slotPos(i,0)); pawn.rotation.y=Math.atan2(-SLOT[i][0],-SLOT[i][1]); scene.add(pawn); /* duduk menghadap api */
     players.push({idx:i,name:d.name,key:d.key,css:d.css,hex:d.hex,cpu:!!d.cpu,pos:0,sixes:0,dhp:100,pawn,score:0,bonus:0,extra:false,p4:false,shield:false,pu:startPU()});
   });
   cur=0; resetCam();
