@@ -2016,7 +2016,7 @@ async function usePU(k,cpu){
   const gid=gameId,L=players.filter(q=>q!==p&&q.pos>0&&q.pos<100).sort((a,b)=>b.pos-a.pos)[0];
   if(k==='tnt'&&!L){ if(cpu) return; fb('event','info','TNT belum punya target.'); return setMsg('TNT belum punya target.'); }
   if(k==='grass'&&(!L||L.pos<=p.pos)){ if(cpu) return; fb('event','info','Tidak ada pemain di depanmu.'); return setMsg('Tidak ada pemain di depanmu.'); }
-  busy=true; setRoll(false); p.pu[k]--; sfx.pop(); setMsg(p.name+' memakai '+PUN[k][1]+': '+PUN[k][2]+'.');
+  busy=true; setRoll(false); clearTurnTimer(); p.pu[k]--; sfx.pop(); setMsg(p.name+' memakai '+PUN[k][1]+': '+PUN[k][2]+'.');
   if(k==='sword') p.bonus=3; if(k==='feather') p.extra=true; if(k==='potion') p.p4=true; if(k==='apple') p.shield=true;
   renderChips();
   const oldL=L?L.pos:0; /* posisi sebelum efek, untuk feedback target (TNT/Grass) */
@@ -2033,7 +2033,7 @@ async function usePU(k,cpu){
     else t=p.name+' bertukar posisi dengan '+L.name+' — '+p.name+' '+p.pos+', '+L.name+' '+L.pos;
     e=k==='tnt'?L.name+(oldL-L.pos>0?' mundur '+(oldL-L.pos)+' petak':' tidak bergerak'):'Bertukar posisi dengan '+L.name; setMsg(t); { const po={gid,icon:PUN[k][0],desc:e}; fb('short',k,PUN[k][1],p.name,po)||hud('showPower',k,PUN[k][1],p.name,po); }
   }else{ const po={gid,icon:PUN[k][0],desc:PUN[k][2]}; fb('short',k,PUN[k][1],p.name,po)||hud('showPower',k,PUN[k][1],p.name,po); }
-  busy=false; if(!p.cpu) setRoll(true); focus=p.pawn; renderChips();
+  busy=false; if(!p.cpu) setRoll(true); focus=p.pawn; renderChips(); startTurnTimer(); /* setelah Power, hitung ulang 15 dtk */
 }
 function renderChips(){
   const box=$('players'),sc=$('scores'),pu=$('pus'); box.textContent=''; sc.textContent=''; pu.textContent='';
@@ -2075,13 +2075,25 @@ function beginTurn(extra){
   hud('showTurn',p,{extra:!!extra});
   if(extra) setMsg(p.name+' dapat giliran tambahan, lempar lagi.'+(p.cpu?'':' Tekan Lempar dadu.'));
   else setMsg(p.cpu?p.name+' sedang melempar dadu...':(mode==='cpu'?'Giliranmu. Tekan Roll dadu.':'Giliran '+p.name+'. Tekan Lempar dadu.'));
-  setRoll(!p.cpu);
+  setRoll(!p.cpu); startTurnTimer();
   if(p.cpu){ const gid=gameId; setTimeout(async()=>{ if(gid!==gameId||gameOver) return; const ks=['sword','feather','potion','apple','tnt'].filter(k=>cpuPUValid(p,k)); const go=()=>{ if(gid!==gameId||gameOver) return; if(busy||paused){ setTimeout(go,paused?250:500); return; } doRoll(); }; if(paused){ go(); return; } if(ks.length&&Math.random()<0.6) await usePU(ks[0],true); go(); },950); }
 }
 /* 4.1.15.6: snapshot state giliran (baca-saja) agar modul lain/uji bisa membaca tanpa mengekspos players. Sumber kebenaran tetap players[]+cur. */
 function publishTurnState(){
   players.forEach((q,i)=>{ if(!q.turnOrder) q.turnOrder=i+1; }); /* tanpa shuffle (?ready=0): urutan awal */
   try{ const C=UT.Gameplay.Core; C.turn={ turnOrder:players.map(q=>({id:q.idx,name:q.name,turnOrder:q.turnOrder||0,cpu:!!q.cpu})), get currentTurnIndex(){ return cur; }, get currentPlayerId(){ return players[cur]?players[cur].idx:null; } }; }catch(e){}
+}
+/* 4.1.15.8-9: AFK giliran manusia. Satu timer aktif ('turn') lewat UT.GameplayAFK. Timeout -> doRoll() existing (identitas pemain tidak berubah). */
+const AFK_TURN_MS=15000;
+function clearTurnTimer(){ try{ if(UT.GameplayAFK) UT.GameplayAFK.clear('turn'); }catch(e){} }
+function startTurnTimer(){
+  clearTurnTimer();
+  const A=UT.GameplayAFK,p=players[cur]; if(!A||!p||p.cpu||paused||busy||gameOver||document.getElementById('readyScreen')) return;
+  const gid=gameId,who=p;
+  A.start('turn',AFK_TURN_MS,()=>{
+    if(gid!==gameId||gameOver||players[cur]!==who||busy||paused) return; /* sudah main / pindah giliran / jeda -> abaikan */
+    setMsg(who.name+' tidak aktif. Auto roll...'); fb('event','info',who.name+' AFK — auto roll',{gid}); doRoll();
+  },s=>{ if(gid===gameId&&!busy&&!paused&&!gameOver&&players[cur]===who&&s<=5&&s>0) setMsg(who.name+': auto roll dalam '+s+' dtk'); });
 }
 function nextTurn(){ cur=(cur+1)%players.length; busy=false; beginTurn(); }
 
@@ -2233,7 +2245,7 @@ async function playTurn(p,v,gid,bn){
 }
 async function doRoll(){
   if(busy||paused||gameOver||!players.length) return;
-  busy=true; setRoll(false);
+  busy=true; setRoll(false); clearTurnTimer();
   const gid=gameId,p=players[cur];let v=1+Math.floor(Math.random()*6);
   if(p.p4){ v=4+Math.floor(Math.random()*3); p.p4=false; }
   sfx.roll(); showDie(v,!reduce);
@@ -2250,11 +2262,11 @@ async function doRoll(){
     }
     const bn=p.bonus; p.bonus=0; await playTurn(p,v,gid,bn);
   }catch(e){
-    if(e!==STALE){ console.error(e); busy=false; setRoll(!players[cur].cpu); }
+    if(e!==STALE){ console.error(e); busy=false; setRoll(!players[cur].cpu); startTurnTimer(); }
   }
 }
 function finishGame(p){
-  gameOver=true; p.score+=50; renderChips(); if(FBK) FBK.hideMarker(p);
+  gameOver=true; clearTurnTimer(); p.score+=50; renderChips(); if(FBK) FBK.hideMarker(p);
   setMsg(p.name+' mengalahkan Ender Dragon!'); setRoll(false);
   const lost=(mode==='cpu'&&p.cpu);
   $('win').dataset.state=lost?'lose':'win';
@@ -2330,11 +2342,11 @@ $('pmNight').addEventListener('click',()=>{ setNight(true); syncPauseNight(); se
 /* ---------- Menu jeda: lanjutkan, siang/malam, keluar (dengan konfirmasi) ---------- */
 function syncPauseNight(){ $('pmDay').setAttribute('aria-pressed',String(!night)); $('pmNight').setAttribute('aria-pressed',String(night)); }
 function openPause(){
-  if(paused) return; paused=true;
+  if(paused) return; paused=true; clearTurnTimer();
   $('pmCpu').hidden=mode!=='cpu'; syncPauseNight(); syncMusicUI();
   $('pauseMenu').hidden=false; $('pmResume').focus();
 }
-function closePause(){ paused=false; $('exitConfirm').hidden=true; $('pauseMenu').hidden=true; $('btnMenu').focus(); }
+function closePause(){ paused=false; startTurnTimer(); $('exitConfirm').hidden=true; $('pauseMenu').hidden=true; $('btnMenu').focus(); }
 $('btnMenu').addEventListener('click',openPause);
 $('pmResume').addEventListener('click',closePause);
 $('pmExit').addEventListener('click',()=>{ $('exitConfirm').hidden=false; $('ecNo').focus(); });
