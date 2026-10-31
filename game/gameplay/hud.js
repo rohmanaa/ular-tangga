@@ -28,7 +28,7 @@
   var ICON = { turn: '🎲', extra: '✨', ladder: '🪜', snake: '🐍', mob: '👾', chest: '🎁', power: '⚡', three6: '🎲',
                bounce: '↩️', shield: '🛡️', dragon: '🐉', info: 'ℹ️' };
   var POWER_SHORT = { sword: ['🗡️', 'Pedang +3'], feather: ['🪶', 'Bulu — Giliran Tambahan'], tnt: ['🧨', 'TNT — Pemimpin −6'],
-                      apple: ['🍎', 'Apel Emas — Kebal'], potion: ['🧪', 'Ramuan — Dadu 4–6'], grass: ['🟩', 'Blok Rumput — Tukar Posisi'] };
+                      apple: ['🗿', 'Totem Undying — Kebal'], potion: ['🧪', 'Ramuan — Dadu 4–6'], grass: ['🟩', 'Blok Rumput — Tukar Posisi'] };
   var POWER_VERB = { sword: 'digunakan', feather: 'aktif', tnt: 'digunakan', apple: 'aktif', potion: 'aktif', grass: 'digunakan' };
   var cfg = { getGameId: null, isPaused: null };
   var root = null, banner = null, bIcon = null, bText = null, panel = null, pTitle = null, pText = null,

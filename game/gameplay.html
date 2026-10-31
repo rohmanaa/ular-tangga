@@ -1631,14 +1631,21 @@ function showAttackCard(attacker,defender,weapon,desc){
    c.classList.remove('pop'); c.hidden=false; c.classList.add('pop'); sfx.pop();
    setTimeout(()=>c.hidden=true,1600);
 }
+/* CPU hanya memilih Power yang valid (aturan sama dengan usePU): punya stok, bukan Pedang/Totem di fase Dragon, TNT wajib punya target. */
+function cpuPUValid(p,k){
+  if(!p||!p.pu[k]) return false;
+  if(p.pos===100&&(k==='sword'||k==='apple')) return false;
+  if(k==='tnt') return players.some(q=>q!==p&&q.pos>0&&q.pos<100);
+  return true;
+}
 async function usePU(k,cpu){
   const p=players[cur];
   if(!p||busy||gameOver||!p.pu[k]||(p.cpu&&!cpu)) return;
-  /* Fase Dragon = p.pos===100 (kondisi existing di playTurn). Pedang/Apel Emas hanya relevan untuk gerak papan: tolak SEBELUM konsumsi, Power tidak berkurang. CPU: tolak diam-diam (AI diubah di 4.1.8). */
+  /* Fase Dragon = p.pos===100 (kondisi existing di playTurn). Pedang/Totem Undying (id 'apple') hanya relevan untuk gerak papan: tolak SEBELUM konsumsi, Power tidak berkurang. CPU: tolak diam-diam (CPU sudah memfilter Power valid sebelum usePU, 4.1.8). */
   if(p.pos===100&&(k==='sword'||k==='apple')){ if(!cpu){ const m=PUN[k][1]+' tidak dapat digunakan saat melawan Ender Dragon.'; fb('short',k,PUN[k][1],p.name,{text:m})||hud('showPower',k,PUN[k][1],p.name,{text:m}); } return; }
   const gid=gameId,L=players.filter(q=>q!==p&&q.pos>0&&q.pos<100).sort((a,b)=>b.pos-a.pos)[0];
-  if(k==='tnt'&&!L){ fb('event','info','TNT belum punya target.'); return setMsg('TNT belum punya target.'); }
-  if(k==='grass'&&(!L||L.pos<=p.pos)){ fb('event','info','Tidak ada pemain di depanmu.'); return setMsg('Tidak ada pemain di depanmu.'); }
+  if(k==='tnt'&&!L){ if(cpu) return; fb('event','info','TNT belum punya target.'); return setMsg('TNT belum punya target.'); }
+  if(k==='grass'&&(!L||L.pos<=p.pos)){ if(cpu) return; fb('event','info','Tidak ada pemain di depanmu.'); return setMsg('Tidak ada pemain di depanmu.'); }
   busy=true; setRoll(false); p.pu[k]--; sfx.pop(); setMsg(p.name+' memakai '+PUN[k][1]+': '+PUN[k][2]+'.');
   if(k==='sword') p.bonus=3; if(k==='feather') p.extra=true; if(k==='potion') p.p4=true; if(k==='apple') p.shield=true;
   renderChips();
@@ -1666,7 +1673,7 @@ function renderChips(){
     const nm=document.createElement('span'); nm.textContent=p.name;
     const ps=document.createElement('span'); ps.className='pos'; ps.textContent=p.pos===0?'Mulai':(p.pos===100?'Naga '+p.dhp:String(p.pos));
     d.appendChild(im); d.appendChild(nm); d.appendChild(ps);
-    const bfT=[p.bonus?'🗡️+3':'',p.extra?'🪶 ekstra':'',p.p4?'🧪 dadu 4-6':'',p.shield?'🍎 kebal':''].filter(Boolean).join('  '); if(bfT){ const bs=document.createElement('span'); bs.className='bf'; bs.textContent=bfT; d.appendChild(bs); }
+    const bfT=[p.bonus?'🗡️+3':'',p.extra?'🪶 ekstra':'',p.p4?'🧪 dadu 4-6':'',p.shield?'🗿 kebal':''].filter(Boolean).join('  '); if(bfT){ const bs=document.createElement('span'); bs.className='bf'; bs.textContent=bfT; d.appendChild(bs); }
     if(p.pos===100){ const hp=document.createElement('span'); hp.className='hp'; const b=document.createElement('i'); b.style.width=p.dhp+'%'; hp.appendChild(b); d.appendChild(hp); }
     box.appendChild(d);
     const r=document.createElement('div'); r.className='sr'; r.style.color=p.key==='ender'?'#c9a2ff':p.css;
@@ -1698,7 +1705,7 @@ function beginTurn(extra){
   if(extra) setMsg(p.name+' dapat giliran tambahan, lempar lagi.'+(p.cpu?'':' Tekan Lempar dadu.'));
   else setMsg(p.cpu?p.name+' sedang melempar dadu...':(mode==='cpu'?'Giliranmu. Tekan Roll dadu.':'Giliran '+p.name+'. Tekan Lempar dadu.'));
   setRoll(!p.cpu);
-  if(p.cpu){ const gid=gameId; setTimeout(async()=>{ if(gid!==gameId||gameOver) return; const ks=['sword','feather','potion','apple','tnt'].filter(k=>p.pu[k]); const go=()=>{ if(gid!==gameId||gameOver) return; if(busy||paused){ setTimeout(go,paused?250:500); return; } doRoll(); }; if(paused){ go(); return; } if(ks.length&&Math.random()<0.6) await usePU(ks[0],true); go(); },950); }
+  if(p.cpu){ const gid=gameId; setTimeout(async()=>{ if(gid!==gameId||gameOver) return; const ks=['sword','feather','potion','apple','tnt'].filter(k=>cpuPUValid(p,k)); const go=()=>{ if(gid!==gameId||gameOver) return; if(busy||paused){ setTimeout(go,paused?250:500); return; } doRoll(); }; if(paused){ go(); return; } if(ks.length&&Math.random()<0.6) await usePU(ks[0],true); go(); },950); }
 }
 function nextTurn(){ cur=(cur+1)%players.length; busy=false; beginTurn(); }
 
@@ -1807,7 +1814,7 @@ async function playTurn(p,v,gid,bn){
     const to=LADDERS[p.pos]; setMsg('Tangga! '+p.name+' naik dari '+p.pos+' ke '+to+'.'); fb('event','ladder','Naik Tangga! +'+(to-p.pos)+' langkah',{gid}); sfx.naiktangga();
     await A(sleep(350)); await A(climb(p,p.pos,to)); p.pos=to; p.score+=10;
   }else if(p.shield&&(SNAKES[p.pos]||(mobOn(p.pos)&&mobOn(p.pos)!=='villager'))){
-    p.shield=false; setMsg('Apel Emas melindungi '+p.name+'!'); fb('event','shield','Apel Emas melindungi '+p.name+'!',{gid}); sfx.pop(); await A(sleep(900));
+    p.shield=false; setMsg(PUN.apple[1]+' melindungi '+p.name+'!'); fb('event','shield',PUN.apple[1]+' melindungi '+p.name+'!',{gid}); sfx.pop(); await A(sleep(900));
   }else if(SNAKES[p.pos]){
     const to=SNAKES[p.pos];
     if(!SNAKEINFO[p.pos]){ p.pos=to; setMsg('Ular! '+p.name+' turun ke '+to+'.'); fb('event','snake','Kena Ular! Turun ke '+to,{gid}); await A(sleep(350)); await A(hopTo(p.pawn,slotPos(p.idx,to),0.5,0.8)); }

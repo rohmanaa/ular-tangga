@@ -130,7 +130,7 @@
     powerup('sword',   'Pedang',     'common', 'Langkah berikutnya +3.'),
     powerup('feather', 'Bulu',       'common', 'Giliran tambahan sekali lempar.'),
     powerup('tnt',     'TNT',        'common', 'Pemain terdepan mundur 6 petak.'),
-    powerup('apple',   'Apel Emas',  'common', 'Kebal dari 1 ular atau mob jahat.'),
+    powerup('apple',   'Totem Undying', 'common', 'Kebal dari 1 ular atau mob jahat.'),
     powerup('potion',  'Ramuan',     'common', 'Dadu berikutnya selalu 4 sampai 6.'),
     powerup('grass',   'Blok Rumput','common', 'Tukar posisi dengan pemain terdepan.')
   ];

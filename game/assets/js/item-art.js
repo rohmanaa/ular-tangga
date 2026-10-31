@@ -182,6 +182,30 @@
     return '<svg class="art-theme" viewBox="0 0 96 64" preserveAspectRatio="xMidYMid slice" shape-rendering="crispEdges" role="img" aria-label="' + (label || it.name) + '">' + s + '</svg>';
   }
 
+  /* Totem Undying (viewBox 500x500: gold, mata emerald, sayap, glow). Id gradient unik per render agar aman bila tampil berkali-kali.
+     Visual sementara sesuai spesifikasi; ganti isi TOTEM_BODY dengan SVG final dari user (cukup isi di dalam <svg>, viewBox tetap 500x500). */
+  var TOTEM_BODY =
+    '<ellipse cx="250" cy="260" rx="190" ry="200" fill="url(#G_glow)"/>' +
+    '<path d="M92 170 L20 120 L48 214 L28 290 L98 262 L128 300 L150 190 Z" fill="url(#G_gold)" stroke="#7a5a08" stroke-width="6" stroke-linejoin="round"/>' +
+    '<path d="M408 170 L480 120 L452 214 L472 290 L402 262 L372 300 L350 190 Z" fill="url(#G_gold)" stroke="#7a5a08" stroke-width="6" stroke-linejoin="round"/>' +
+    '<rect x="196" y="318" width="40" height="120" rx="8" fill="url(#G_gold)" stroke="#7a5a08" stroke-width="6"/>' +
+    '<rect x="264" y="318" width="40" height="120" rx="8" fill="url(#G_gold)" stroke="#7a5a08" stroke-width="6"/>' +
+    '<rect x="126" y="190" width="40" height="128" rx="8" fill="url(#G_gold)" stroke="#7a5a08" stroke-width="6"/>' +
+    '<rect x="334" y="190" width="40" height="128" rx="8" fill="url(#G_gold)" stroke="#7a5a08" stroke-width="6"/>' +
+    '<rect x="166" y="190" width="168" height="150" rx="14" fill="url(#G_gold)" stroke="#7a5a08" stroke-width="6"/>' +
+    '<rect x="170" y="52" width="160" height="150" rx="18" fill="url(#G_gold)" stroke="#7a5a08" stroke-width="6"/>' +
+    '<rect x="194" y="112" width="40" height="34" rx="6" fill="url(#G_em)" stroke="#0b4a30" stroke-width="5"/>' +
+    '<rect x="266" y="112" width="40" height="34" rx="6" fill="url(#G_em)" stroke="#0b4a30" stroke-width="5"/>' +
+    '<rect x="232" y="224" width="36" height="36" rx="6" fill="url(#G_em)" stroke="#0b4a30" stroke-width="5"/>';
+  function totem(label) {
+    var id = 'tt-' + Math.random().toString(36).slice(2, 7), b = TOTEM_BODY.replace(/G_(glow|gold|em)/g, id + '-$1');
+    var defs = '<defs>' +
+      '<radialGradient id="' + id + '-glow"><stop offset="0" stop-color="#ffe27a" stop-opacity=".55"/><stop offset="1" stop-color="#ffe27a" stop-opacity="0"/></radialGradient>' +
+      '<linearGradient id="' + id + '-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff0a8"/><stop offset=".5" stop-color="#f5c518"/><stop offset="1" stop-color="#b8860b"/></linearGradient>' +
+      '<linearGradient id="' + id + '-em" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6ff2a8"/><stop offset="1" stop-color="#0a9d5a"/></linearGradient></defs>';
+    return '<svg class="art-powerup" viewBox="0 0 500 500" role="img" aria-label="' + label + '">' + defs + b + '</svg>';
+  }
+
   /* Power-Up (Tahap 3.1): ikon blok sederhana per gameplay key — satu sistem art, tanpa aset eksternal. */
   function powerup(itemId, label) {
     var it = C.byId(itemId); if (!it || it.kind !== 'powerup') return '';
@@ -197,8 +221,7 @@
       s += rect(16, 32, 6, 4, '#4a0d07') + rect(24, 32, 5, 4, '#4a0d07') + rect(31, 32, 6, 4, '#4a0d07') + rect(40, 32, 5, 4, '#4a0d07');
       s += rect(29, 8, 6, 8, '#8a5a2b') + rect(35, 4, 6, 4, '#ffb02e');
     } else if (k === 'apple') {
-      s += rect(14, 20, 36, 32, '#ffc83a') + rect(10, 26, 44, 20, '#ffc83a') + rect(14, 20, 10, 6, '#ffe27a');
-      s += rect(30, 10, 5, 10, '#7a4a2a') + rect(35, 8, 12, 6, '#4fae3e');
+      return totem(label || it.name); /* id internal tetap 'apple'; tampilan = Totem Undying */
     } else if (k === 'potion') {
       s += rect(26, 4, 12, 6, '#8a5a2b') + rect(24, 10, 16, 8, '#b9c9e4');
       s += rect(14, 18, 36, 38, '#dff3ff') + rect(14, 36, 36, 20, '#c04fd0') + rect(18, 40, 8, 6, '#e08ae8');
