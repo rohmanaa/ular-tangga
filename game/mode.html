@@ -16,7 +16,7 @@ html,body{margin:0;height:100%;overflow:hidden;font-family:'Baloo 2','Fredoka','
 .isl i{display:block;background:#6fbf4a}.isl b{display:block;background:#8a5a3a;margin:0 auto}
 .cl{position:absolute;border-radius:50%;background:#fff;filter:blur(.6rem);opacity:.75}
 @keyframes fl{50%{translate:0 -.8rem}}
-#stage{position:absolute;left:50%;top:50%;width:100rem;height:56.25rem;translate:-50% -50%}
+#stage{position:absolute;left:50%;top:50%;width:100vw;height:56.25rem;translate:-50% -50%}
 .ab{position:absolute}
 button{font:inherit;color:inherit;border:0;cursor:pointer;transition:transform .15s cubic-bezier(.3,1.6,.5,1),filter .15s}
 button:hover{transform:scale(1.05);filter:brightness(1.08)}button:active{transform:scale(.94)}button:focus-visible{outline:.3rem solid #fff}
@@ -30,14 +30,14 @@ svg{display:block}
 .pulse{animation:pu .4s}@keyframes pu{50%{transform:scale(1.15)}}
 #gear{right:1.4rem;top:1.8rem;width:4.5rem;height:4.5rem;border-radius:1.4rem;padding:0;display:grid;place-items:center}#gear svg{width:2.8rem;height:2.8rem}
 /* mode cards */
-#modes{left:4rem;top:9.4rem;width:92rem;height:34rem;display:flex;gap:1.6rem;align-items:center}
+#modes{left:2.4rem;right:2.4rem;top:9.4rem;height:34rem;display:flex;gap:2.8rem;align-items:center}
 .mode{position:relative;flex:1;height:100%;border-radius:2.6rem;overflow:hidden;cursor:pointer;background:var(--c1);
  box-shadow:0 .6rem 0 var(--c3),0 1.4rem 2rem rgba(18,30,100,.35),inset 0 0 0 .35rem var(--c2);
  transition:transform .25s cubic-bezier(.3,1.5,.5,1),box-shadow .25s;animation:pop .45s both}
 @keyframes pop{from{opacity:0;transform:translateY(2rem) scale(.9)}}
 .mode:hover{transform:translateY(-.5rem)}
-.mode.sel{transform:scale(1.07);z-index:2;box-shadow:0 0 0 .5rem #ffe94d,0 0 2.8rem 1rem rgba(255,235,80,.7),0 .6rem 0 var(--c3)}
-.mode.sel:hover{transform:scale(1.07) translateY(-.4rem)}
+.mode.sel{transform:scale(1.04);z-index:2;box-shadow:0 0 0 .5rem #ffe94d,0 0 2.8rem 1rem rgba(255,235,80,.7),0 .6rem 0 var(--c3)}
+.mode.sel:hover{transform:scale(1.04) translateY(-.4rem)}
 .mode:focus-visible{outline:.4rem solid #fff}
 .art{position:absolute;left:0;right:0;top:0;height:16.5rem;background:linear-gradient(var(--a1),var(--a2));border-radius:2.6rem 2.6rem 0 0}
 .art svg{width:100%;height:100%}
@@ -50,7 +50,7 @@ svg{display:block}
 .cta.y{background:linear-gradient(#ffd24d,#ff9a1f);box-shadow:0 .35rem 0 #c96a0c,inset 0 .2rem .2rem rgba(255,255,255,.6);text-shadow:0 .1rem 0 #8a4a0a}
 .cta.b{background:linear-gradient(#58b6ff,#1f86ee);box-shadow:0 .35rem 0 #14449f,inset 0 .2rem .2rem rgba(255,255,255,.5);text-shadow:0 .1rem 0 rgba(10,40,120,.6)}
 /* bottom bars */
-#bar{left:3.6rem;top:46.4rem;width:92.8rem;height:6.8rem;display:flex;gap:1.6rem}
+#bar{left:2.4rem;right:2.4rem;top:46.4rem;height:6.8rem;display:flex;gap:2rem}
 .bb{position:relative;flex:1;min-width:0;overflow:hidden;display:flex;align-items:center;gap:1.4rem;padding:0 1.6rem;text-align:left;border-radius:2rem;
  background:linear-gradient(#3d9bfa,#1f6fe0);box-shadow:0 .4rem 0 var(--bd),0 1rem 1.4rem rgba(18,51,127,.3),inset 0 .2rem .3rem rgba(255,255,255,.55),inset 0 0 0 .22rem rgba(120,195,255,.65)}
 .bb.w{flex:1.3}

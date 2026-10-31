@@ -472,6 +472,20 @@ body .pucard{min-width:clamp(250px,22vw,340px);padding:18px 30px 20px}
 }
 </style>
 
+<style id="turn-panel-v2">
+/* Panel giliran lebih kecil: avatar (dikecilkan 1.4x) tepat di atas nama, dadu diperbesar 1.3x */
+#side{--tav:clamp(74px,6.4vw,107px)}
+body #side .rcol .pnl.tn{margin-top:22px;padding:10px 12px 10px}
+body #side .tn-av{left:12px;top:10px;bottom:auto;width:var(--tav)}
+body #side .tn .trow{margin-top:calc(var(--tav) + 12px)}
+body #side .tn .die-scene{zoom:1.37;top:12px;right:clamp(12px,1.2vw,20px)}
+body #side #turnName{font-size:clamp(18px,1.45vw,22px)}
+body #side .tn-meta{margin:2px 0 8px;font-size:clamp(12px,.9vw,14px)}
+body #side .tn #btnRoll{height:clamp(44px,3.5vw,56px);font-size:clamp(18px,1.5vw,24px);gap:10px}
+body #side .tn .msg{font-size:12px;min-height:0!important;margin-top:6px}
+@media(min-width:700px){body #side .rcol{width:clamp(224px,18vw,300px)}}
+@media(max-width:699px){#side{--tav:64px}body #side .tn .die-scene{zoom:1.1;top:10px}}
+</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 if (typeof THREE === 'undefined') {
