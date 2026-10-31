@@ -170,6 +170,7 @@
     showResult: function (title, text, o) {
       if (!title || stale(o) || !build()) return H;
       pTitle.textContent = String(title); pText.textContent = text ? String(text) : ''; pText.hidden = !text;
+      hideCombat(); /* prioritas: Result/Victory > Dragon Combat — strip combat tidak menumpuk dengan panel hasil */
       clearTimeout(tPanel); retrigger(panel);
       tPanel = setTimeout(hidePanel, ttlOf(o, 2400));
       return H;

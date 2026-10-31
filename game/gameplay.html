@@ -1477,9 +1477,11 @@ function makeDragon(){
 const dragon=makeDragon();
 function resetDragon(){ dragon.visible=true; dragon.scale.setScalar(1.3); dragon.userData.dy=0; dragon.userData.shk=0; }
 async function hitDragon(p,v){
-   const D=dragon.userData,dmg=v*DMG;
-   setMsg(p.name+' menyerang Ender Dragon: '+v+' x '+DMG+' = '+dmg+' damage!'); hud('showCombat',p.name,'Ender Dragon','Serangan '+v+' x '+DMG+' = '+dmg+' damage!',{hp:p.dhp,owner:p.name});
-   showAttackCard(p.name,'Ender Dragon','hit','Menyerang naga '+v+' x '+DMG+' = '+dmg+' damage!');
+   const D=dragon.userData,dmg=v*DMG,gid=gameId,atk='Serangan '+v+' x '+DMG+' = '+dmg+' damage!';
+   /* 4.1.9: 1 serangan = 1 presentation utama (combat strip HUD, dengan guard gid). setMsg + attack card hanya FALLBACK bila HUD combat tidak tersedia, agar tidak jadi 3 notifikasi yang sama. */
+   const H=window.UT&&UT.GameplayHUD;
+   if(H&&typeof H.showCombat==='function') hud('showCombat',p.name,'Ender Dragon',atk,{hp:p.dhp,owner:p.name,gid});
+   else{ setMsg(p.name+' menyerang Ender Dragon: '+v+' x '+DMG+' = '+dmg+' damage!'); showAttackCard(p.name,'Ender Dragon','hit','Menyerang naga '+v+' x '+DMG+' = '+dmg+' damage!'); }
    sfx.dragonHurt();
    await hopTo(p.pawn,p.pawn.position.clone(),0.38,0.6);
    sfx.hundred();
@@ -1488,7 +1490,7 @@ async function hitDragon(p,v){
    p.dhp=Math.max(0,p.dhp-dmg); renderChips(); hud('updatePlayer',p);
    if(p.dhp>0){ setMsg('Naga '+p.name+' tersisa '+p.dhp+'/100.'); return; }
    sfx.dragonDeath();
-   setMsg('Ender Dragon kalah!'); hud('showResult','Ender Dragon kalah!',p.name+' menang!',{ttl:2600}); spawnConfetti(dragon.position);
+   setMsg('Ender Dragon kalah!'); hud('showResult','Ender Dragon kalah!',p.name+' menang!',{ttl:2600,gid}); spawnConfetti(dragon.position);
    await tween(1.3,k=>{ D.dy=-k*3; dragon.scale.setScalar(1.3*(1-k*0.85)); });
    dragon.visible=false;
 }
