@@ -1584,7 +1584,7 @@ let players=[],cur=0,busy=false,gameOver=false,gameId=0,mode='cpu',pendingTheme=
 function setMsg(t){ $('msg').textContent=t; }
 /* Stage 4.0.9: jembatan presentasi ke UT.GameplayHUD (gameplay/hud.js). Aman bila HUD tidak termuat; tidak mengubah state/logic. */
 function hud(f,...a){ try{ const H=window.UT&&UT.GameplayHUD; if(H&&H[f]) H[f](...a); }catch(e){ console.error(e); } }
-function fb(k,...a){ try{ const F=window.UT&&UT.Gameplay&&UT.Gameplay.Feedback; if(F&&typeof F[k]==='function') return F[k](...a); }catch(e){ console.error(e); } return false; }
+function fb(k,...a){ try{ const F=window.UT&&UT.Gameplay&&UT.Gameplay.Feedback; if(F&&typeof F[k]==='function') return F[k](...a); if(k==='event'){ hud('showEvent',...a); return true; } }catch(e){ console.error(e); } return false; }
 if(window.UT&&UT.GameplayHUD) UT.GameplayHUD.init({getGameId:()=>gameId,isPaused:()=>paused});
 function setRoll(on){ $('btnRoll').disabled=!on; }
 const FC={
@@ -1608,7 +1608,7 @@ function startPU(){ const o={sword:0,feather:0,tnt:0,apple:0,potion:0,grass:0},k
 async function giveChest(p){
    openChest(p.pos);
    const ks=Object.keys(p.pu),k=ks[Math.floor(Math.random()*ks.length)];
-   p.pu[k]++; p.score+=5; sfx.chest(); setMsg(p.name+' membuka peti: '+PUN[k][1]+' '+PUN[k][0]); hud('showEvent','chest','Chest ditemukan! Dapat '+PUN[k][1]); renderChips();
+   p.pu[k]++; p.score+=5; sfx.chest(); setMsg(p.name+' membuka peti: '+PUN[k][1]+' '+PUN[k][0]); fb('event','chest','Chest ditemukan! Dapat '+PUN[k][1]); renderChips();
    await (fb('reward',p,k)||showPUCard(p,k));
    sfx.chestClose();
 }
@@ -1635,8 +1635,8 @@ async function usePU(k,cpu){
   const p=players[cur];
   if(!p||busy||gameOver||!p.pu[k]||(p.cpu&&!cpu)) return;
   const gid=gameId,L=players.filter(q=>q!==p&&q.pos>0&&q.pos<100).sort((a,b)=>b.pos-a.pos)[0];
-  if(k==='tnt'&&!L){ hud('showEvent','info','TNT belum punya target.'); return setMsg('TNT belum punya target.'); }
-  if(k==='grass'&&(!L||L.pos<=p.pos)){ hud('showEvent','info','Tidak ada pemain di depanmu.'); return setMsg('Tidak ada pemain di depanmu.'); }
+  if(k==='tnt'&&!L){ fb('event','info','TNT belum punya target.'); return setMsg('TNT belum punya target.'); }
+  if(k==='grass'&&(!L||L.pos<=p.pos)){ fb('event','info','Tidak ada pemain di depanmu.'); return setMsg('Tidak ada pemain di depanmu.'); }
   busy=true; setRoll(false); p.pu[k]--; sfx.pop(); setMsg(p.name+' memakai '+PUN[k][1]+': '+PUN[k][2]+'.');
   if(k==='sword') p.bonus=3; if(k==='feather') p.extra=true; if(k==='potion') p.p4=true; if(k==='apple') p.shield=true;
   renderChips();
@@ -1789,43 +1789,43 @@ async function playTurn(p,v,gid,bn){
   }else{
     const over=target-100,fin=100-over;
     await A(walk(p,p.pos,100)); p.pos=100; renderChips();
-    setMsg('Kelebihan '+over+'. '+p.name+' memantul mundur ke '+fin+'.'); hud('showEvent','bounce','Kelebihan '+over+'! Memantul ke '+fin,{gid}); sfx.bounce();
+    setMsg('Kelebihan '+over+'. '+p.name+' memantul mundur ke '+fin+'.'); fb('event','bounce','Kelebihan '+over+'! Memantul ke '+fin,{gid}); sfx.bounce();
     await A(sleep(300)); await A(walk(p,100,fin)); p.pos=fin;
   }
   renderChips();
-  if(p.pos===100){ setMsg(p.name+' tiba di The End! Lempar dadu untuk melawan Ender Dragon.'); hud('showEvent','dragon',p.name+' tiba di The End! Siap lawan Ender Dragon',{gid,ttl:2400}); sfx.hundred(); sfx.win(); await A(sleep(900)); nextTurn(); return; }
+  if(p.pos===100){ setMsg(p.name+' tiba di The End! Lempar dadu untuk melawan Ender Dragon.'); fb('event','dragon',p.name+' tiba di The End! Siap lawan Ender Dragon',{gid,ttl:2400}); sfx.hundred(); sfx.win(); await A(sleep(900)); nextTurn(); return; }
   if(LADDERS[p.pos]){
-    const to=LADDERS[p.pos]; setMsg('Tangga! '+p.name+' naik dari '+p.pos+' ke '+to+'.'); hud('showEvent','ladder','Naik Tangga! +'+(to-p.pos)+' langkah',{gid}); sfx.naiktangga();
+    const to=LADDERS[p.pos]; setMsg('Tangga! '+p.name+' naik dari '+p.pos+' ke '+to+'.'); fb('event','ladder','Naik Tangga! +'+(to-p.pos)+' langkah',{gid}); sfx.naiktangga();
     await A(sleep(350)); await A(climb(p,p.pos,to)); p.pos=to; p.score+=10;
   }else if(p.shield&&(SNAKES[p.pos]||(mobOn(p.pos)&&mobOn(p.pos)!=='villager'))){
-    p.shield=false; setMsg('Apel Emas melindungi '+p.name+'!'); hud('showEvent','shield','Apel Emas melindungi '+p.name+'!',{gid}); sfx.pop(); await A(sleep(900));
+    p.shield=false; setMsg('Apel Emas melindungi '+p.name+'!'); fb('event','shield','Apel Emas melindungi '+p.name+'!',{gid}); sfx.pop(); await A(sleep(900));
   }else if(SNAKES[p.pos]){
     const to=SNAKES[p.pos];
-    if(!SNAKEINFO[p.pos]){ p.pos=to; setMsg('Ular! '+p.name+' turun ke '+to+'.'); hud('showEvent','snake','Kena Ular! Turun ke '+to,{gid}); await A(sleep(350)); await A(hopTo(p.pawn,slotPos(p.idx,to),0.5,0.8)); }
-    else{ setMsg('Dicaplok ular! '+p.name+' turun dari '+p.pos+' ke '+to+'.'); hud('showEvent','snake','Kena Ular! Turun ke '+to,{gid}); sfx.naiktangga(); await A(sleep(350)); await A(bite(p,p.pos,to,gid)); }
+    if(!SNAKEINFO[p.pos]){ p.pos=to; setMsg('Ular! '+p.name+' turun ke '+to+'.'); fb('event','snake','Kena Ular! Turun ke '+to,{gid}); await A(sleep(350)); await A(hopTo(p.pawn,slotPos(p.idx,to),0.5,0.8)); }
+    else{ setMsg('Dicaplok ular! '+p.name+' turun dari '+p.pos+' ke '+to+'.'); fb('event','snake','Kena Ular! Turun ke '+to,{gid}); sfx.naiktangga(); await A(sleep(350)); await A(bite(p,p.pos,to,gid)); }
     p.pos=to;
   }else if(mobOn(p.pos)){
     const k=mobOn(p.pos); mobReact(p.pos);
     if(k==='creeper'){
-      setMsg('Creeper meledak! '+p.name+' terlempar mundur 2 blok.'); hud('showEvent','mob','Creeper! Meledak, mundur 2 blok',{gid});
+      setMsg('Creeper meledak! '+p.name+' terlempar mundur 2 blok.'); fb('event','mob','Creeper! Meledak, mundur 2 blok',{gid});
       sfx.creeper();
       await A(sleep(300)); await A(explode(p));
       const to=Math.max(1,p.pos-2); await A(walk(p,p.pos,to)); p.pos=to;
     }else if(k==='ender'){
       let to; do{ to=p.pos+Math.floor(Math.random()*21)-10; }while(to<1||to>98||to===p.pos);
-      setMsg('Enderman! '+p.name+' teleport '+(to>p.pos?'maju':'mundur')+' ke '+to+'.'); hud('showEvent','mob','Enderman! Teleport ke '+to,{gid});
+      setMsg('Enderman! '+p.name+' teleport '+(to>p.pos?'maju':'mundur')+' ke '+to+'.'); fb('event','mob','Enderman! Teleport ke '+to,{gid});
       sfx.enderman();
       await A(sleep(300)); await A(teleport(p,to)); p.pos=to;
     }else if(k==='villager'){
-      const to=Math.min(99,p.pos+5); setMsg('Villager membantu! '+p.name+' maju 5 blok ke '+to+'.'); hud('showEvent','mob','Villager membantu! Maju 5 blok',{gid}); sfx.pop(); p.score+=5;
+      const to=Math.min(99,p.pos+5); setMsg('Villager membantu! '+p.name+' maju 5 blok ke '+to+'.'); fb('event','mob','Villager membantu! Maju 5 blok',{gid}); sfx.pop(); p.score+=5;
       await A(sleep(500)); await A(walk(p,p.pos,to)); p.pos=to;
 }else if(k==='skeleton'){
-      setMsg('Skeleton menembak! '+p.name+' terpental mundur 1 blok.'); hud('showEvent','mob','Skeleton! Terpental mundur 1 blok',{gid});
+      setMsg('Skeleton menembak! '+p.name+' terpental mundur 1 blok.'); fb('event','mob','Skeleton! Terpental mundur 1 blok',{gid});
       sfx.skeltonSh();
       const to=Math.max(1,p.pos-1); await A(sleep(400)); await A(fly(p,to,0.45,0.9)); p.pos=to;
     }else{
       const bk=MOBBACK[k],to=Math.max(1,p.pos-bk);
-      setMsg(MOBNAME[k]+' menghantam! '+p.name+' terpental mundur '+bk+' blok ke '+to+'.'); hud('showEvent','mob',MOBNAME[k]+'! Mundur '+bk+' blok',{gid});
+      setMsg(MOBNAME[k]+' menghantam! '+p.name+' terpental mundur '+bk+' blok ke '+to+'.'); fb('event','mob',MOBNAME[k]+'! Mundur '+bk+' blok',{gid});
       showAttackCard(MOBNAME[k],p.name,'hit',MOBNAME[k]+' menghantam '+p.name+' dan mundur '+bk+' blok.');
       sfx.hit();
       await A(sleep(450)); await A(fly(p,to,bk>3?0.8:0.45,bk>3?2.4:0.9)); p.pos=to;
