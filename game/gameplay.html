@@ -382,6 +382,7 @@ if (typeof THREE === 'undefined') {
 <script src="gameplay/audio.js"></script>
 <script src="gameplay/voxel-geom.js"></script>
 <script src="gameplay/fx.js"></script>
+<script src="gameplay/feedback.js"></script>
 <script>
     if (window.__NO_THREE) { throw new Error('Three.js tidak dimuat'); }
 (function(){
@@ -1476,24 +1477,11 @@ async function giveChest(p){
    sfx.chestClose();
 }
 try{ fb('setRewardPresenter',showPUCard); }catch(e){ console.error(e); }
-async function showPUCard(p,k){
-   const c=$('puCard'),em=$('pcEmoji'),keys=Object.keys(PUN);
-   $('pcWho').textContent=p.name+' membuka peti'; $('pcName').textContent='...'; $('pcDesc').textContent='';
-   c.classList.remove('pop'); c.hidden=false;
-   if(!reduce) for(let i=0;i<9;i++){ em.textContent=PUN[keys[i%keys.length]][0]; await sleep(75); }
-   sfx.rewardpower();
-   em.textContent=PUN[k][0]; $('pcName').textContent=PUN[k][1]; $('pcDesc').textContent=PUN[k][2]; c.classList.add('pop'); sfx.pop();
-   await sleep(reduce?900:1500); c.hidden=true;
-}
-function showAttackCard(attacker,defender,weapon,desc){
-   const c=$('puCard'),em=$('pcEmoji');
-   $('pcWho').textContent=attacker+' → '+defender;
-   $('pcName').textContent=PUN[weapon]?PUN[weapon][1]:weapon;
-   $('pcDesc').textContent=desc;
-   em.textContent=PUN[weapon]?PUN[weapon][0]:'⚔️';
-   c.classList.remove('pop'); c.hidden=false; c.classList.add('pop'); sfx.pop();
-   setTimeout(()=>c.hidden=true,1600);
-}
+/* Presentasi visual feedback = UT.GameplayFeedback (gameplay/feedback.js). Routing teks/HUD tetap UT.Gameplay.Feedback (fb(...)); kapan kartu tampil tetap ditentukan di sini. */
+const FBK=(window.UT&&UT.GameplayFeedback)||null; /* modul tak termuat -> presentasi visual dilewati, gameplay tetap jalan */
+if(FBK) FBK.init({sfx,sleep,reduce});
+async function showPUCard(p,k){ if(FBK) return FBK.showPUCard(p,k); }
+function showAttackCard(attacker,defender,weapon,desc){ if(FBK) FBK.showAttackCard(attacker,defender,weapon,desc); }
 /* CPU hanya memilih Power yang valid (aturan sama dengan usePU): punya stok, bukan Pedang/Totem di fase Dragon, TNT wajib punya target. */
 function cpuPUValid(p,k){
   if(!p||!p.pu[k]) return false;
@@ -1562,7 +1550,7 @@ function applyPendingTheme(){
 function beginTurn(extra){
   applyPendingTheme();
   const p=players[cur];
-  players.forEach((q,i)=>{ q.pawn.userData.marker.visible=(i===cur); });
+  if(FBK) FBK.setCurrentMarker(players,cur);
   focus=p.pawn; renderChips();
   hud('showTurn',p,{extra:!!extra});
   if(extra) setMsg(p.name+' dapat giliran tambahan, lempar lagi.'+(p.cpu?'':' Tekan Lempar dadu.'));
@@ -1739,7 +1727,7 @@ async function doRoll(){
   }
 }
 function finishGame(p){
-  gameOver=true; p.score+=50; renderChips(); p.pawn.userData.marker.visible=false;
+  gameOver=true; p.score+=50; renderChips(); if(FBK) FBK.hideMarker(p);
   setMsg(p.name+' mengalahkan Ender Dragon!'); setRoll(false);
   const lost=(mode==='cpu'&&p.cpu);
   $('win').dataset.state=lost?'lose':'win';
@@ -1870,10 +1858,7 @@ function frame(now){
   { const D=dragon.userData,wr=Math.sin(now*0.006)*0.55;
     D.wR.rotation.z=wr; D.wL.rotation.z=-wr;
     dragon.position.y=D.y0+Math.sin(now*0.003)*0.18+D.dy; dragon.rotation.y=Math.sin(now*0.0015)*0.2+D.shk; }
-  players.forEach(p=>{
-    const mk=p.pawn.userData.marker;
-    if(mk.visible){ mk.position.y=1.22+Math.sin(now*0.004)*0.08; mk.rotation.y+=dt*2; }
-  });
+  if(FBK) FBK.updateTurnMarkers(players,now,dt);
   if(FX) FX.updateConfetti(dt);
   const watch=[camTarget];
   if(focus) watch.push(focus.position);
