@@ -13,8 +13,8 @@
      Hanya skin 'palette' (legacy) yang diteruskan; skin PNG yang dipakai/dimiliki jatuh ke skin cadangan,
      TANPA mengubah kepemilikan atau skin terpasang di PlayerData. */
   var FALLBACK_KEY = (IC.byId(IC.fallbackSkinId()) || {}).gameKey || 'steve';
-  function playable(k) { var it = IC.byGameKey('skin', k); return !!it && it.renderer === 'palette'; }
-  function eqSkinKey() { var it = IC.byId(PD.equippedId('skin')); return !it ? null : (it.renderer === 'palette' ? it.gameKey : FALLBACK_KEY); }
+  function playable(k) { var it = IC.byGameKey('skin', k); return !!it && (it.renderer === 'palette' || it.renderer === 'png'); } /* 4.1.14.9: PNG punya renderer 3D (gameplay/skin-uv.js); gagal muat -> palette Steve di gameplay */
+  function eqSkinKey() { var it = IC.byId(PD.equippedId('skin')); return !it ? null : ((it.renderer === 'palette' || it.renderer === 'png') ? it.gameKey : FALLBACK_KEY); }
   function uniq(a) { return a.filter(function (x, i) { return a.indexOf(x) === i; }); }
 
   try {
@@ -27,7 +27,7 @@
     var skins = uniq(String(rawSkins).split(',').map(function (s) { return s.trim(); })
       .filter(function (k) { return k && PD.owns('skin.' + k) && playable(k); }));
     var need = mode === 'cpu' ? 1 : +mode;
-    var ownedSkins = PD.ownedItems().filter(function (o) { return o.item.kind === 'skin' && o.item.renderer === 'palette'; })
+    var ownedSkins = PD.ownedItems().filter(function (o) { return o.item.kind === 'skin' && (o.item.renderer === 'palette' || o.item.renderer === 'png'); })
       .sort(function (a, b) { return a.seq - b.seq; }).map(function (o) { return o.item.gameKey; });
     if (!skins.length && eqSkinKey()) skins.push(eqSkinKey());           /* Pemain 1 = skin aktif (PNG -> skin cadangan) */
     /* Mode CPU: skin CPU (indeks 1) boleh bebas, jadi pertahankan apa yang dikirim lobi */

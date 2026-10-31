@@ -68,5 +68,26 @@
     } catch (e) { return null; }
   }
 
-  UT.GameplaySkin = { TEX: TEX, FACE_ORDER: FACE_ORDER, boxUV: boxUV, parts: parts, applyBoxUV: applyBoxUV, detectSlim: detectSlim };
+  /* Perakit model 3D bertekstur (CP2). THREE dari parameter (tidak bergantung global).
+     tex   = THREE.Texture pixel-art (NearestFilter) dari ItemArt.makeSkinTexture
+     opts  = { slim: bool, unit: ukuran 1 piksel skin dalam unit dunia (default 0.03 => tinggi ~0.96) }
+     Hasil = THREE.Group (kaki di y=0, menghadap +z). Material dibagi antar bagian; alphaTest untuk piksel transparan.
+     Tidak memakai rnd(). */
+  function buildModel(THREE, tex, opts) {
+    opts = opts || {};
+    var u = opts.unit || 0.03, slim = !!opts.slim, g = new THREE.Group(), list = parts(slim);
+    var mBase = new THREE.MeshLambertMaterial({ map: tex, alphaTest: 0.5 });
+    var mOver = new THREE.MeshLambertMaterial({ map: tex, alphaTest: 0.5 });
+    list.forEach(function (p) {
+      var s = p.size, uv = boxUV(p.base[0], p.base[1], s[0], s[1], s[2]), ov = boxUV(p.over[0], p.over[1], s[0], s[1], s[2]);
+      var m = new THREE.Mesh(applyBoxUV(new THREE.BoxGeometry(s[0] * u, s[1] * u, s[2] * u), uv), mBase);
+      m.position.set(p.pos[0] * u, p.pos[1] * u, p.pos[2] * u); m.castShadow = true; m.name = p.id; g.add(m);
+      var k = p.inflate * 2, o = new THREE.Mesh(applyBoxUV(new THREE.BoxGeometry((s[0] + k) * u, (s[1] + k) * u, (s[2] + k) * u), ov), mOver);
+      o.position.copy(m.position); o.name = p.id + 'Over'; g.add(o);
+    });
+    g.userData.pngSkin = true; g.userData.slim = slim;
+    return g;
+  }
+
+  UT.GameplaySkin = { TEX: TEX, FACE_ORDER: FACE_ORDER, boxUV: boxUV, parts: parts, applyBoxUV: applyBoxUV, detectSlim: detectSlim, buildModel: buildModel };
 })(window);

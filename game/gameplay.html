@@ -580,6 +580,37 @@ const PLAYER_DEFS=[
   {name:'Zombie',key:'zombie',hex:0x2DB5A6,css:'#2b8f87'},
   {name:'Skeleton',key:'skeleton',hex:0xD0D0D0,css:'#6f7378'}
 ];
+/* Stage 4.1.14.9: skin PNG 64x64 (renderer 3D bertekstur = gameplay/skin-uv.js). Daftar TERPISAH agar PLAYER_DEFS
+   (urutan default + pemilihan CPU acak) tidak berubah. Pawn palette tetap dibuat dulu sebagai fallback (Steve). */
+const PNG_DEFS=[
+  {name:'Hero',key:'hero',hex:0xE5484D,css:'#c93a3f',png:true},
+  {name:'Knight',key:'knight',hex:0x9AA7B8,css:'#6f7a89',png:true},
+  {name:'Ninja Red',key:'ninja_red',hex:0xD62828,css:'#a81f1f',png:true},
+  {name:'Pejabat',key:'pejabat',hex:0x6B6B7B,css:'#5a5a68',png:true},
+  {name:'Sakura',key:'sakura',hex:0xFF8FB8,css:'#d9709a',png:true},
+  {name:'Warden',key:'warden',hex:0x2AA5A0,css:'#1f7f7a',png:true}
+];
+const SKIN3D={},SKIN_IMG={};
+function refreshFaces(){ try{ if(typeof renderChips==='function'&&players&&players.length) renderChips(); }catch(e){} }
+/* Muat texture PNG (ItemArt.loadSkinTexture + makeSkinTexture). Gagal -> null (pawn tetap palette/Steve). */
+function loadSkin3D(k){
+  if(SKIN3D[k]) return SKIN3D[k];
+  return SKIN3D[k]=(async()=>{
+    try{
+      const IA=window.ItemArt,SU=UT.GameplaySkin; if(!IA||!SU||!SU.buildModel) return null;
+      const id='skin.'+k,r=await IA.loadSkinTexture(id); if(!r||!r.ok||!r.image) return null;
+      const it=window.ItemCatalog&&ItemCatalog.byId(id); let slim=!!(it&&it.arms==='slim');
+      if(!it||!it.arms) slim=SU.detectSlim(r.image)===true;
+      SKIN_IMG[k]=r.image; return {tex:IA.makeSkinTexture(THREE,r.image),slim};
+    }catch(e){ return null; }
+  })().then(v=>{ if(v) refreshFaces(); return v; });
+}
+function upgradePawnPNG(g,pal,k){
+  loadSkin3D(k).then(m=>{
+    if(!m) return;
+    const mdl=UT.GameplaySkin.buildModel(THREE,m.tex,{slim:m.slim}); g.add(mdl); pal.visible=false; g.userData.png=mdl;
+  }).catch(()=>{});
+}
 /* Geometri papan murni (tile serpentine, tinggi terrain) = UT.GameplayVoxelGeom (gameplay/voxel-geom.js). Rumus dipindah apa adanya. */
 const GV=UT.GameplayVoxelGeom;
 const TILES=GV.buildTiles();
@@ -1728,7 +1759,8 @@ function makePawn(d){
     if(k==='steve') bx(0,0.57,0.152,0.1,0.03,0.02,0x5A3820,F); else bx(0,0.57,0.152,0.06,0.025,0.02,0xB0563A,F);
   }
   const g=new THREE.Group();
-  g.add(buildBatch(b));
+  const pal=buildBatch(b); g.add(pal);
+  if(d.png) upgradePawnPNG(g,pal,d.key); /* PNG gagal dimuat -> tetap palette (Steve) */
   const marker=new THREE.Mesh(new THREE.OctahedronGeometry(0.13),new THREE.MeshLambertMaterial({color:d.hex,emissive:d.hex,emissiveIntensity:0.35}));
   marker.position.y=1.22; marker.visible=false;
   g.add(marker); g.userData.marker=marker;
@@ -1930,6 +1962,11 @@ FC.skeleton={p:{k:'#e8e8e8',K:'#c4c4c4',d:'#222',m:'#8a8a8a'},f:['kkkkkkkk','kKk
 const FURL={};
 function faceURL(k){
   if(FURL[k]) return FURL[k];
+  if(PNG_DEFS.some(d=>d.key===k)){ /* wajah dari texture PNG (kepala + hat); belum siap -> wajah Steve tanpa disimpan di cache */
+    const im=SKIN_IMG[k]; if(!im) return faceURL('steve');
+    const cv=document.createElement('canvas'); cv.width=cv.height=16; const x=cv.getContext('2d'); x.imageSmoothingEnabled=false;
+    x.drawImage(im,8,8,8,8,0,0,16,16); x.drawImage(im,40,8,8,8,0,0,16,16); return FURL[k]=cv.toDataURL();
+  }
   const c=FC[k],cv=document.createElement('canvas'); cv.width=cv.height=16; const x=cv.getContext('2d');
   c.f.forEach((r,j)=>[...r].forEach((l,i)=>{ x.fillStyle=c.p[l]; x.fillRect(i*2,j*2,2,2); }));
   for(let i=0;i<16;i++)for(let j=0;j<16;j++){ x.fillStyle='rgba(0,0,0,'+(Math.random()*0.14).toFixed(2)+')'; x.fillRect(i,j,1,1); }
@@ -2212,7 +2249,7 @@ function startGame(m,keys){
   applyPendingTheme(); resetSnakes(); resetDragon();
   let defs;
   keys=keys||(m==='cpu'?['steve','alex']:PLAYER_DEFS.slice(0,+m).map(d=>d.key));
-  defs=keys.map((k,i)=>{ const d=Object.assign({},PLAYER_DEFS.find(x=>x.key===k)); if(m==='cpu'&&i===1){ d.cpu=true; d.name+=' CPU'; } return d; });
+  defs=keys.map((k,i)=>{ const d=Object.assign({},PLAYER_DEFS.find(x=>x.key===k)||PNG_DEFS.find(x=>x.key===k)); if(m==='cpu'&&i===1){ d.cpu=true; d.name+=' CPU'; } return d; });
   defs.forEach((d,i)=>{
     const pawn=makePawn(d); pawn.position.copy(slotPos(i,0)); pawn.rotation.y=Math.atan2(-SLOT[i][0],-SLOT[i][1]); scene.add(pawn); /* duduk menghadap api */
     players.push({idx:i,name:d.name,key:d.key,css:d.css,hex:d.hex,cpu:!!d.cpu,pos:0,sixes:0,dhp:100,pawn,score:0,bonus:0,extra:false,p4:false,shield:false,pu:startPU()});
@@ -2346,7 +2383,7 @@ function readLobbyConfig(){
   let ss=null;
   try{ ss=JSON.parse(sessionStorage.getItem('ut-config')||'null'); }catch(e){ ss=null; }
   if(!ss||typeof ss!=='object') ss=null;
-  const validSkin=k=>typeof k==='string'&&PLAYER_DEFS.some(d=>d.key===k);
+  const validSkin=k=>typeof k==='string'&&(PLAYER_DEFS.some(d=>d.key===k)||PNG_DEFS.some(d=>d.key===k));
   const validMode=m=>m==='cpu'||m==='2'||m==='3'||m==='4';
   const pickParam=(name,isValid)=>{ const v=q.get(name); return v!==null&&isValid(v)?v:null; };
   const themeKeys=THEMES.map(t=>t.key),diceKeys=DICE.map(d=>d.key);
