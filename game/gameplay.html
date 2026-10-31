@@ -1634,6 +1634,8 @@ function showAttackCard(attacker,defender,weapon,desc){
 async function usePU(k,cpu){
   const p=players[cur];
   if(!p||busy||gameOver||!p.pu[k]||(p.cpu&&!cpu)) return;
+  /* Fase Dragon = p.pos===100 (kondisi existing di playTurn). Pedang/Apel Emas hanya relevan untuk gerak papan: tolak SEBELUM konsumsi, Power tidak berkurang. CPU: tolak diam-diam (AI diubah di 4.1.8). */
+  if(p.pos===100&&(k==='sword'||k==='apple')){ if(!cpu){ const m=PUN[k][1]+' tidak dapat digunakan saat melawan Ender Dragon.'; fb('short',k,PUN[k][1],p.name,{text:m})||hud('showPower',k,PUN[k][1],p.name,{text:m}); } return; }
   const gid=gameId,L=players.filter(q=>q!==p&&q.pos>0&&q.pos<100).sort((a,b)=>b.pos-a.pos)[0];
   if(k==='tnt'&&!L){ fb('event','info','TNT belum punya target.'); return setMsg('TNT belum punya target.'); }
   if(k==='grass'&&(!L||L.pos<=p.pos)){ fb('event','info','Tidak ada pemain di depanmu.'); return setMsg('Tidak ada pemain di depanmu.'); }
@@ -1679,7 +1681,7 @@ function renderChips(){
     const bt=document.createElement('button'); bt.type='button'; bt.className='pb'; bt.title=PUN[k][1]+': '+PUN[k][2];
     bt.setAttribute('aria-label',PUN[k][1]+': '+PUN[k][2]); bt.textContent=PUN[k][0]; const lb=document.createElement('em'); lb.textContent=PUN[k][1].split(' ')[0]; bt.appendChild(lb);
     const n=document.createElement('b'); n.textContent=c?c.pu[k]:0; bt.appendChild(n);
-    bt.disabled=!c||c.cpu||busy||gameOver||!c.pu[k];
+    bt.disabled=!c||c.cpu||busy||gameOver||!c.pu[k]||(c.pos===100&&(k==='sword'||k==='apple'));
     bt.addEventListener('click',()=>{ ensureAudio(); usePU(k); });
     pu.appendChild(bt);
   });

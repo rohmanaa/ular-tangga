@@ -9,7 +9,7 @@
      UT.GameplayHUD.reset()                             — game baru/diulang: bersihkan timer + sembunyikan
      UT.GameplayHUD.showTurn(player, {extra})           — "Giliran X" / "Giliran Computer" / "Giliran tambahan!"
      UT.GameplayHUD.showEvent(kind, text, {ttl, gid})   — LEVEL 1: banner kecil non-blocking (role=status)
-     UT.GameplayHUD.showPower(key, name, who)           — LEVEL 1: "Pedang digunakan!" dst.
+     UT.GameplayHUD.showPower(key, name, who, {text})   — LEVEL 1: "Pedang digunakan!" dst.
      UT.GameplayHUD.showCombat(att, def, text, {hp,maxHp,ttl,gid}) — strip combat + bar HP naga (opsional)
      UT.GameplayHUD.showResult(title, text, {ttl, gid}) — LEVEL 2: panel penting non-blocking (role=status)
      UT.GameplayHUD.updatePlayer(player)                — sinkronkan bar HP naga bila sedang tampil
@@ -144,7 +144,8 @@
       if (o && o.extra) return H.showEvent('extra', 'Giliran tambahan!', { ttl: 1600 });
       return H.showEvent('turn', p.cpu ? 'Giliran Computer' : 'Giliran ' + p.name, { ttl: 1200 });
     },
-    showPower: function (key, name, who) {
+    showPower: function (key, name, who, o) {
+      if (o && o.text) return H.showEvent('power', String(o.text), { ttl: 1800, icon: (POWER_SHORT[key] || [])[0] }); /* pesan kustom (mis. Power ditolak) */
       /* Feedback ringkas "<ikon> Nama — efek". Bukan modal; modal hadiah khusus Chest (#puCard di gameplay.html). */
       var s = POWER_SHORT[key], who_ = who ? ' (' + who + ')' : '';
       if (s) return H.showEvent('power', s[1] + who_, { ttl: 1800, icon: s[0] });

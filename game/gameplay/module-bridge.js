@@ -13,7 +13,7 @@
                                               nama tidak dikenal/api bukan object/namespace sudah terisi
      UT.Gameplay.hasModule(name)           — true bila namespace sudah terisi (bukan sekadar ada)
    UT.Gameplay.Feedback — kontrak pemisahan feedback (ADAPTER tipis, bukan sistem baru):
-     Feedback.short(key, name, who)   — Power: banner HUD singkat (UT.GameplayHUD.showPower), BUKAN modal Chest
+     Feedback.short(key, name, who, opts) — Power (opts.text = pesan singkat kustom, mis. Power ditolak): banner HUD singkat (UT.GameplayHUD.showPower), BUKAN modal Chest
      Feedback.event(kind, text, opts) — event gameplay: banner HUD (UT.GameplayHUD.showEvent)
      Feedback.reward(...args)         — reward Chest: modal besar; presenter didaftarkan gameplay.html lewat
                                         Feedback.setRewardPresenter(fn). Mengembalikan false bila belum terdaftar.
@@ -33,9 +33,9 @@
   var F = G.Feedback;
   function hud() { return win.UT && win.UT.GameplayHUD; }
   if (typeof F.short !== 'function') {
-    F.short = function (key, name, who) {
+    F.short = function (key, name, who, opts) {
       var H = hud();
-      return H && typeof H.showPower === 'function' ? H.showPower(key, name, who) : false;
+      return H && typeof H.showPower === 'function' ? H.showPower(key, name, who, opts) : false;
     };
   }
   if (typeof F.event !== 'function') {
