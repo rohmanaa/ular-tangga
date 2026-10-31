@@ -1995,7 +1995,7 @@ async function usePU(k,cpu){
   const p=players[cur];
   if(!p||busy||gameOver||!p.pu[k]||(p.cpu&&!cpu)) return;
   /* Fase Dragon = p.pos===100 (kondisi existing di playTurn). Pedang/Totem Undying (id 'apple') hanya relevan untuk gerak papan: tolak SEBELUM konsumsi, Power tidak berkurang. CPU: tolak diam-diam (CPU sudah memfilter Power valid sebelum usePU, 4.1.8). */
-  if(p.pos===100&&(k==='sword'||k==='apple')){ if(!cpu){ const m=PUN[k][1]+' tidak dapat digunakan saat melawan Ender Dragon.'; fb('short',k,PUN[k][1],p.name,{text:m})||hud('showPower',k,PUN[k][1],p.name,{text:m}); } return; }
+  if(p.pos===100&&(k==='sword'||k==='apple')){ if(!cpu){ const m=PUN[k][1]+' tidak dapat digunakan saat melawan Ender Dragon.'; fb('short',k,PUN[k][1],p.name,{text:m,icon:PUN[k][0]})||hud('showPower',k,PUN[k][1],p.name,{text:m,icon:PUN[k][0]}); } return; }
   const gid=gameId,L=players.filter(q=>q!==p&&q.pos>0&&q.pos<100).sort((a,b)=>b.pos-a.pos)[0];
   if(k==='tnt'&&!L){ if(cpu) return; fb('event','info','TNT belum punya target.'); return setMsg('TNT belum punya target.'); }
   if(k==='grass'&&(!L||L.pos<=p.pos)){ if(cpu) return; fb('event','info','Tidak ada pemain di depanmu.'); return setMsg('Tidak ada pemain di depanmu.'); }
@@ -2011,11 +2011,11 @@ async function usePU(k,cpu){
   /* Power = feedback singkat (banner HUD), BUKAN kartu/modal hadiah Chest (#puCard). Urutan: pakai → terapkan efek → feedback → lanjut.
      Self-power → Feedback.short. Power bertarget (TNT/Grass) → Feedback.event: pelaku → target → efek → hasil aktual. */
   if(k==='tnt'||k==='grass'){
-    let t;
+    let t,e;
     if(k==='tnt'){ const d=oldL-L.pos; t=p.name+' → TNT → '+L.name+(d>0?' mundur '+d+' petak':' tidak bergerak')+' ('+oldL+' → '+L.pos+')'; }
     else t=p.name+' bertukar posisi dengan '+L.name+' — '+p.name+' '+p.pos+', '+L.name+' '+L.pos;
-    setMsg(t); fb('event','power',t,{gid,icon:PUN[k][0]});
-  }else fb('short',k,PUN[k][1],p.name)||hud('showPower',k,PUN[k][1],p.name);
+    e=k==='tnt'?L.name+(oldL-L.pos>0?' mundur '+(oldL-L.pos)+' petak':' tidak bergerak'):'Bertukar posisi dengan '+L.name; setMsg(t); { const po={gid,icon:PUN[k][0],desc:e}; fb('short',k,PUN[k][1],p.name,po)||hud('showPower',k,PUN[k][1],p.name,po); }
+  }else{ const po={gid,icon:PUN[k][0],desc:PUN[k][2]}; fb('short',k,PUN[k][1],p.name,po)||hud('showPower',k,PUN[k][1],p.name,po); }
   busy=false; if(!p.cpu) setRoll(true); focus=p.pawn; renderChips();
 }
 function renderChips(){

@@ -9,15 +9,15 @@
      UT.GameplayHUD.reset()                             — game baru/diulang: bersihkan timer + sembunyikan
      UT.GameplayHUD.showTurn(player, {extra})           — "Giliran X" / "Giliran Computer" / "Giliran tambahan!"
      UT.GameplayHUD.showEvent(kind, text, {ttl, gid})   — LEVEL 1: banner kecil non-blocking (role=status)
-     UT.GameplayHUD.showPower(key, name, who, {text})   — LEVEL 1: "Pedang digunakan!" dst.
+     UT.GameplayHUD.showPower(key, name, who, {icon,desc,gid,text})  LEVEL 1: kartu Power (ikon, pemain, nama Power, efek) di stack; text = pesan satu baris
      UT.GameplayHUD.showCombat(att, def, text, {hp,maxHp,ttl,gid}) — strip combat + bar HP naga (opsional)
      UT.GameplayHUD.showResult(title, text, {ttl, gid}) — LEVEL 2: panel penting non-blocking (role=status)
      UT.GameplayHUD.updatePlayer(player)                — sinkronkan bar HP naga bila sedang tampil
-   Prioritas banner (Stage 4.1.6, hanya presentasi, state ada di HUD ini):
-     NORMAL    = kind 'turn' / 'extra' (showTurn)         — tidak boleh menimpa banner IMPORTANT yang masih aktif;
-                                                            ditunda 1 slot (yang terbaru) lalu tampil saat IMPORTANT selesai
-     IMPORTANT = semua kind lain (ladder, snake, mob, power, shield, dragon, chest, bounce, info)
-                                                          — boleh menimpa NORMAL maupun IMPORTANT sebelumnya (event baru)
+   Feedback stack (Stage 4.1.14): semua feedback LEVEL 1 masuk ke SATU .feedback-stack (kolom, gap tetap => tidak overlap).
+     Item baru muncul di ATAS (slide-down), item lama bergeser turun. Prioritas hanya presentasi, state ada di HUD ini:
+     NORMAL    = kind 'turn' / 'extra' (showTurn)   maksimal 1 sekaligus: yang baru menggantikan yang lama, tidak menggusur IMPORTANT
+     IMPORTANT = semua kind lain (ladder, snake, mob, power, shield, dragon, chest, bounce, info)   maksimal 3; lebih dari itu, yang TERLAMA dibuang
+     Kartu Power memakai data Power milik gameplay (PUN) yang dikirim lewat opts; HUD tidak punya daftar Power sendiri.
    Semua teks lewat textContent (tanpa HTML string). Elemen informasi tidak diberi role=button/tabindex. */
 (function (win, doc) {
   'use strict';
@@ -27,15 +27,12 @@
   var STYLE_ID = 'ut-ghud-css';
   var ICON = { turn: '🎲', extra: '✨', ladder: '🪜', snake: '🐍', mob: '👾', chest: '🎁', power: '⚡', three6: '🎲',
                bounce: '↩️', shield: '🛡️', dragon: '🐉', info: 'ℹ️' };
-  var POWER_SHORT = { sword: ['🗡️', 'Pedang +3'], feather: ['🪶', 'Bulu — Giliran Tambahan'], tnt: ['🧨', 'TNT — Pemimpin −6'],
-                      apple: ['🗿', 'Totem Undying — Kebal'], potion: ['🧪', 'Ramuan — Dadu 4–6'], grass: ['🟩', 'Blok Rumput — Tukar Posisi'] };
-  var POWER_VERB = { sword: 'digunakan', feather: 'aktif', tnt: 'digunakan', apple: 'aktif', potion: 'aktif', grass: 'digunakan' };
   var cfg = { getGameId: null, isPaused: null };
-  var root = null, banner = null, bIcon = null, bText = null, panel = null, pTitle = null, pText = null,
+  var root = null, stack = null, panel = null, pTitle = null, pText = null,
       combat = null, cWho = null, cText = null, cBar = null, cFill = null, cHp = null;
-  var tBanner = 0, tPanel = 0, tCombat = 0;
+  var tPanel = 0, tCombat = 0;
   var NORMAL = { turn: 1, extra: 1 };
-  var bPrio = '', pend = null; /* prioritas banner yang tampil ('normal'|'important'|'') + 1 slot feedback NORMAL tertunda */
+  var live = [], MAX_IMPORTANT = 3; /* entri stack, terbaru di indeks 0 (= anak pertama DOM) */
   var combatOwner = null;
 
   function injectStyle() {
@@ -64,6 +61,11 @@
       'background:linear-gradient(#3b9cf8,#2a86ee);box-shadow:0 7px 0 rgba(0,0,0,.5),inset 0 0 0 4px #ffe36a,0 0 24px rgba(255,210,77,.55);animation:utghpop .3s ease-out}' +
       '.ut-ghud-p h4{margin:0;font-family:var(--font-display,"Baloo 2",sans-serif);font-size:20px;color:#ffe36a;text-transform:uppercase;overflow-wrap:anywhere}' +
       '.ut-ghud-p p{margin:4px 0 0;font-size:13px;font-weight:700;overflow-wrap:anywhere}' +
+      '.feedback-stack{box-sizing:border-box;width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}' +
+      '.ut-ghud-pw{align-items:flex-start;padding:8px 14px}.ut-ghud-pw>i{font-size:26px}' +
+      '.ut-ghud-pw .c{display:flex;flex-direction:column;gap:1px;min-width:0}' +
+      '.ut-ghud-pw .w{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#ffe36a}' +
+      '.ut-ghud-pw .t{font-size:14px}.ut-ghud-pw .e{font-size:12px;font-weight:700;color:#e0f2ff}' +
       '@keyframes utghin{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}' +
       '@keyframes utghpop{0%{opacity:0;transform:scale(.85)}60%{transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}' +
       '@media(max-width:699px){.ut-ghud{top:calc(54px + env(safe-area-inset-top,0px))}.ut-ghud-b,.ut-ghud-c{font-size:13px;padding:7px 12px}}' +
@@ -81,11 +83,9 @@
     injectStyle();
     root = el('div', 'ut-ghud', doc.body);
     root.id = 'utGameplayHud';
-    /* Level 1: banner non-blocking */
-    banner = el('div', 'ut-ghud-b', root); banner.hidden = true;
-    banner.setAttribute('role', 'status'); banner.setAttribute('aria-live', 'polite');
-    bIcon = el('i', '', banner); bIcon.setAttribute('aria-hidden', 'true');
-    bText = el('span', '', banner);
+    /* Level 1: feedback stack non-blocking (item ditambah/dibuang oleh push/expire) */
+    stack = el('div', 'feedback-stack ut-ghud-stack', root);
+    stack.setAttribute('role', 'status'); stack.setAttribute('aria-live', 'polite'); stack.setAttribute('aria-atomic', 'false');
     /* Combat strip */
     combat = el('div', 'ut-ghud-c', root); combat.hidden = true;
     combat.setAttribute('role', 'status'); combat.setAttribute('aria-live', 'polite');
@@ -105,11 +105,64 @@
   }
   function ttlOf(o, d) { var t = o && +o.ttl; return t > 0 ? t : d; }
 
-  function hideBanner() { clearTimeout(tBanner); tBanner = 0; bPrio = ''; if (banner) banner.hidden = true; }
-  /* Banner habis waktu: sembunyikan, lalu tampilkan feedback NORMAL yang tertunda (bila ada). */
-  function expireBanner() {
-    hideBanner();
-    if (pend) { var q = pend; pend = null; H.showEvent(q.kind, q.text, q.o); }
+  function reduced() { try { return !!(win.matchMedia && win.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { return false; } }
+
+  /* Susunan stack berubah: item yang tersisa digeser halus dari posisi lama ke posisi baru (item baru masuk lewat CSS utghin). */
+  function flip(mutate) {
+    var before = [], i;
+    for (i = 0; i < live.length; i++) before.push([live[i], live[i].n.getBoundingClientRect().top]);
+    mutate();
+    if (reduced()) return;
+    for (i = 0; i < before.length; i++) {
+      var e = before[i][0];
+      if (live.indexOf(e) < 0 || !e.n.animate) continue;
+      var d = before[i][1] - e.n.getBoundingClientRect().top;
+      if (d) e.n.animate([{ transform: 'translateY(' + d + 'px)' }, { transform: 'none' }], { duration: 200, easing: 'ease-out' });
+    }
+  }
+  function removeNow(e) {
+    var i = live.indexOf(e); if (i < 0) return;
+    clearTimeout(e.t); live.splice(i, 1);
+    if (e.n.parentNode) e.n.parentNode.removeChild(e.n);
+  }
+  function expire(e) {
+    var i = live.indexOf(e); if (i < 0) return;
+    var n = e.n; clearTimeout(e.t); live.splice(i, 1);
+    function done() { flip(function () { if (n.parentNode) n.parentNode.removeChild(n); }); }
+    if (reduced() || !n.animate) return done();
+    n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 150, fill: 'forwards' }).onfinish = done;
+  }
+  function clearStack() {
+    for (var i = 0; i < live.length; i++) clearTimeout(live[i].t);
+    live.length = 0;
+    if (stack) stack.textContent = '';
+  }
+  function push(k, fill, ttl) {
+    var normal = !!NORMAL[k], e = { n: null, normal: normal, t: 0 };
+    flip(function () {
+      var i;
+      if (normal) { for (i = 0; i < live.length; i++) if (live[i].normal) { removeNow(live[i]); break; } }
+      var n = el('div', 'ut-ghud-b'); n.setAttribute('data-k', k); fill(n);
+      stack.insertBefore(n, stack.firstChild);
+      e.n = n; live.unshift(e);
+      if (!normal) {
+        var imp = 0;
+        for (i = 0; i < live.length; i++) if (!live[i].normal && ++imp > MAX_IMPORTANT) { removeNow(live[i]); i--; }
+      }
+    });
+    e.t = setTimeout(function () { expire(e); }, ttl);
+  }
+  function textCard(n, icon, text) {
+    var i = el('i', '', n); i.setAttribute('aria-hidden', 'true'); i.textContent = icon;
+    el('span', '', n).textContent = String(text);
+  }
+  function powerCard(n, icon, who, title, eff) {
+    n.className += ' ut-ghud-pw';
+    var i = el('i', '', n); i.setAttribute('aria-hidden', 'true'); i.textContent = icon;
+    var c = el('div', 'c', n);
+    if (who) el('span', 'w', c).textContent = String(who);
+    el('span', 't', c).textContent = title;
+    if (eff) el('span', 'e', c).textContent = eff;
   }
   function hidePanel() { clearTimeout(tPanel); tPanel = 0; if (panel) panel.hidden = true; }
   function hideCombat() { clearTimeout(tCombat); tCombat = 0; combatOwner = null; if (combat) combat.hidden = true; }
@@ -125,18 +178,13 @@
       return H;
     },
     reset: function () {
-      pend = null; hideBanner(); hidePanel(); hideCombat();
+      clearStack(); hidePanel(); hideCombat();
       return H;
     },
     showEvent: function (kind, text, o) {
       if (!text || stale(o) || !build()) return H;
-      var k = ICON[kind] ? kind : 'info', normal = !!NORMAL[k];
-      if (normal && bPrio === 'important' && !banner.hidden) { pend = { kind: kind, text: text, o: o }; return H; } /* tunda, jangan timpa IMPORTANT */
-      bPrio = normal ? 'normal' : 'important';
-      banner.setAttribute('data-k', k);
-      bIcon.textContent = (o && o.icon) || ICON[k]; bText.textContent = String(text);
-      clearTimeout(tBanner); retrigger(banner);
-      tBanner = setTimeout(expireBanner, ttlOf(o, 2000));
+      var k = ICON[kind] ? kind : 'info', icon = (o && o.icon) || ICON[k];
+      push(k, function (n) { textCard(n, icon, text); }, ttlOf(o, 2000));
       return H;
     },
     showTurn: function (p, o) {
@@ -145,12 +193,15 @@
       return H.showEvent('turn', p.cpu ? 'Giliran Computer' : 'Giliran ' + p.name, { ttl: 1200 });
     },
     showPower: function (key, name, who, o) {
-      if (o && o.text) return H.showEvent('power', String(o.text), { ttl: 1800, icon: (POWER_SHORT[key] || [])[0] }); /* pesan kustom (mis. Power ditolak) */
-      /* Feedback ringkas "<ikon> Nama — efek". Bukan modal; modal hadiah khusus Chest (#puCard di gameplay.html). */
-      var s = POWER_SHORT[key], who_ = who ? ' (' + who + ')' : '';
-      if (s) return H.showEvent('power', s[1] + who_, { ttl: 1800, icon: s[0] });
-      var v = POWER_VERB[key] || 'digunakan';
-      return H.showEvent('power', (name || key) + ' ' + v + '!' + who_, { ttl: 1800 });
+      o = o || {};
+      var icon = o.icon || ICON.power;
+      if (o.text) return H.showEvent('power', String(o.text), { ttl: 1800, icon: icon, gid: o.gid }); /* pesan kustom (mis. Power ditolak): satu baris */
+      if (stale(o) || !build()) return H;
+      /* Kartu Power: ikon + pemain + nama Power + efek, semua dari data yang dikirim gameplay (bukan Modal Chest #puCard). */
+      var eff = o.desc ? String(o.desc) : '';
+      eff = eff.charAt(0).toUpperCase() + eff.slice(1);
+      push('power', function (n) { powerCard(n, icon, who, 'Menggunakan ' + (name || key), eff); }, ttlOf(o, 2400));
+      return H;
     },
     showCombat: function (att, def, text, o) {
       if (stale(o) || !build()) return H;
