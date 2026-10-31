@@ -473,18 +473,20 @@ body .pucard{min-width:clamp(250px,22vw,340px);padding:18px 30px 20px}
 </style>
 
 <style id="turn-panel-v2">
-/* Panel giliran lebih kecil: avatar (dikecilkan 1.4x) tepat di atas nama, dadu diperbesar 1.3x */
-#side{--tav:clamp(74px,6.4vw,107px)}
-body #side .rcol .pnl.tn{margin-top:22px;padding:10px 12px 10px}
-body #side .tn-av{left:12px;top:10px;bottom:auto;width:var(--tav)}
-body #side .tn .trow{margin-top:calc(var(--tav) + 12px)}
-body #side .tn .die-scene{zoom:1.37;top:12px;right:clamp(12px,1.2vw,20px)}
-body #side #turnName{font-size:clamp(18px,1.45vw,22px)}
-body #side .tn-meta{margin:2px 0 8px;font-size:clamp(12px,.9vw,14px)}
-body #side .tn #btnRoll{height:clamp(44px,3.5vw,56px);font-size:clamp(18px,1.5vw,24px);gap:10px}
-body #side .tn .msg{font-size:12px;min-height:0!important;margin-top:6px}
-@media(min-width:700px){body #side .rcol{width:clamp(224px,18vw,300px)}}
-@media(max-width:699px){#side{--tav:64px}body #side .tn .die-scene{zoom:1.1;top:10px}}
+/* Panel giliran (kanan bawah) — layout grid, tanpa elemen yang saling menimpa:
+   kiri = avatar, nama, status | kanan = dadu | bawah = tombol Roll & pesan (lebar penuh). Tab "Giliran" tetap menempel di tepi atas panel. */
+#side{--tav:clamp(62px,5.2vw,80px)}
+body #side .rcol .pnl.tn{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"av die" "name die" "meta die" "btn btn" "msg msg";column-gap:8px;align-items:start;margin-top:22px;padding:18px 14px 12px}
+body #side .tn-av{position:relative;grid-area:av;left:auto;top:auto;bottom:auto;width:var(--tav);margin:0 0 8px 2px}
+body #side .tn .trow{display:contents}
+body #side #turnName{grid-area:name;max-width:100%;min-width:0;align-self:center;font-size:clamp(20px,1.6vw,24px);line-height:1.1}
+body #side .tn-meta{grid-area:meta;margin:3px 0 0;gap:8px;flex-wrap:nowrap;white-space:nowrap;font-size:clamp(12px,.9vw,13px)}
+body #side .tn .die-scene{grid-area:die;position:relative;top:auto;right:auto;zoom:1.2;margin:6px 6px 6px 0;align-self:center;justify-self:end}
+body #side .tn #btnRoll{grid-area:btn;height:clamp(46px,3.8vw,56px);margin-top:12px;font-size:clamp(20px,1.7vw,24px);gap:10px}
+body #side .tn .msg{grid-area:msg;font-size:12px;min-height:0!important;margin-top:8px}
+@media(min-width:700px){body #side .rcol{width:clamp(240px,19vw,300px)}}
+@media(max-width:699px){#side{--tav:54px}body #side .rcol .pnl.tn{padding:14px 12px 8px}body #side .tn-av{margin-bottom:6px}body #side .tn .die-scene{zoom:1}body #side .tn #btnRoll{height:44px;margin-top:6px}body #side .tn .msg{margin-top:5px}}
+@media(min-width:700px) and (max-height:560px){#side{--tav:54px}body #side .rcol .pnl.tn{padding:14px 12px 8px;margin-top:18px}body #side .tn .die-scene{zoom:1;margin:2px 4px 2px 0}body #side .tn #btnRoll{height:42px;margin-top:8px;font-size:20px}body #side .tn .msg{margin-top:5px}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
