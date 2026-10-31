@@ -378,6 +378,7 @@ if (typeof THREE === 'undefined') {
 <script src="gameplay/module-bridge.js"></script>
 <script src="gameplay/config.js"></script>
 <script src="gameplay/hud.js"></script>
+<script src="gameplay/dice-ui.js"></script>
 <script>
     if (window.__NO_THREE) { throw new Error('Three.js tidak dimuat'); }
 (function(){
@@ -1421,23 +1422,9 @@ const sfx={
 };
 
 /* ---------- Dadu ---------- */
-const PIPS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
-const dieEl=$('die'),dieScene=$('dieScene');
-for(let v=1;v<=6;v++){
-  const f=document.createElement('div'); f.className='face f'+v;
-  for(let i=0;i<9;i++){ const s=document.createElement('i'); if(PIPS[v].indexOf(i)>-1) s.className='on'; f.appendChild(s); }
-  dieEl.appendChild(f);
-}
-const DIE_T={1:[0,0],2:[90,0],3:[0,-90],4:[0,90],5:[-90,0],6:[0,180]};
-let dX=0,dY=0;
-function showDie(v,anim){
-  const tx=DIE_T[v][0],ty=DIE_T[v][1];
-  const ax=Math.ceil((dX-tx)/360)+(anim?2:0),ay=Math.ceil((dY-ty)/360)+(anim?2:0);
-  dX=tx+360*ax; dY=ty+360*ay;
-  dieEl.style.transition=anim?'transform 1.05s cubic-bezier(.15,.7,.2,1)':'none';
-  dieEl.style.transform='rotateX('+dX+'deg) rotateY('+dY+'deg)';
-  if(anim){ dieScene.classList.remove('hop'); void dieScene.offsetWidth; dieScene.classList.add('hop'); }
-}
+/* Presentation dadu = UT.GameplayDiceUI (gameplay/dice-ui.js). Hasil dadu (random/Potion/6/tiga 6) tetap ditentukan di gameplay ini. */
+function showDie(v,anim){ const D=window.UT&&UT.GameplayDiceUI; if(D) D.showDie(v,anim); }
+try{ const D=window.UT&&UT.GameplayDiceUI; if(D) D.init(); }catch(e){ console.error(e); }
 showDie(1,false);
 
 /* ---------- Konfeti ---------- */
