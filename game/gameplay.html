@@ -526,6 +526,8 @@ if (typeof THREE === 'undefined') {
 <script src="gameplay/fx.js"></script>
 <script src="gameplay/skin-uv.js"></script>
 <script src="gameplay/feedback.js"></script>
+<script src="gameplay/afk.js"></script>
+<script src="gameplay/ready.js"></script>
 <script>
     if (window.__NO_THREE) { throw new Error('Three.js tidak dimuat'); }
 (function(){
@@ -2258,6 +2260,7 @@ function finishGame(p){
 }
 function startGame(m,keys){
   mode=m; gameId++; busy=false; gameOver=false; hud('reset');
+  try{ if(UT.GameplayAFK) UT.GameplayAFK.clearAll(); if(UT.GameplayReady) UT.GameplayReady.cancel(); }catch(e){} /* 4.1.15: bersihkan timer Ready/AFK saat (re)start */
   players.forEach(p=>scene.remove(p.pawn)); players=[]; clearConfetti();
   applyPendingTheme(); resetSnakes(); resetDragon();
   let defs;
@@ -2271,7 +2274,14 @@ function startGame(m,keys){
   cur=0; resetCam();
   $('win').hidden=true;
   document.body.classList.add('playing');
-  showDie(1,false); beginTurn();
+  showDie(1,false);
+  /* 4.1.15: Ready Screen sebelum giliran pertama. ?ready=0 / modul tak termuat -> langsung main seperti sebelumnya. */
+  const gidR=gameId,goPlay=()=>{ if(gidR!==gameId) return; beginTurn(); },RD=window.UT&&UT.GameplayReady;
+  if(RD&&RD.show&&UT.GameplayAFK&&new URLSearchParams(location.search).get('ready')!=='0'){
+    setRoll(false); setMsg('Tekan READY untuk mulai.'); focus=players[0].pawn; renderChips();
+    const pre=players.filter(q=>PNG_DEFS.some(d=>d.key===q.key)).map(q=>loadSkin3D(q.key)); /* tunggu wajah PNG (maks 1,5 dtk) */
+    Promise.race([Promise.all(pre),sleep(1500)]).catch(()=>{}).then(()=>{ if(gidR!==gameId) return; return RD.show(players,{face:q=>faceURL(q.key),sfx:n=>{ try{ sfx[n]&&sfx[n](); }catch(e){} }}); }).then(r=>{ if(r) goPlay(); }).catch(e=>{ console.error(e); goPlay(); });
+  }else goPlay();
 }
 
 /* ---------- Kontrol antarmuka ---------- */
