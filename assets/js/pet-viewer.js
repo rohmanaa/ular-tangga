@@ -693,17 +693,17 @@ const SND=[
   ()=>{[2093,2637,3136].forEach((f,i)=>tone(f,f,1.0,'sine',.06,i*.05,{vib:9,vibd:f*.01}));noise(.9,.05,'highpass',6000,9000,0)}
  ]
 ];
-/* Suara Forest Pup (anjing), Copper Golem (logam/uap/servo), dan Crystal Axolotl (gelembung/lonceng air/cicit), Arcane Owl (hu-hu/denting arcane/kepakan), Storm Wolf (lolongan/guntur/setrum), Inferno Dragon (raungan/semburan api/kepakan sayap), dan Celestial Kitsune (lonceng/lengkingan rubah/kilau) = rekaman asli (assets/sfx/pet/, kekerasan diseragamkan oleh tools/normalize-sfx.py).
-   Urutan sama dengan SND[indeks pet]. Forest Pup: gonggongan beruntun, satu gonggongan, rengekan. Sintesis lama jadi cadangan bila file belum dimuat/gagal. */
-const PET_FILES={
- 0:['assets/sfx/pet/forest-pup-bark-burst.mp3','assets/sfx/pet/forest-pup-bark.mp3','assets/sfx/pet/forest-pup-whimper.mp3'],
- 1:['assets/sfx/pet/copper-golem-clang.mp3','assets/sfx/pet/copper-golem-steam.mp3','assets/sfx/pet/copper-golem-servo.mp3'], /* denting logam, uap, servo */
- 2:['assets/sfx/pet/crystal-axolotl-bubble.mp3','assets/sfx/pet/crystal-axolotl-chime.mp3','assets/sfx/pet/crystal-axolotl-squeak.mp3'], /* gelembung, lonceng air, cicit */
- 3:['assets/sfx/pet/arcane-owl-hoot.mp3','assets/sfx/pet/arcane-owl-sparkle.mp3','assets/sfx/pet/arcane-owl-flap.mp3'], /* hu-hu, denting arcane, kepakan */
- 4:['assets/sfx/pet/storm-wolf-howl.mp3','assets/sfx/pet/storm-wolf-thunder.mp3','assets/sfx/pet/storm-wolf-zap.mp3'], /* lolongan, guntur, setrum */
- 5:['assets/sfx/pet/inferno-dragon-roar.mp3','assets/sfx/pet/inferno-dragon-fire.mp3','assets/sfx/pet/inferno-dragon-wings.mp3'], /* raungan, semburan api, kepakan sayap */
- 6:['assets/sfx/pet/celestial-kitsune-bell.mp3','assets/sfx/pet/celestial-kitsune-cry.mp3','assets/sfx/pet/celestial-kitsune-shine.mp3'] /* lonceng, lengkingan rubah, kilau */
-};
+/* Suara semua Pet = rekaman asli (assets/sfx/pet/, kekerasan diseragamkan oleh tools/normalize-sfx.py). Stage 4.1: path SFX dibaca dari manifest Pet
+   (data/inventory/pet/<key>/manifest.js -> assets.sfx, via UT.ItemRegistry), BUKAN lagi dipetakan per indeks tier di sini. assets.sfx[k] = SND[pet][k].
+   Sintesis lama (SND) jadi cadangan bila file belum dimuat/gagal, atau bila Registry/manifest tidak tersedia. */
+const PET_FILES={};
+function petSfxFromManifest(id){
+  try{
+    const IR=window.UT&&window.UT.ItemRegistry; if(!IR||!IR.shared)return null;
+    const m=IR.shared().getItem('pet.'+id), f=m&&m.assets&&m.assets.sfx;
+    return Array.isArray(f)&&f.length===3&&f.every(u=>typeof u==='string'&&u)?f.slice():null;
+  }catch(e){return null}
+}
 const petBuf={},petLoading={};
 function petLoad(url){
   if(petBuf[url]||petLoading[url]||!AC)return;
@@ -716,7 +716,6 @@ function petPlayFile(url,fallback){
   const s=AC.createBufferSource();s.buffer=b;s.connect(MASTER);s.start();
 }
 function petPreloadFiles(){Object.keys(PET_FILES).forEach(k=>PET_FILES[k].forEach(petLoad))}
-Object.keys(PET_FILES).forEach(k=>PET_FILES[k].forEach((url,i)=>{const synth=SND[k][i];SND[k][i]=()=>petPlayFile(url,synth)}));
 const PETS=[
  {id:'forest_pup',tier:1,name:'Forest Pup',mat:'Oak Wood dan Daun',ident:'Ramah dan setia',efek:'Ekor bergoyang, daun jatuh pelan',lore:'Anak anjing hutan dengan kalung papan kayu. Gerakannya sederhana: bernapas, mengibas ekor, berkedip.',color:'#6fd05a',build:petPup},
  {id:'copper_golem',tier:2,name:'Copper Golem',mat:'Copper Block dan Verdigris',ident:'Industrial dan rajin',efek:'Roda gigi berputar, uap, lampu antena berdenyut',lore:'Golem tembaga dengan bercak karat hijau, panel pengukur di dada, dan roda gigi di punggung.',color:'#ff9a30',build:petGolem},
@@ -726,6 +725,9 @@ const PETS=[
  {id:'inferno_dragon',tier:6,name:'Inferno Dragon',mat:'Dragon Scale dan Obsidian',ident:'Dragon Lord',efek:'Kepakan sayap, napas api, bara menyala',lore:'Naga obsidian dengan retakan lava di dada. Setiap beberapa detik rahangnya terbuka dan menyemburkan api.',color:'#ff4a3a',build:petDragon},
  {id:'celestial_kitsune',tier:7,name:'Celestial Kitsune',mat:'Divine Crystal dan Gold',ident:'Celestial Guardian',efek:'Sembilan ekor tebal bergelombang, bintang mengorbit',lore:'Rubah sembilan ekor melayang di atas lingkaran sihir. Ekornya besar, berbulu tebal, mengembang seperti kipas dan berujung bintang.',color:'#ffe08a',build:petKitsune}
 ];
+
+/* Hubungkan SND[indeks PETS][slot] ke file dari manifest (cari per id Pet, tidak bergantung urutan Registry). */
+PETS.forEach((d,i)=>{const f=petSfxFromManifest(d.id);if(!f)return;PET_FILES[i]=f;f.forEach((url,k)=>{const synth=SND[i][k];SND[i][k]=()=>petPlayFile(url,synth)})});
 
 /* ================= scene: latar transparan, tanpa pad, kanvas besar, tanpa zoom ================= */
 const view=document.getElementById('fpv'),canvas=document.getElementById('petGl');

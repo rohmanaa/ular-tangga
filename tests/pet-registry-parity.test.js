@@ -8,6 +8,7 @@ const PetCat = require(path.join(ROOT, 'data/inventory/pet/index.js'));
 const FrameCat = require(path.join(ROOT, 'data/inventory/frame/index.js'));
 const base = JSON.parse(rd('tests/fixtures/item-catalog-baseline.json'));
 const clone = o => JSON.parse(JSON.stringify(o));
+const srcs = h => (h.match(/<script[^>]+src="([^"]+)"/g) || []).map(x => /src="([^"]+)"/.exec(x)[1]);
 let n = 0; const t = (name, fn) => { fn(); n++; console.log('ok - ' + name); };
 
 const bp = base.items.filter(i => i.kind === 'pet'), bf = base.items.filter(i => i.kind === 'frame');
@@ -137,15 +138,74 @@ t('B. FORMAT path gambar valid 7/7 (bukan bukti file ada / termuat)', () => { it
 t('C. file gambar ADA, tidak kosong, header PNG (BUKAN pemuatan di browser)', () => {
   items.forEach(m => { const f = path.join(ROOT, m.assets.image); assert.ok(fs.existsSync(f), m.assets.image); const b = fs.readFileSync(f); assert.ok(b.length > 1000, m.assets.image); assert.strictEqual(b.slice(1, 4).toString(), 'PNG', m.assets.image); });
 });
-t('Audio: 21 file sfx Pet (3 per pet) ada di disk dan masih dipetakan per tier di pet-viewer.js (sistem audio tidak disentuh; manifest tidak mereferensikan audio)', () => {
-  const pv = rd('assets/js/pet-viewer.js'), files = fs.readdirSync(path.join(ROOT, 'assets/sfx/pet')).filter(f => /\.mp3$/.test(f)); assert.strictEqual(files.length, 21);
-  files.forEach(f => assert.ok(pv.indexOf('assets/sfx/pet/' + f) >= 0, f)); files.forEach(f => assert.ok(fs.statSync(path.join(ROOT, 'assets/sfx/pet', f)).size > 1000, f));
-  items.forEach(m => assert.ok(!('audio' in m) && !('sfx' in m.assets)));
+/* Baseline Stage 4 (SEBELUM 4.1): PET_FILES hardcoded per indeks tier di pet-viewer.js. Dibekukan di sini sebagai bukti pemetaan tidak berubah. */
+const SFX_BASELINE = {
+  forest_pup: ['forest-pup-bark-burst', 'forest-pup-bark', 'forest-pup-whimper'], copper_golem: ['copper-golem-clang', 'copper-golem-steam', 'copper-golem-servo'],
+  crystal_axolotl: ['crystal-axolotl-bubble', 'crystal-axolotl-chime', 'crystal-axolotl-squeak'], arcane_owl: ['arcane-owl-hoot', 'arcane-owl-sparkle', 'arcane-owl-flap'],
+  storm_wolf: ['storm-wolf-howl', 'storm-wolf-thunder', 'storm-wolf-zap'], inferno_dragon: ['inferno-dragon-roar', 'inferno-dragon-fire', 'inferno-dragon-wings'],
+  celestial_kitsune: ['celestial-kitsune-bell', 'celestial-kitsune-cry', 'celestial-kitsune-shine'] };
+const sfxPath = n => 'assets/sfx/pet/' + n + '.mp3', PV = rd('assets/js/pet-viewer.js');
+t('SFX manifest (4.1): 7 Pet x 3 = 21 referensi, tepat 3 per Pet, tanpa duplikat', () => {
+  const all = []; items.forEach(m => { assert.ok(Array.isArray(m.assets.sfx) && m.assets.sfx.length === 3, m.id); all.push.apply(all, m.assets.sfx); });
+  assert.strictEqual(all.length, 21); assert.strictEqual(new Set(all).size, 21);
+});
+t('SFX manifest: path dan urutan slot = pemetaan baseline pet-viewer.js (tidak ada yang hilang/salah)', () => {
+  assert.deepStrictEqual(Object.keys(SFX_BASELINE), PetCat.keys);
+  items.forEach(m => assert.deepStrictEqual(m.assets.sfx, SFX_BASELINE[m.gameKey].map(sfxPath), m.id));
+});
+t('SFX validasi: A. validateManifest OK 7/7  B. format path OK (ekstensi mp3)  C. 21 file ada di lokasi lama, header MP3, tidak kosong, tidak ada file mp3 yatim', () => {
+  items.forEach(m => { assert.deepStrictEqual(IR.validateManifest(m, PetCat.category), { ok: true, errors: [] }, m.id); assert.strictEqual(IR.validateAssetPaths(m, PetCat.category).ok, true, m.id); });
+  const disk = fs.readdirSync(path.join(ROOT, 'assets/sfx/pet')).filter(f => /\.mp3$/.test(f)).map(f => 'assets/sfx/pet/' + f).sort(), ref = [];
+  items.forEach(m => m.assets.sfx.forEach(u => { ref.push(u); const f = path.join(ROOT, u); assert.ok(fs.existsSync(f), u); const b = fs.readFileSync(f); assert.ok(b.length > 1000, u);
+    assert.ok(b.slice(0, 3).toString() === 'ID3' || (b[0] === 0xff && (b[1] & 0xe0) === 0xe0), u + ' header MP3'); }));
+  assert.deepStrictEqual(ref.slice().sort(), disk);
+});
+t('SFX: tidak digandakan di ItemCatalog (item katalog tetap = baseline; tidak ada field sfx/audio/assets)', () => {
+  [legacy, viaPet, viaBoth].forEach(c => c.ItemCatalog.items.forEach(i => { assert.ok(!('sfx' in i) && !('audio' in i) && !('assets' in i), i.id); }));
+  assert.deepStrictEqual(clone(viaPet.ItemCatalog.items), base.items);
+});
+t('Pet Viewer: tidak lagi punya path mp3 hardcoded; membaca dari UT.ItemRegistry (pet.<id> -> assets.sfx)', () => {
+  assert.ok(PV.indexOf('assets/sfx/pet/') < 0 || !/['"]assets\/sfx\/pet\/[^'"]+\.mp3['"]/.test(PV), 'masih ada literal path mp3');
+  assert.ok(/UT\.ItemRegistry/.test(PV) && /getItem\('pet\.'\+id\)/.test(PV) && /assets\.sfx/.test(PV));
+});
+/* Jalankan potongan nyata pet-viewer.js (PET_FILES..wiring) di VM dgn Registry + manifest asli; AC=null -> hanya jalur cadangan sintesis. */
+function viewerSlice(reg) {
+  const a = PV.indexOf('const PET_FILES={}'), b = PV.indexOf('const PETS=['), w = PV.indexOf('PETS.forEach((d,i)=>{const f=petSfxFromManifest');
+  assert.ok(a > 0 && b > a && w > b, 'penanda potongan');
+  const wEnd = PV.indexOf('\n', w), ids = PetCat.keys, calls = [];
+  const SND = ids.map((_, i) => [0, 1, 2].map(k => () => calls.push([i, k])));
+  const win = { UT: reg ? { ItemRegistry: { shared: () => reg } } : {} }, ctx = vm.createContext({ window: win, SND, AC: null, MASTER: null, fetch() { throw new Error('tak boleh fetch tanpa AC'); }, console, calls });
+  vm.runInContext(PV.slice(a, b) + 'const PETS=' + JSON.stringify(ids.map(id => ({ id }))) + ';\n' + PV.slice(w, wEnd) + '\nthis.PET_FILES=PET_FILES;this.SND=SND;', ctx);
+  return { PET_FILES: clone(ctx.PET_FILES), SND: ctx.SND, calls, ids };
+}
+t('Pet Viewer (kode nyata di VM): PET_FILES diambil dari manifest = baseline per indeks tier; SND[pet][slot] tetap fungsi; cadangan sintesis jalan', () => {
+  const r = viewerSlice(reg); assert.strictEqual(Object.keys(r.PET_FILES).length, 7);
+  r.ids.forEach((id, i) => assert.deepStrictEqual(r.PET_FILES[i], SFX_BASELINE[id].map(sfxPath), id));
+  r.ids.forEach((id, i) => [0, 1, 2].forEach(k => { const before = r.calls.length; r.SND[i][k](); assert.strictEqual(r.calls.length, before + 1, id + ' slot ' + k + ' cadangan sintesis'); }));
+});
+t('Pet Viewer: manifest adalah sumber — mengubah assets.sfx di manifest mengubah yang dibaca viewer; urutan Registry tidak berpengaruh', () => {
+  const r2 = IR.create(); r2.registerCategory(PetCat.category); PetCat.keys.forEach(k => { const mm = clone(require(path.join(ROOT, 'data/inventory/pet/' + k + '/manifest.js'))); if (k === 'storm_wolf') mm.assets.sfx[0] = 'assets/sfx/pet/ZZ.mp3'; assert.ok(r2.registerItem(mm).ok); });
+  assert.strictEqual(viewerSlice(r2).PET_FILES[4][0], 'assets/sfx/pet/ZZ.mp3');
+  const r3 = IR.create(); r3.registerCategory(PetCat.category); PetCat.keys.slice().reverse().forEach(k => r3.registerItem(require(path.join(ROOT, 'data/inventory/pet/' + k + '/manifest.js'))));
+  assert.deepStrictEqual(viewerSlice(r3).PET_FILES, viewerSlice(reg).PET_FILES);
+});
+t('Pet Viewer: tanpa Registry / tanpa sfx di manifest -> tidak melempar, tetap memakai sintesis (tanpa pemetaan kedua)', () => {
+  assert.deepStrictEqual(viewerSlice(null).PET_FILES, {});
+  const r4 = IR.create(); r4.registerCategory(PetCat.category); const m = clone(require(path.join(ROOT, 'data/inventory/pet/forest_pup/manifest.js'))); delete m.assets.sfx; r4.registerItem(m);
+  const r = viewerSlice(r4); assert.strictEqual(r.PET_FILES[0], undefined); r.SND[0][0](); assert.strictEqual(r.calls.length, 1);
+});
+t('Event/trigger/timing/volume pet-viewer TIDAK berubah (playPetSound: kantong acak 0-2, timer 3..5.5s, 120ms saat ganti Pet, sfxVol/master .55)', () => {
+  ['sndBag=[0,1,2].sort(()=>Math.random()-.5)', 'SND[cur][k]()', 'sndT=rr(3,5.5);playPetSound()', 'setTimeout(playPetSound,120)', 'MASTER.gain.value=.55*sfxVolume()',
+   'function petPlayFile(url,fallback){', "s.buffer=b;s.connect(MASTER);s.start();"].forEach(x => assert.ok(PV.indexOf(x) >= 0, x));
+});
+t('SFX: pet.html memuat manifest + pet/index.js SEBELUM pet-viewer.js; ke-21 mp3 sudah terdaftar di preload-manifest.json (path sama, tidak perlu didaftarkan ulang)', () => {
+  const s = srcs(rd('pet.html')), pv = s.indexOf('assets/js/pet-viewer.js'); assert.ok(pv > 0);
+  PET_CHAIN.concat(['assets/js/item-catalog.js']).forEach(f => assert.ok(s.indexOf(f) >= 0 && s.indexOf(f) < pv, f));
+  const pm = JSON.parse(rd('assets/preload-manifest.json')); items.forEach(m => m.assets.sfx.forEach(u => assert.ok(pm[u] > 1000, u)));
 });
 t('D. pemuatan aset/visual/audio di browser: NOT TESTED (tidak diuji oleh tes ini)', () => { assert.ok(true); });
 
 /* ---- pemuatan skrip ---- */
-const srcs = h => (h.match(/<script[^>]+src="([^"]+)"/g) || []).map(x => /src="([^"]+)"/.exec(x)[1]);
 t('pet.html: item-registry.js -> 7 manifest -> pet/index.js -> item-catalog.js -> skrip halaman; tepat satu kali; tanpa document.write', () => {
   const html = rd('pet.html'), s = srcs(html), i = s.indexOf('assets/js/item-catalog.js'); assert.deepStrictEqual(s.slice(i - PET_CHAIN.length, i), PET_CHAIN);
   PET_CHAIN.concat(['assets/js/item-catalog.js']).forEach(f => assert.strictEqual(s.filter(x => x === f).length, 1, f)); assert.ok(s.indexOf('assets/js/pet-page.js') > i); assert.ok(!/document\.write/.test(html));

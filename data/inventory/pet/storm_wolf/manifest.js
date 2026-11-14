@@ -1,6 +1,6 @@
 /* Manifest pet.storm_wolf — dibuat dari ItemCatalog (data existing; tidak ada data baru). Paritas dijaga tests/pet-registry-parity.test.js.
    tier/role/accent/colors = field katalog existing. assets.image = gambar yang dibangun pet-page.js (IMAGE_ROOT + gameKey + '.png').
-   Visual 3D (assets/js/pet-viewer.js) dan audio (assets/sfx/pet/*, dipetakan per tier di pet-viewer.js) TIDAK diduplikasi di sini. */
+   Visual 3D (assets/js/pet-viewer.js) tidak diduplikasi di sini. assets.sfx (Stage 4.1) = sumber path 3 SFX Pet, urutan = slot 0,1,2 yang diacak pet-viewer.js (playPetSound). */
 (function (g, m) {
   if (typeof module === 'object' && module.exports) module.exports = m;
   else ((g.UT = g.UT || {}).ItemManifests = g.UT.ItemManifests || []).push(m);
@@ -17,5 +17,5 @@
     starter: false,
     desc: "Serigala baja dengan surai duri petir. Awan badai di atasnya menyambar tanah dan surainya secara acak.",
     visual: {"accent":"#7fd0ff","colors":["#5a6a8a","#e8f4ff","#7fd0ff"]},
-    assets: { image: "assets/ng/pet3d/storm_wolf.png" }
+    assets: { image: "assets/ng/pet3d/storm_wolf.png", sfx: ["assets/sfx/pet/storm-wolf-howl.mp3", "assets/sfx/pet/storm-wolf-thunder.mp3", "assets/sfx/pet/storm-wolf-zap.mp3"] }
 });
