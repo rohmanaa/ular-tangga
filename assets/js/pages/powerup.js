@@ -12,7 +12,7 @@ const LIST=CI.powerup;
 const SET=()=>PD.settings();
 /* Efek visual Power (data/power/power-fx.js): partikel keluar saat Power dipilih/dilihat; catatan efek ikut tampil di deskripsi. Modul tak termuat -> dilewati. */
 const PFX={at(i,el){try{if(P3D.on())return;if(i&&i.kind==='powerup'&&window.UT&&UT.PowerFX)UT.PowerFX.playAtElement(i.gameKey,el||$('#fpv'))}catch(e){}},
- note(i){try{const d=i&&i.kind==='powerup'&&window.UT&&UT.PowerFX&&UT.PowerFX.DATA[i.gameKey];return d?' Efek: '+d.note+'.':''}catch(e){return''}}};
+ note(i){try{const fx=window.UT&&UT.PowerFX,d=i&&i.kind==='powerup'&&fx&&fx.DATA[fx.keyFor(i.gameKey)];return d?' Efek: '+d.note+'.':''}catch(e){return''}}};
 const canSell=i=>!!i&&typeof i.price==='number'&&i.price>0&&!i.starter;
 const qty=i=>PD.qty(i.id);
 const COIN='<img src="assets/ng/komponen/hud/ikon-koin-emas.webp" alt="">';

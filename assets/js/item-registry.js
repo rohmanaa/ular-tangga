@@ -2,8 +2,8 @@
    Registri item berbasis manifest: daftar kategori, validasi manifest, penolakan duplikat, pencarian by-ID, fallback.
    - TIDAK bergantung pada DOM, localStorage, PlayerData, atau ItemCatalog. Skrip klasik ES5, dapat dimuat di browser
      (window.UT.ItemRegistry) maupun Node (module.exports) untuk tes — pola sama dengan appearance-service.js.
-   - Berjalan PARALEL dengan ItemCatalog (assets/js/item-catalog.js): belum ada konsumen yang dialihkan. Kesesuaian dengan
-     katalog lama dijaga oleh tes paritas (tests/frame-registry-parity.test.js), bukan oleh kode runtime.
+   - ItemCatalog mengadopsi kategori yang sudah dimuat dari Registry dan tetap mempertahankan jalur fallback legacy.
+     Kesesuaian kedua jalur dijaga oleh tes paritas per kategori.
    - Tiga lapis pemeriksaan yang SENGAJA dipisah (satu lapis lulus tidak berarti lapis berikutnya lulus):
        1. validateManifest(m, category)  : struktur & isi manifest
        2. validateAssetPaths(m, category): FORMAT path aset (bukan keberadaan file, bukan keberhasilan memuat)

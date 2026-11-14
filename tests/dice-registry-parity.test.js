@@ -85,10 +85,10 @@ t('ItemCatalog: 147 item, urutan ID sama, tanpa ID ganda, DEEP-EQUAL ke baseline
     assert.deepStrictEqual(clone(IC.items), base.items);
     assert.strictEqual(new Set(IC.items.map(i => i.id)).size, 147); });
 });
-t('ItemCatalog: API publik sama (tipe & kunci) dengan baseline; tambahan hanya diceSource', () => {
+t('ItemCatalog: API publik sama (tipe & kunci) dengan baseline; sumber Registry baru tersedia', () => {
   const a = Object.keys(legacy.ItemCatalog).sort(), b = Object.keys(viaDice.ItemCatalog).sort(); assert.deepStrictEqual(a, b);
   base.api.forEach(k => { if (typeof k === 'string') assert.ok(k in viaDice.ItemCatalog, k); });
-  assert.ok(typeof viaDice.ItemCatalog.diceSource === 'function');
+  ['diceSource', 'powerSource'].forEach(k => assert.ok(typeof viaDice.ItemCatalog[k] === 'function', k));
   const IC = viaDice.ItemCatalog; bd.forEach(b => { assert.strictEqual(IC.byId(b.id).gameKey, b.gameKey); assert.strictEqual(IC.byGameKey('dice', b.gameKey).id, b.id); });
   assert.strictEqual(IC.byId('dice.tidak-ada'), null);
 });
@@ -127,8 +127,8 @@ t('Equip->Gameplay: tiap gameKey Dice ada di DiceKit (DiceCatalog.js) sehingga d
   assert.ok(/window\.ItemCatalog\.byId\(di\)/.test(rd('gameplay/js/main.js')) && /p\.diceKey=\(it&&it\.gameKey\)/.test(rd('gameplay/js/main.js')));
   assert.ok(/DiceKit\.has\(want\.key\) \? want\.key : 'klasik'/.test(rd('gameplay/js/dice-ui.js')));
 });
-t('Gameplay tidak disentuh: gameplay.html, gameplay/, player-data.js, supabase/ identik dengan HEAD', () => {
-  const d = cp.execSync('git diff --name-only HEAD -- gameplay.html gameplay assets/js/player-data.js assets/js/game-integration.js assets/js/dice-kit supabase assets/sfx', { cwd: ROOT }).toString().trim();
+t('Gameplay implementation tidak disentuh: gameplay/, PlayerData, API server, dan aset audio identik dengan HEAD', () => {
+  const d = cp.execSync('git diff --name-only HEAD -- gameplay assets/js/player-data.js assets/js/game-integration.js assets/js/dice-kit supabase assets/sfx', { cwd: ROOT }).toString().trim();
   assert.strictEqual(d, '');
 });
 
@@ -173,7 +173,7 @@ t('Halaman lain tidak diubah: gameplay/shop/inventory/lobby/profile memakai jalu
   ['gameplay.html', 'lobby.html', 'shop.html', 'inventory.html', 'mode.html', 'profile.html', 'karakter.html', 'pet.html'].forEach(h => assert.ok(rd(h).indexOf('data/inventory/dice/') < 0, h));
 });
 t('Service worker: VERSION dinaikkan dan preload-manifest memuat 24 berkas Dice baru dengan ukuran benar', () => {
-  assert.ok(/VERSION = 'ut-pwa-v178'/.test(rd('sw.js')));
+  assert.ok(/VERSION = 'ut-pwa-v179'/.test(rd('sw.js')));
   const pm = JSON.parse(rd('assets/preload-manifest.json')), want = DiceCat.keys.map(k => 'data/inventory/dice/' + k + '/manifest.js').concat(['data/inventory/dice/index.js']);
   assert.strictEqual(want.length, 24); want.forEach(f => assert.strictEqual(pm[f], fs.statSync(path.join(ROOT, f)).size, f));
 });

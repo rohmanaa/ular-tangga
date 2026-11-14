@@ -13,6 +13,7 @@ vm.runInContext(rd('gameplay/js/config.js'), ctx);
 const IC = ctx.ItemCatalog, pus = IC.items.filter(i => i.kind === 'powerup'), C = ctx.UT.Gameplay.Config, FX = ctx.UT.PowerFX;
 const keys = Array.from(pus, i => i.gameKey); /* Array.from: array dari konteks vm -> array biasa (deepStrictEqual) */
 const NEW = ['diamond_sword', 'netherite_sword', 'wooden_shield', 'golden_apple', 'fire_charge', 'ice_crystal', 'blaze_core', 'trident', 'dragon_crystal', 'nether_star'];
+const powerManifest = key => require('../data/inventory/power/' + key + '/manifest.js');
 
 t('17 power di katalog; PUN dan PUR punya kunci yang sama persis', () => {
   assert.strictEqual(keys.length, 17);
@@ -48,7 +49,7 @@ t('fase Dragon: Power khusus papan (pedang, Golden Apple, Dragon Crystal, Totem)
   ['grass', 'feather', 'wooden_shield', 'ice_crystal', 'trident', 'nether_star'].forEach(k => assert.strictEqual(C.PUR[k].boss, true, k));
 });
 t('tiap Power punya ikon 3D (file ada), efek 2D, dan peta model 3D', () => {
-  const map = {}; (rd('assets/js/power3d/power-show.js').match(/KEY_TO_POWER3D\s*=\s*\{([\s\S]*?)\};/)[1]).replace(/\/\*[\s\S]*?\*\//g, '').split(',').forEach(p => { const m = p.match(/(\w+)\s*:\s*'(\w+)'/); if (m) map[m[1]] = m[2]; });
+  const map = Object.fromEntries(keys.map(k => [k, powerManifest(k).visual.modelKey]));
   pus.forEach(p => {
     assert.ok(p.icon && ex(p.icon), 'ikon tidak ada: ' + p.gameKey);
     assert.ok(FX.has(p.gameKey), 'efek 2D tidak ada: ' + p.gameKey);

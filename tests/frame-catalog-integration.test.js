@@ -39,9 +39,9 @@ t('ItemCatalog: kategori non-Frame identik dengan baseline', () => {
   const nf = a => clone(a.filter(i => i.kind !== 'frame'));
   assert.strictEqual(nf(ICr.items).length, 133); assert.deepStrictEqual(nf(ICr.items), base.items.filter(i => i.kind !== 'frame'));
 });
-t('ItemCatalog: semua API publik baseline tetap ada (tipe sama); hanya frameSource/petSource yang baru', () => {
+t('ItemCatalog: semua API publik baseline tetap ada (tipe sama); sumber Registry kategori tetap tersedia', () => {
   const cur = Object.keys(ICr).sort(); base.api.forEach(k => { assert.ok(k in ICr, k); assert.strictEqual(typeof ICr[k], typeof ICl[k], k); });
-  assert.deepStrictEqual(cur.filter(k => base.api.indexOf(k) < 0), ['diceSource', 'frameSource', 'petSource']);
+  assert.deepStrictEqual(cur.filter(k => base.api.indexOf(k) < 0), ['diceSource', 'frameSource', 'petSource', 'powerSource']);
   assert.ok(Object.isFrozen(ICr) && Object.isFrozen(ICr.items));
 });
 t('ItemCatalog: byId/byGameKey/cost/starters/defaultEquipped/FRAME_TAB_ICON sama di kedua jalur', () => {
@@ -116,18 +116,18 @@ t('Server catalog: harga/gems Frame hasil integrasi = seed server (migrasi SQL f
 const WIRED = ['shop', 'inventory', 'karakter', 'profile', 'frame'];
 const CHAIN = ['assets/js/item-registry.js'].concat(FrameCat.keys.map(k => 'data/inventory/frame/' + k + '/manifest.js'), ['data/inventory/frame/index.js']);
 const srcs = h => (h.match(/<script[^>]+src="([^"]+)"/g) || []).map(x => /src="([^"]+)"/.exec(x)[1]);
-t('Halaman: registry -> 14 manifest -> index.js berurutan, tepat satu kali, LANGSUNG sebelum item-catalog.js', () => {
+t('Halaman: registry -> 14 manifest -> index.js berurutan dan sebelum item-catalog.js', () => {
   WIRED.forEach(p => { const s = srcs(rd(p + '.html')), i = s.indexOf('assets/js/item-catalog.js');
-    assert.ok(i >= CHAIN.length, p); assert.deepStrictEqual(s.slice(i - CHAIN.length, i), CHAIN, p);
+    const indexes = CHAIN.map(f => s.indexOf(f));
+    assert.ok(indexes.every(x => x >= 0 && x < i), p);
+    assert.deepStrictEqual(indexes, indexes.slice().sort((a, b) => a - b), p);
     CHAIN.concat(['assets/js/item-catalog.js']).forEach(f => assert.strictEqual(s.filter(x => x === f).length, 1, p + ' ' + f));
     const fx = s.indexOf('assets/js/frame-fx.js'); assert.ok(fx < 0 || fx > i, p + ': frame-fx.js (bila dimuat) tetap sesudah katalog'); });
 });
 t('Halaman: semua file rantai ada di disk', () => { CHAIN.forEach(f => assert.ok(fs.existsSync(path.join(ROOT, f)), f)); assert.strictEqual(CHAIN.length, 16); });
-t('Halaman lain (dan gameplay.html) tidak diubah (pet.html: Stage 4; dadu.html & room.html: Stage 5 hanya rantai Dice): tanpa rantai Frame, tetap memakai jalur cadangan', () => {
-  const DICE_PAGES = ['dadu', 'room'];
+t('Halaman lain memakai jalur fallback Frame tanpa manifest Frame; Registry kategori lain tidak mengubahnya', () => {
   fs.readdirSync(ROOT).filter(f => /\.html$/.test(f) && WIRED.concat(['pet']).indexOf(f.replace('.html', '')) < 0).forEach(f => {
-    const dp = DICE_PAGES.indexOf(f.replace('.html', '')) >= 0;
-    assert.ok(!(dp ? /inventory\/frame/ : /item-registry|inventory\/frame/).test(rd(f)), f); });
+    assert.ok(!/data\/inventory\/frame\//.test(rd(f)), f); });
 });
 t('Simulasi urutan halaman: menjalankan skrip PERSIS menurut urutan tag di HTML -> frameSource = registry di setiap halaman terhubung', () => {
   WIRED.forEach(p => { const w = { addEventListener() {}, localStorage: { getItem() { return null; }, setItem() {}, removeItem() {} } }; w.window = w;

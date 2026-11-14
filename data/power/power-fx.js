@@ -2,8 +2,8 @@
    Hanya memakai engine UT.ParticleFX.burstAt (gameplay/js/particle-fx.js): layer #fx-layer, batas partikel, cleanup animationend, otomatis mati saat reduced-motion.
    Tanpa timer/rAF/listener; urutan lapisan dijadwalkan lewat delayMin (CSS animation-delay). Aman-gagal: modul/engine tak ada -> return 0, gameplay tetap jalan.
    Classic script. Namespace: UT.PowerFX.
-   API: play(key, x, y[, o]) · playAtElement(key, el[, o]) · has(key) · DATA
-   key = ID canonical Power (sword · feather · tnt · totem · potion_odd · potion_even · grass · diamond_sword · netherite_sword · wooden_shield · golden_apple · fire_charge · ice_crystal · blaze_core · trident · dragon_crystal · nether_star) + efek tambahan: totem_block (Totem menahan serangan) · shield_block (Wooden Shield menahan) · get (dapat Power).
+   API: play(key, x, y[, o]) · playAtElement(key, el[, o]) · has(key) · keyFor(key) · DATA
+   key = gameKey Power; Registry visual.effect2d memilih efeknya, dengan gameKey sebagai fallback. Efek tambahan: totem_block · shield_block · get.
    o = { scale: pengali jumlah & jarak partikel (default 1) }.
    Tiap entri DATA = { name, note, layers[] }. Layer = opsi UT.ParticleFX.burstAt:
      count · colors[] · size · sizeJitter · distance · distanceJitter · duration · spread · angle (0=kanan, -90=atas) · gravity (+ turun, - naik)
@@ -184,7 +184,11 @@
   };
 
   function engine() { return UT.ParticleFX && typeof UT.ParticleFX.burstAt === 'function' ? UT.ParticleFX : null; }
-  function has(key) { return Object.prototype.hasOwnProperty.call(DATA, key); }
+  function effectKey(key) {
+    var R = UT.ItemRegistry, m = R && R.shared().getItem('powerup.' + key);
+    return m && m.visual && typeof m.visual.effect2d === 'string' ? m.visual.effect2d : key;
+  }
+  function has(key) { return Object.prototype.hasOwnProperty.call(DATA, effectKey(key)); }
 
   var tuned = false;
   function tune(E) { /* beberapa lapisan sekaligus (mis. 2 pemain di Rumput) -> naikkan batas total partikel engine sedikit */
@@ -194,9 +198,9 @@
 
   function play(key, x, y, o) {
     try {
-      var E = engine(); if (!E || !has(key)) return 0;
+      var E = engine(), id = effectKey(key); if (!E || !Object.prototype.hasOwnProperty.call(DATA, id)) return 0;
       tune(E);
-      var k = (o && +o.scale > 0) ? +o.scale : 1, total = 0, layers = DATA[key].layers;
+      var k = (o && +o.scale > 0) ? +o.scale : 1, total = 0, layers = DATA[id].layers;
       for (var i = 0; i < layers.length; i++) {
         var src = layers[i], p = {};
         for (var f in src) if (Object.prototype.hasOwnProperty.call(src, f)) p[f] = src[f];
@@ -215,5 +219,5 @@
     } catch (e) { return 0; }
   }
 
-  UT.PowerFX = { DATA: DATA, play: play, playAtElement: playAtElement, has: has };
+  UT.PowerFX = { DATA: DATA, play: play, playAtElement: playAtElement, has: has, keyFor: effectKey };
 })(window);

@@ -3,12 +3,12 @@
    (window.UT.PowerOverlay). Gagal/WebGL mati -> pemanggil memakai efek 2D (UT.PowerFX). Hanya VISUAL/AUDIO: aturan Power tetap di gameplay.html (C.PUR). */
 import { PowerRenderer } from './PowerRenderer.js';
 import { PowerSound } from './PowerSound.js';
-import { KEY_TO_POWER3D } from './power-show.js';
+import { power3dKey } from './PowerRegistry.js';
 
 export { PowerSound };
 /* efek khusus gameplay -> model 3D */
 const ALIAS = { totem_block: 'totem', shield_block: 'wooden_shield' };
-const idOf = (key) => KEY_TO_POWER3D[ALIAS[key] || key] || null;
+const idOf = (key) => power3dKey(ALIAS[key] || key);
 export const supports = (key) => !!idOf(key);
 
 /* Model power tampil SHRINK x lebih kecil dari ukuran dasar (size), tetapi canvas boleh sebesar layar (o.rect) supaya aura/partikel tidak terpotong */

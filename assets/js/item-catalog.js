@@ -69,18 +69,15 @@
     return Object.assign({ id: 'theme.' + gameKey, kind: 'theme', gameKey: gameKey, name: 'Map ' + name,
       rarity: rarity, price: null, desc: desc, starter: price === 0, free: true, art: art }, extra || {});
   }
-  /* Power-Up (Tahap 3.1): consumable ber-quantity.
-     ID canonical = PERSIS key gameplay di gameplay.html (p.pu: sword/feather/tnt/totem/potion_odd/potion_even/grass)
-     — tanpa prefiks, agar tidak perlu bridge ID (lihat DATA_MIGRATION.md "Power-Up").
-     price: null = EKONOMI BELUM DITENTUKAN — tidak dijual di shop, tidak boleh diarang.
-     rarity 'common' = default netral untuk UI; gameplay sendiri tidak mengenal rarity power-up. */
-  /* SATU-SATUNYA sumber path ikon Power: render 192px dari model 3D (assets/js/power3d), dibuat oleh tools/power-icons/bake.py
-     ke data/power/3d/<gameKey>.png. Dibaca oleh gameplay (Config.PUIMG), Shop/Inventory/Profil (ItemArt.powerup). Key = ID Power. */
+  /* Builder Power ini hanya jalur fallback legacy (metadata utama Stage 6 ada di data/inventory/power).
+     ID publik tetap sama dengan key gameplay tanpa prefiks. Power adalah consumable ber-quantity; pembelian/pemakaian
+     tetap lewat RPC buy_powerup/use_powerup, bukan transaksi ItemCatalog biasa. */
+  /* Path ikon ini hanya untuk jalur fallback legacy; metadata utama menunjuk ikon lewat manifest Power. */
   var POWER_ICON = {
     sword: 'data/power/3d/sword.png', feather: 'data/power/3d/feather.png', tnt: 'data/power/3d/tnt.png',
     totem: 'data/power/3d/totem.png', potion_odd: 'data/power/3d/potion_odd.png', potion_even: 'data/power/3d/potion_even.png', grass: 'data/power/3d/grass.png'
   };
-  /* Batch 2-3: 10 Power baru. gameKey = id model 3D (assets/js/power3d/PowerCatalog.js); ikon = render 3D tools/power-icons/bake.py */
+  /* Batch 2-3: fallback path ikon Power tambahan; visual.modelKey pada manifest menunjuk model 3D. */
   ['diamond_sword', 'netherite_sword', 'wooden_shield', 'golden_apple', 'fire_charge', 'ice_crystal', 'blaze_core', 'trident', 'dragon_crystal', 'nether_star']
     .forEach(function (k) { POWER_ICON[k] = 'data/power/3d/' + k + '.png'; });
   /* Stage 4.1.20: ID Power lama -> identity sekarang. Dipakai HANYA untuk membaca data lama (save/localStorage pemain
@@ -392,13 +389,8 @@
     it.price = t[0]; it.gems = t[1];
   });
 
-  /* ---- Frame: metadata dari ItemRegistry (Stage 3) ----
-     (Stage 4: pola yang sama dipakai untuk Pet — 7 manifest, adoptFromRegistry('pet', ...).)
-     Bila ItemRegistry + kategori Frame + 14 manifest sudah dimuat SEBELUM berkas ini (urutan skrip: lihat audit/5/stage-3-frame-integration.md),
-     ke-14 item Frame dibangun dari manifest (data/inventory/frame/<key>/manifest.js) — manifest = sumber metadata klien (nama, rarity, harga, gems, starter,
-     desc, featured, gambar). Posisi & urutan item di ITEMS tidak berubah.
-     Bila tidak dimuat (mis. gameplay.html yang tidak boleh diubah, atau tes yang memuat berkas ini sendirian), literal frame(...) + TIER_PRICE di atas
-     dipakai sebagai JALUR CADANGAN: tes paritas menjamin kedua jalur menghasilkan item yang sama persis. Halaman lama tidak pernah gagal. */
+  /* Metadata Frame/Pet/Dice/Power diadopsi dari Registry hanya jika semua manifest kategori cocok.
+     Tanpa rantai Registry lengkap, builder legacy di atas tetap menjadi fallback; tes paritas menjaga hasil katalog sama. */
   function frameFromManifest(m) {
     var it = { id: m.id, kind: 'frame', gameKey: m.gameKey, name: m.name, rarity: m.rarity, price: m.price == null ? null : m.price,
       desc: m.desc, starter: !!m.starter, image: m.assets.image, gems: m.gems == null ? null : m.gems };
@@ -421,6 +413,16 @@
     if (m.legacyIds) it.legacyIds = m.legacyIds.slice();
     return it;
   }
+  /* Stage 6: Registry ID memakai prefix powerup., sedangkan ID gameplay lama tetap gameKey tanpa prefix. */
+  function powerFromManifest(m) {
+    var it = { id: m.gameKey, kind: 'powerup', gameKey: m.gameKey, name: m.name, rarity: m.rarity,
+      price: m.price == null ? null : m.price, gems: m.gems == null ? null : m.gems, desc: m.desc,
+      starter: !!m.starter, stackable: !!m.stackable, icon: m.assets.icon };
+    if (m.off) it.off = true;
+    if (m.offNote) it.offNote = m.offNote;
+    if (m.maps) it.maps = m.maps.slice();
+    return it;
+  }
   /* Ganti item kategori `kind` di ITEMS (posisi sama) dengan item dari manifest Registry. Mengembalikan 'registry' bila berhasil, 'legacy' bila tidak. */
   function adoptFromRegistry(kind, build) {
     try {
@@ -430,7 +432,7 @@
       if (!reg.getCategory(kind)) CC.register(reg);          /* idempoten: tidak mendaftar dua kali */
       var cat = reg.getCategory(kind);
       if (!cat || cat.items.length !== CC.keys.length) return 'legacy';
-      var fromReg = {}; cat.items.forEach(function (m) { fromReg[m.id] = build(m); });
+      var fromReg = {}; cat.items.forEach(function (m) { var it = build(m); fromReg[it.id] = it; });
       var idx = [], ok = true;
       ITEMS.forEach(function (it, i) { if (it.kind === kind) { idx.push(i); if (!fromReg[it.id]) ok = false; } });
       if (!ok || idx.length !== cat.items.length) { if (g.console) g.console.error('[ItemCatalog] manifest ' + kind + ' tidak cocok dengan katalog; memakai jalur cadangan'); return 'legacy'; }
@@ -441,6 +443,7 @@
   var FRAME_SOURCE = adoptFromRegistry('frame', frameFromManifest);
   var PET_SOURCE = adoptFromRegistry('pet', petFromManifest);   /* Stage 4: 7 Pet dari manifest (data/inventory/pet/) */
   var DICE_SOURCE = adoptFromRegistry('dice', diceFromManifest);   /* Stage 5: 23 Dice dari manifest (data/inventory/dice/) */
+  var POWER_SOURCE = adoptFromRegistry('powerup', powerFromManifest);   /* Stage 6: 17 Power dari manifest; ID publik tetap gameKey */
 
   var DEFAULT_EQUIPPED = Object.freeze({ skin: 'skin.steve', dice: 'dice.klasik', theme: 'theme.minecraft', frame: 'frame.default' });
   var BY_ID = {};
@@ -471,6 +474,7 @@
     frameSource: function () { return FRAME_SOURCE; },   /* 'registry' | 'legacy' (diagnostik) */
     petSource: function () { return PET_SOURCE; },       /* idem, untuk Pet */
     diceSource: function () { return DICE_SOURCE; },     /* idem, untuk Dice */
+    powerSource: function () { return POWER_SOURCE; },   /* idem, untuk Power */
     KIND_META: KIND_META,
     GEAR_SLOTS: Object.freeze(GEAR_SLOTS),
     /* Semua slot equipment gear yang dikenal ('g.top', ..., 'g.acc.belt', ...) */

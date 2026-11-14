@@ -1,10 +1,9 @@
 /* Kategori Frame (pilot Stage 2) — mendaftarkan kategori + 14 manifest ke ItemRegistry.
    Urutan KEYS = urutan di ItemCatalog (assets/js/item-catalog.js). Satu item = satu folder (nama folder = gameKey).
    Asset TIDAK dipindah: manifest merujuk path existing di data/frame/ (aset & renderer frame-fx.js tidak berubah).
-   Belum ada halaman yang memuat berkas ini; ItemCatalog tetap sumber untuk semua konsumen (paritas dijaga tes).
+   Halaman yang memuat rantai ini mengadopsi metadata lewat ItemCatalog; fallback legacy tetap tersedia.
    Node : require('data/inventory/frame/index.js').register(registry)
-   Browser: muat tiap <folder>/manifest.js (mengisi UT.ItemManifests), lalu muat berkas ini dan panggil
-            UT.ItemCategories.frame.register(UT.ItemRegistry.shared()) — pemuatan malas = tahap berikutnya. */
+   Browser: muat tiap <folder>/manifest.js, lalu berkas ini; ItemCatalog memanggil register() saat mengadopsi kategori. */
 (function (root, factory) {
   var api = factory(typeof require === 'function' ? require : null);
   if (typeof module === 'object' && module.exports) module.exports = api;

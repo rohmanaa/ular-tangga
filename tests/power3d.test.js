@@ -7,8 +7,8 @@ let n = 0; const t = (name, fn) => { fn(); n++; console.log('ok - ' + name); };
 const w = { addEventListener() {} }; w.window = w; const ctx = vm.createContext(w);
 vm.runInContext(rd('assets/js/item-catalog.js'), ctx);
 const IC = ctx.ItemCatalog, pus = IC.items.filter(i => i.kind === 'powerup');
-const showSrc = rd('assets/js/power3d/power-show.js');
-const map = {}; (showSrc.match(/KEY_TO_POWER3D\s*=\s*\{([^}]*)\}/)[1]).split(',').forEach(p => { const m = p.match(/(\w+)\s*:\s*'(\w+)'/); if (m) map[m[1]] = m[2]; });
+const powerKeys = require('../data/inventory/power/index.js').keys;
+const map = Object.fromEntries(powerKeys.map(k => [k, require('../data/inventory/power/' + k + '/manifest.js').visual.modelKey]));
 
 t('17 power punya model 3D: 7 lama + 10 Batch 2-3', () => {
   assert.deepStrictEqual(Object.keys(map).sort(), ['blaze_core', 'diamond_sword', 'dragon_crystal', 'feather', 'fire_charge', 'golden_apple', 'grass', 'ice_crystal', 'nether_star', 'netherite_sword', 'potion_even', 'potion_odd', 'sword', 'tnt', 'totem', 'trident', 'wooden_shield']);
