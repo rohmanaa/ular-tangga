@@ -132,8 +132,14 @@ Integrated browser dipakai untuk memuat Three.js, ItemRegistry, 15 manifest, ind
 - Tes baru: `tests/aura-registry-parity.test.js`; tes sumber aktual Aura: `tests/aura-view.test.js`; assertion API/version yang bergantung versi diperbarui di tes Frame, Dice, dan Power.
 - Tidak ada perubahan pada gameplay JS, renderer/effect engine, PlayerData, server, SQL, RPC, atau Supabase.
 
-Commit implementasi: `04bc5d4` (`feat: integrate aura registry`), sudah di-push ke `origin/restruktur`.  
-Commit audit: dibuat terpisah setelah laporan ini difinalkan.
+Commit implementasi: `04bc5d4` (`feat: integrate aura registry`), sudah di-push ke `origin/restruktur`.
+Commit audit yang pertama kali mencatat laporan: `b415a14` (`docs: record Stage 7 Aura audit`); laporan ini difinalkan dalam commit dokumentasi lanjutan.
+
+### Verifikasi Git akhir
+
+- Branch kerja: `restruktur`; implementasi dan audit didorong hanya ke `origin/restruktur`.
+- `main` lokal dan `origin/main` tetap pada `aeb11acf130df4ade4acc9417f01470e40a33dbb` saat diverifikasi; tidak ada checkout, merge, atau push ke `main`.
+- Kesamaan HEAD dengan `origin/restruktur` dan worktree bersih diverifikasi setelah push audit final.
 
 #### Batas verifikasi
 
