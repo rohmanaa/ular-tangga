@@ -1,5 +1,5 @@
-/* Katalog item Ular Tangga Blok — SATU-SATUNYA sumber harga & metadata item.
-   Hanya berisi item yang benar-benar didukung gameplay (skin karakter, skin dadu, tema papan).
+/* Katalog item Ular Tangga Blok — sumber metadata publik dan fallback kategori legacy.
+   Kategori yang belum memakai Registry tetap mempertahankan builder legacy sebagai fallback.
    `gameKey` = kunci yang dipakai lobby.html / gameplay.html.
    Kepemilikan pemain TIDAK disimpan di sini (lihat player-data.js). */
 (function (g) {
@@ -389,7 +389,7 @@
     it.price = t[0]; it.gems = t[1];
   });
 
-  /* Metadata Frame/Pet/Dice/Power diadopsi dari Registry hanya jika semua manifest kategori cocok.
+  /* Metadata Frame/Aura/Pet/Dice/Power diadopsi dari Registry hanya jika semua manifest kategori cocok.
      Tanpa rantai Registry lengkap, builder legacy di atas tetap menjadi fallback; tes paritas menjaga hasil katalog sama. */
   function frameFromManifest(m) {
     var it = { id: m.id, kind: 'frame', gameKey: m.gameKey, name: m.name, rarity: m.rarity, price: m.price == null ? null : m.price,
@@ -400,6 +400,10 @@
   function petFromManifest(m) {
     return { id: m.id, kind: 'pet', gameKey: m.gameKey, name: m.name, rarity: m.rarity, tier: m.tier, role: m.role, price: m.price == null ? null : m.price,
       desc: m.desc, starter: !!m.starter, accent: m.visual.accent, colors: m.visual.colors.slice(), gems: m.gems == null ? null : m.gems };
+  }
+  function auraFromManifest(m) {
+    return { id: m.id, kind: 'aura', gameKey: m.gameKey, name: m.name, rarity: m.rarity, price: m.price == null ? null : m.price,
+      desc: m.desc, starter: !!m.starter, colors: m.visual.colors.slice(), gems: m.gems == null ? null : m.gems };
   }
   /* Stage 5: Dice. Bentuk item = persis hasil dice(...) + TIER_PRICE (art{bg,accent?,pip,edge}, tier/collection/materialName/featured/legacyIds hanya bila ada).
      Harga/gems dari manifest = nilai TIER_PRICE; server tetap otoritas transaksi, saldo, kepemilikan. Kepemilikan & equip tidak ada di manifest. */
@@ -441,6 +445,7 @@
     } catch (e) { if (g.console) g.console.error('[ItemCatalog] ItemRegistry ' + kind + ' gagal; memakai jalur cadangan: ' + (e && e.message)); return 'legacy'; }
   }
   var FRAME_SOURCE = adoptFromRegistry('frame', frameFromManifest);
+  var AURA_SOURCE = adoptFromRegistry('aura', auraFromManifest);   /* Stage 7: 15 Aura dari manifest; bentuk katalog lama tetap */
   var PET_SOURCE = adoptFromRegistry('pet', petFromManifest);   /* Stage 4: 7 Pet dari manifest (data/inventory/pet/) */
   var DICE_SOURCE = adoptFromRegistry('dice', diceFromManifest);   /* Stage 5: 23 Dice dari manifest (data/inventory/dice/) */
   var POWER_SOURCE = adoptFromRegistry('powerup', powerFromManifest);   /* Stage 6: 17 Power dari manifest; ID publik tetap gameKey */
@@ -472,6 +477,7 @@
     SKIN_GROUPS: SKIN_GROUPS,
     FRAME_TAB_ICON: FRAME_TAB_ICON,
     frameSource: function () { return FRAME_SOURCE; },   /* 'registry' | 'legacy' (diagnostik) */
+    auraSource: function () { return AURA_SOURCE; },     /* idem, untuk Aura */
     petSource: function () { return PET_SOURCE; },       /* idem, untuk Pet */
     diceSource: function () { return DICE_SOURCE; },     /* idem, untuk Dice */
     powerSource: function () { return POWER_SOURCE; },   /* idem, untuk Power */

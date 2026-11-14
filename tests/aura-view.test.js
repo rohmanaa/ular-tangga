@@ -68,17 +68,25 @@ t('lompat: cincin & kabut aura tetap di lantai, dekor badan ikut naik; mendarat 
   }
 });
 t('lobby, profil, gameplay memuat skrip aura berurutan (three -> blocky -> aura-fx -> aura-view) dan memakai UT.AuraView', () => {
-  for (const f of ['lobby.html', 'profile.html', 'gameplay.html']) {
-    const g = read(f), i = x => { const k = g.indexOf(x); assert.ok(k > 0, f + ': ' + x); return k; };
-    assert.ok(i('vendor/three.min.js') < i('blocky-character.js') || f === 'lobby.html', f);
+  const pages = [
+    { html: 'lobby.html', source: 'assets/js/pages/lobby.js', update: /AUR\.update\(motionDt\)/ },
+    { html: 'profile.html', source: 'assets/js/pages/profile.js', update: /R\.aura\.update\(dt\)/ },
+    { html: 'gameplay.html', source: 'gameplay/js/main.js', update: /PAURA\.update\(dt\)/ }
+  ];
+  pages.forEach(({ html: f, source, update }) => {
+    const g = read(f), js = read(source), i = x => { const k = g.indexOf(x); assert.ok(k > 0, f + ': ' + x); return k; };
+    assert.ok(i('vendor/three.min.js') < i('blocky-character.js'), f);
     assert.ok(i('three.min.js') < i('aura-fx.js') && i('blocky-character.js') < i('aura-fx.js') && i('aura-fx.js') < i('aura-view.js'), f);
-    assert.ok(/UT\.AuraView\.create\(/.test(g) && /\.update\(\w+\)/.test(g), f);
-  }
-  assert.ok(/keyFromEquipped\(seed\.equipped\)/.test(read('gameplay.html')), 'pemain lain: aura dari data server');
+    assert.ok(/UT\.AuraView\.create\(/.test(js) && update.test(js), source);
+  });
+  const gameplay = read('gameplay/js/main.js');
+  assert.ok(/keyFromEquipped\(seed\.equipped\)/.test(gameplay), 'pemain lain: aura dari data server');
+  assert.ok(/A\.set\(b\.root,u\.auraKey/.test(gameplay), 'Aura dipasang pada pion gameplay');
+  assert.ok(/PAURA\.update\(dt\)/.test(gameplay), 'AuraFX diperbarui setiap frame');
 });
 t('karakter.html: skrip aura dimuat setelah three & player-data; aura disinkronkan di loop dan diupdate tiap frame', () => {
-  const g = read('karakter.html'), i = x => { const k = g.indexOf(x); assert.ok(k > 0, x); return k; };
+  const g = read('karakter.html'), js = read('assets/js/pages/karakter.js'), i = x => { const k = g.indexOf(x); assert.ok(k > 0, x); return k; };
   assert.ok(i('vendor/three.min.js') < i('player-data.js') && i('player-data.js') < i('aura-fx.js') && i('aura-fx.js') < i('aura-view.js'));
-  assert.ok(/UT\.AuraView\.create\(scene,camera\)/.test(g) && /AUR\.update\(dt\)/.test(g) && /auraSync\(\)/.test(g) && /AUR\.clear\(root\)/.test(g));
+  assert.ok(/UT\.AuraView\.create\(scene,camera\)/.test(js) && /AUR\.update\(dt\)/.test(js) && /auraSync\(\)/.test(js) && /AUR\.clear\(root\)/.test(js));
 });
 console.log(n + ' tes lulus');
