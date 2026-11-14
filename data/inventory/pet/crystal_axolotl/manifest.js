@@ -1,0 +1,21 @@
+/* Manifest pet.crystal_axolotl — dibuat dari ItemCatalog (data existing; tidak ada data baru). Paritas dijaga tests/pet-registry-parity.test.js.
+   tier/role/accent/colors = field katalog existing. assets.image = gambar yang dibangun pet-page.js (IMAGE_ROOT + gameKey + '.png').
+   Visual 3D (assets/js/pet-viewer.js) dan audio (assets/sfx/pet/*, dipetakan per tier di pet-viewer.js) TIDAK diduplikasi di sini. */
+(function (g, m) {
+  if (typeof module === 'object' && module.exports) module.exports = m;
+  else ((g.UT = g.UT || {}).ItemManifests = g.UT.ItemManifests || []).push(m);
+})(typeof window !== 'undefined' ? window : this, {
+    id: "pet.crystal_axolotl",
+    kind: "pet",
+    gameKey: "crystal_axolotl",
+    name: "Crystal Axolotl",
+    rarity: "rare",
+    tier: 3,
+    role: "Penyembuh",
+    price: 25000,
+    gems: null,
+    starter: false,
+    desc: "Axolotl berwarna es dengan kristal tumbuh di punggung dan permata di dahi. Mengambang pelan di atas panggung.",
+    visual: {"accent":"#40e8f4","colors":["#8fe8f2","#d8fbff","#ff9ad8"]},
+    assets: { image: "assets/ng/pet3d/crystal_axolotl.png" }
+});

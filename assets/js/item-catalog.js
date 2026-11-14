@@ -393,6 +393,7 @@
   });
 
   /* ---- Frame: metadata dari ItemRegistry (Stage 3) ----
+     (Stage 4: pola yang sama dipakai untuk Pet — 7 manifest, adoptFromRegistry('pet', ...).)
      Bila ItemRegistry + kategori Frame + 14 manifest sudah dimuat SEBELUM berkas ini (urutan skrip: lihat audit/5/stage-3-frame-integration.md),
      ke-14 item Frame dibangun dari manifest (data/inventory/frame/<key>/manifest.js) — manifest = sumber metadata klien (nama, rarity, harga, gems, starter,
      desc, featured, gambar). Posisi & urutan item di ITEMS tidak berubah.
@@ -404,23 +405,29 @@
     if (m.featured) it.featured = true;
     return it;
   }
-  var FRAME_SOURCE = 'legacy';
-  (function () {
+  function petFromManifest(m) {
+    return { id: m.id, kind: 'pet', gameKey: m.gameKey, name: m.name, rarity: m.rarity, tier: m.tier, role: m.role, price: m.price == null ? null : m.price,
+      desc: m.desc, starter: !!m.starter, accent: m.visual.accent, colors: m.visual.colors.slice(), gems: m.gems == null ? null : m.gems };
+  }
+  /* Ganti item kategori `kind` di ITEMS (posisi sama) dengan item dari manifest Registry. Mengembalikan 'registry' bila berhasil, 'legacy' bila tidak. */
+  function adoptFromRegistry(kind, build) {
     try {
-      var UT = g.UT, IR = UT && UT.ItemRegistry, FC = UT && UT.ItemCategories && UT.ItemCategories.frame;
-      if (!IR || !FC) return;
+      var UT = g.UT, IR = UT && UT.ItemRegistry, CC = UT && UT.ItemCategories && UT.ItemCategories[kind];
+      if (!IR || !CC) return 'legacy';
       var reg = IR.shared();
-      if (!reg.getCategory('frame')) FC.register(reg);          /* idempoten: tidak mendaftar dua kali */
-      var cat = reg.getCategory('frame');
-      if (!cat || cat.items.length !== FC.keys.length) return;
-      var fromReg = {}; cat.items.forEach(function (m) { fromReg[m.id] = frameFromManifest(m); });
+      if (!reg.getCategory(kind)) CC.register(reg);          /* idempoten: tidak mendaftar dua kali */
+      var cat = reg.getCategory(kind);
+      if (!cat || cat.items.length !== CC.keys.length) return 'legacy';
+      var fromReg = {}; cat.items.forEach(function (m) { fromReg[m.id] = build(m); });
       var idx = [], ok = true;
-      ITEMS.forEach(function (it, i) { if (it.kind === 'frame') { idx.push(i); if (!fromReg[it.id]) ok = false; } });
-      if (!ok || idx.length !== cat.items.length) { if (g.console) g.console.error('[ItemCatalog] manifest Frame tidak cocok dengan katalog; memakai jalur cadangan'); return; }
+      ITEMS.forEach(function (it, i) { if (it.kind === kind) { idx.push(i); if (!fromReg[it.id]) ok = false; } });
+      if (!ok || idx.length !== cat.items.length) { if (g.console) g.console.error('[ItemCatalog] manifest ' + kind + ' tidak cocok dengan katalog; memakai jalur cadangan'); return 'legacy'; }
       idx.forEach(function (i) { ITEMS[i] = fromReg[ITEMS[i].id]; });
-      FRAME_SOURCE = 'registry';
-    } catch (e) { if (g.console) g.console.error('[ItemCatalog] ItemRegistry Frame gagal; memakai jalur cadangan: ' + (e && e.message)); }
-  })();
+      return 'registry';
+    } catch (e) { if (g.console) g.console.error('[ItemCatalog] ItemRegistry ' + kind + ' gagal; memakai jalur cadangan: ' + (e && e.message)); return 'legacy'; }
+  }
+  var FRAME_SOURCE = adoptFromRegistry('frame', frameFromManifest);
+  var PET_SOURCE = adoptFromRegistry('pet', petFromManifest);   /* Stage 4: 7 Pet dari manifest (data/inventory/pet/) */
 
   var DEFAULT_EQUIPPED = Object.freeze({ skin: 'skin.steve', dice: 'dice.klasik', theme: 'theme.minecraft', frame: 'frame.default' });
   var BY_ID = {};
@@ -449,6 +456,7 @@
     SKIN_GROUPS: SKIN_GROUPS,
     FRAME_TAB_ICON: FRAME_TAB_ICON,
     frameSource: function () { return FRAME_SOURCE; },   /* 'registry' | 'legacy' (diagnostik) */
+    petSource: function () { return PET_SOURCE; },       /* idem, untuk Pet */
     KIND_META: KIND_META,
     GEAR_SLOTS: Object.freeze(GEAR_SLOTS),
     /* Semua slot equipment gear yang dikenal ('g.top', ..., 'g.acc.belt', ...) */

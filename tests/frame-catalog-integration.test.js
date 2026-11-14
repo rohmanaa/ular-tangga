@@ -39,9 +39,9 @@ t('ItemCatalog: kategori non-Frame identik dengan baseline', () => {
   const nf = a => clone(a.filter(i => i.kind !== 'frame'));
   assert.strictEqual(nf(ICr.items).length, 133); assert.deepStrictEqual(nf(ICr.items), base.items.filter(i => i.kind !== 'frame'));
 });
-t('ItemCatalog: semua API publik baseline tetap ada (tipe sama); hanya frameSource yang baru', () => {
+t('ItemCatalog: semua API publik baseline tetap ada (tipe sama); hanya frameSource/petSource yang baru', () => {
   const cur = Object.keys(ICr).sort(); base.api.forEach(k => { assert.ok(k in ICr, k); assert.strictEqual(typeof ICr[k], typeof ICl[k], k); });
-  assert.deepStrictEqual(cur.filter(k => base.api.indexOf(k) < 0), ['frameSource']);
+  assert.deepStrictEqual(cur.filter(k => base.api.indexOf(k) < 0), ['frameSource', 'petSource']);
   assert.ok(Object.isFrozen(ICr) && Object.isFrozen(ICr.items));
 });
 t('ItemCatalog: byId/byGameKey/cost/starters/defaultEquipped/FRAME_TAB_ICON sama di kedua jalur', () => {
@@ -123,8 +123,8 @@ t('Halaman: registry -> 14 manifest -> index.js berurutan, tepat satu kali, LANG
     const fx = s.indexOf('assets/js/frame-fx.js'); assert.ok(fx < 0 || fx > i, p + ': frame-fx.js (bila dimuat) tetap sesudah katalog'); });
 });
 t('Halaman: semua file rantai ada di disk', () => { CHAIN.forEach(f => assert.ok(fs.existsSync(path.join(ROOT, f)), f)); assert.strictEqual(CHAIN.length, 16); });
-t('Halaman lain (dan gameplay.html) tidak diubah: tanpa rantai, tetap memakai jalur cadangan', () => {
-  fs.readdirSync(ROOT).filter(f => /\.html$/.test(f) && WIRED.indexOf(f.replace('.html', '')) < 0).forEach(f => assert.ok(!/item-registry|inventory\/frame/.test(rd(f)), f));
+t('Halaman lain (dan gameplay.html) tidak diubah (pet.html dihubungkan di Stage 4): tanpa rantai, tetap memakai jalur cadangan', () => {
+  fs.readdirSync(ROOT).filter(f => /\.html$/.test(f) && WIRED.concat(['pet']).indexOf(f.replace('.html', '')) < 0).forEach(f => assert.ok(!/item-registry|inventory\/frame/.test(rd(f)), f));
 });
 t('Simulasi urutan halaman: menjalankan skrip PERSIS menurut urutan tag di HTML -> frameSource = registry di setiap halaman terhubung', () => {
   WIRED.forEach(p => { const w = { addEventListener() {}, localStorage: { getItem() { return null; }, setItem() {}, removeItem() {} } }; w.window = w;
