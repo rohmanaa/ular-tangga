@@ -409,6 +409,18 @@
     return { id: m.id, kind: 'pet', gameKey: m.gameKey, name: m.name, rarity: m.rarity, tier: m.tier, role: m.role, price: m.price == null ? null : m.price,
       desc: m.desc, starter: !!m.starter, accent: m.visual.accent, colors: m.visual.colors.slice(), gems: m.gems == null ? null : m.gems };
   }
+  /* Stage 5: Dice. Bentuk item = persis hasil dice(...) + TIER_PRICE (art{bg,accent?,pip,edge}, tier/collection/materialName/featured/legacyIds hanya bila ada).
+     Harga/gems dari manifest = nilai TIER_PRICE; server tetap otoritas transaksi, saldo, kepemilikan. Kepemilikan & equip tidak ada di manifest. */
+  function diceFromManifest(m) {
+    var it = { id: m.id, kind: 'dice', gameKey: m.gameKey, name: m.name, rarity: m.rarity, price: m.price == null ? null : m.price,
+      desc: m.desc, starter: !!m.starter, art: Object.assign({}, m.visual), gems: m.gems == null ? null : m.gems };
+    if (m.tier != null) it.tier = m.tier;
+    if (m.collection) it.collection = m.collection;
+    if (m.materialName) it.materialName = m.materialName;
+    if (m.featured) it.featured = true;
+    if (m.legacyIds) it.legacyIds = m.legacyIds.slice();
+    return it;
+  }
   /* Ganti item kategori `kind` di ITEMS (posisi sama) dengan item dari manifest Registry. Mengembalikan 'registry' bila berhasil, 'legacy' bila tidak. */
   function adoptFromRegistry(kind, build) {
     try {
@@ -428,6 +440,7 @@
   }
   var FRAME_SOURCE = adoptFromRegistry('frame', frameFromManifest);
   var PET_SOURCE = adoptFromRegistry('pet', petFromManifest);   /* Stage 4: 7 Pet dari manifest (data/inventory/pet/) */
+  var DICE_SOURCE = adoptFromRegistry('dice', diceFromManifest);   /* Stage 5: 23 Dice dari manifest (data/inventory/dice/) */
 
   var DEFAULT_EQUIPPED = Object.freeze({ skin: 'skin.steve', dice: 'dice.klasik', theme: 'theme.minecraft', frame: 'frame.default' });
   var BY_ID = {};
@@ -457,6 +470,7 @@
     FRAME_TAB_ICON: FRAME_TAB_ICON,
     frameSource: function () { return FRAME_SOURCE; },   /* 'registry' | 'legacy' (diagnostik) */
     petSource: function () { return PET_SOURCE; },       /* idem, untuk Pet */
+    diceSource: function () { return DICE_SOURCE; },     /* idem, untuk Dice */
     KIND_META: KIND_META,
     GEAR_SLOTS: Object.freeze(GEAR_SLOTS),
     /* Semua slot equipment gear yang dikenal ('g.top', ..., 'g.acc.belt', ...) */
