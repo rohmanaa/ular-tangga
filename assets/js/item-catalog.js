@@ -392,6 +392,36 @@
     it.price = t[0]; it.gems = t[1];
   });
 
+  /* ---- Frame: metadata dari ItemRegistry (Stage 3) ----
+     Bila ItemRegistry + kategori Frame + 14 manifest sudah dimuat SEBELUM berkas ini (urutan skrip: lihat audit/5/stage-3-frame-integration.md),
+     ke-14 item Frame dibangun dari manifest (data/inventory/frame/<key>/manifest.js) — manifest = sumber metadata klien (nama, rarity, harga, gems, starter,
+     desc, featured, gambar). Posisi & urutan item di ITEMS tidak berubah.
+     Bila tidak dimuat (mis. gameplay.html yang tidak boleh diubah, atau tes yang memuat berkas ini sendirian), literal frame(...) + TIER_PRICE di atas
+     dipakai sebagai JALUR CADANGAN: tes paritas menjamin kedua jalur menghasilkan item yang sama persis. Halaman lama tidak pernah gagal. */
+  function frameFromManifest(m) {
+    var it = { id: m.id, kind: 'frame', gameKey: m.gameKey, name: m.name, rarity: m.rarity, price: m.price == null ? null : m.price,
+      desc: m.desc, starter: !!m.starter, image: m.assets.image, gems: m.gems == null ? null : m.gems };
+    if (m.featured) it.featured = true;
+    return it;
+  }
+  var FRAME_SOURCE = 'legacy';
+  (function () {
+    try {
+      var UT = g.UT, IR = UT && UT.ItemRegistry, FC = UT && UT.ItemCategories && UT.ItemCategories.frame;
+      if (!IR || !FC) return;
+      var reg = IR.shared();
+      if (!reg.getCategory('frame')) FC.register(reg);          /* idempoten: tidak mendaftar dua kali */
+      var cat = reg.getCategory('frame');
+      if (!cat || cat.items.length !== FC.keys.length) return;
+      var fromReg = {}; cat.items.forEach(function (m) { fromReg[m.id] = frameFromManifest(m); });
+      var idx = [], ok = true;
+      ITEMS.forEach(function (it, i) { if (it.kind === 'frame') { idx.push(i); if (!fromReg[it.id]) ok = false; } });
+      if (!ok || idx.length !== cat.items.length) { if (g.console) g.console.error('[ItemCatalog] manifest Frame tidak cocok dengan katalog; memakai jalur cadangan'); return; }
+      idx.forEach(function (i) { ITEMS[i] = fromReg[ITEMS[i].id]; });
+      FRAME_SOURCE = 'registry';
+    } catch (e) { if (g.console) g.console.error('[ItemCatalog] ItemRegistry Frame gagal; memakai jalur cadangan: ' + (e && e.message)); }
+  })();
+
   var DEFAULT_EQUIPPED = Object.freeze({ skin: 'skin.steve', dice: 'dice.klasik', theme: 'theme.minecraft', frame: 'frame.default' });
   var BY_ID = {};
   ITEMS.forEach(function (it) {
@@ -418,6 +448,7 @@
     CATEGORIES: CATEGORIES,
     SKIN_GROUPS: SKIN_GROUPS,
     FRAME_TAB_ICON: FRAME_TAB_ICON,
+    frameSource: function () { return FRAME_SOURCE; },   /* 'registry' | 'legacy' (diagnostik) */
     KIND_META: KIND_META,
     GEAR_SLOTS: Object.freeze(GEAR_SLOTS),
     /* Semua slot equipment gear yang dikenal ('g.top', ..., 'g.acc.belt', ...) */
