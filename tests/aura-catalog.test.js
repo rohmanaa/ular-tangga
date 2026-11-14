@@ -10,20 +10,41 @@ t('15 aura di katalog, id & rarity sama dengan aura-fx.js', () => {
   assert.strictEqual(auras.length, 15); assert.strictEqual(fxIds.length, 15);
   fxIds.forEach(([id, r]) => { const it = IC.byId('aura.' + id); assert.ok(it, id); assert.strictEqual(it.rarity, r); assert.strictEqual(it.gameKey, id); });
 });
-t('aura dijual (harga > 0, bukan starter) dan memakai slot opsional "aura"', () => {
-  auras.forEach(a => { assert.ok(a.price > 0 && !a.starter && !a.stackable, a.id); assert.strictEqual(a.slot, 'aura'); assert.strictEqual(a.category, 'efek'); });
+t('aura dijual dengan tepat satu mata uang dan memakai slot opsional "aura"', () => {
+  auras.forEach(a => {
+    assert.ok((a.price > 0) !== (a.gems > 0), a.id + ' harus memakai tepat satu mata uang');
+    assert.ok(!a.starter && !a.stackable, a.id);
+    assert.strictEqual(a.slot, 'aura'); assert.strictEqual(a.category, 'efek');
+  });
   assert.ok(IC.optionalSlots().indexOf('aura') >= 0);
   assert.strictEqual(IC.defaultEquipped.aura, undefined, 'tidak ada aura bawaan');
 });
 t('harga tidak turun saat rarity naik', () => {
-  const order = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'divine'];
-  const min = r => Math.min.apply(null, auras.filter(a => a.rarity === r).map(a => a.price));
-  for (let i = 1; i < order.length; i++) assert.ok(min(order[i]) >= min(order[i - 1]), order[i]);
+  const checkOrder = (order, currency) => {
+    const min = r => {
+      const prices = auras.filter(a => a.rarity === r).map(a => a[currency]).filter(v => v > 0);
+      assert.ok(prices.length, r + ' harus memiliki harga ' + currency);
+      return Math.min.apply(null, prices);
+    };
+    for (let i = 1; i < order.length; i++) assert.ok(min(order[i]) >= min(order[i - 1]), order[i] + ' ' + currency);
+  };
+  checkOrder(['common', 'uncommon', 'rare', 'epic'], 'price');
+  checkOrder(['legendary', 'mythic', 'divine'], 'gems');
 });
 t('migrasi aura memuat semua aura dengan harga yang sama dan slot equip "aura"', () => {
-  const sql = rd('supabase/migrations/202611200001_aura_catalog.sql');
-  auras.forEach(a => assert.ok(sql.indexOf("('" + a.id + "', 'aura', " + a.price + ", false, false)") >= 0, a.id));
-  assert.ok(/when 'aura' then 'aura'/.test(sql));
+  const catalogSql = rd('supabase/migrations/202611200001_aura_catalog.sql');
+  const economySql = rd('supabase/migrations/202611280001_economy_phase3_gems.sql');
+  const block = /BEGIN TIER PRICE SEED[\s\S]*?END TIER PRICE SEED/.exec(economySql);
+  assert.ok(block, 'seed harga terbaru');
+  auras.forEach(a => {
+    assert.ok(catalogSql.indexOf("('" + a.id + "', 'aura', ") >= 0, a.id + ' ada di katalog server');
+    const escaped = a.id.replace(/\./g, '\\.');
+    const row = new RegExp("\\('" + escaped + "',\\s*(null|\\d+),\\s*(null|\\d+)\\)").exec(block[0]);
+    assert.ok(row, a.id + ' ada di seed harga terbaru');
+    assert.strictEqual(row[1] === 'null' ? null : Number(row[1]), a.price, a.id + ' harga Coin');
+    assert.strictEqual(row[2] === 'null' ? null : Number(row[2]), a.gems, a.id + ' harga Gems');
+  });
+  assert.ok(/when 'aura' then 'aura'/.test(catalogSql));
 });
 /* ---- PlayerData: equip/lepas aura ---- */
 function boot() {

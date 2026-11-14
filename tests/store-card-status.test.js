@@ -12,6 +12,11 @@ const pages = {
   efek: read("efek.html"),
   room: read("room.html")
 };
+const scripts = {
+  frame: read("assets/js/pages/frame.js"),
+  dadu: read("assets/js/pages/dadu.js"),
+  room: read("assets/js/pages/room.js")
+};
 const headers = ["karakter.html", "frame.html", "dadu.html", "powerup.html", "shop.html", "friendship.html", "hadiah-misi.html", "tambang.html", "profile.html"];
 const pageCss = read("assets/ng/css/page.css");
 const frameCss = read("assets/ng/css/frame.css");
@@ -33,11 +38,12 @@ test("harga ringkas pada kartu konsisten untuk semua halaman", () => {
   }
 });
 
-test("tombol beli menampilkan ikon koin dan harga saja", () => {
+test("tombol beli menampilkan ikon mata uang yang sesuai dan harga saja", () => {
   assert.ok(pages.karakter.includes("'<img class=\"coin\" src=\"'+KOIN+'\" alt=\"\"><span>'+fmtPrice(ci.price)+'</span>'"));
   assert.ok(!/Beli <img class="coin"/.test(pages.karakter));
-  assert.ok(/data-action="buy"><img src="\$\{KOIN\}" alt="">\$\{fmtPrice\(x\.price\)\}/.test(pages.frame));
-  assert.ok(/data-action="buy"><img src="\$\{KOIN\}" alt="">\$\{fmtPrice\(x\.price\)\}/.test(pages.dadu));
+  const currencyPrice = 'data-action="buy"><img src="${x.gems>0?GEM:KOIN}" alt="">${fmtPrice(x.gems>0?x.gems:x.price)}';
+  assert.ok(scripts.frame.includes(currencyPrice));
+  assert.ok(scripts.dadu.includes(currencyPrice));
   assert.ok(/data-action="buy" aria-label="Beli '\+fmtPrice\(i\.price\)\+' koin">'\+COIN\+fmtPrice\(i\.price\)/.test(pages.powerup));
   assert.ok(/data-buy="1">\$\{PCOIN\}\$\{fmtPrice\(p\.price\)\}/.test(pages.room));
 });
@@ -46,8 +52,8 @@ test("status Dimiliki memakai warna biru-abu dan status lain tetap di bawah item
   assert.ok(/\.fslot \.pr\.owned\{background-image:url\(\.\.\/komponen\/tombol-dan-kontrol\/tombol-abu-polos\.webp\)/.test(frameCss));
   assert.ok(/\.fslot \.pr\.owned\{background-image:url\(\.\.\/komponen\/tombol-dan-kontrol\/tombol-abu-polos\.webp\)/.test(powerCss));
   assert.ok(/\.card \.bt\.owned\{background-image:url\(\.\.\/komponen\/tombol-dan-kontrol\/tombol-abu-polos\.webp\)/.test(read("assets/ng/css/kredit.css")));
-  assert.ok(/on\?'DIPAKAI':'DIMILIKI'/.test(pages.frame));
-  assert.ok(/on\?'DIPASANG':'DIMILIKI'/.test(pages.dadu));
+  assert.ok(/on\?'DIPAKAI':'DIMILIKI'/.test(scripts.frame));
+  assert.ok(/on\?'DIPASANG':'DIMILIKI'/.test(scripts.dadu));
   assert.ok(/class="pr \$\{on\?'used':'owned'\}".*DIPAKAI/.test(pages.efek));
   assert.ok(!/class="tag">DIPAKAI/.test(pages.efek), "status efek bukan lagi badge di atas");
   assert.ok(!/id="use"/.test(pages.efek) && !pages.efek.includes("$('#use')"), "aksi efek ada pada kartu, bukan panel");
@@ -63,8 +69,8 @@ test("Power-up hanya menunjukkan stok dan tombol beli; status pasang tetap di Ro
   assert.ok(/STOK ×'\+k/.test(pages.powerup));
   assert.ok(/data-action="buy" aria-label="Beli '\+fmtPrice\(i\.price\)\+' koin"/.test(pages.powerup));
   assert.ok(!/roomPowers|DIPASANG|installed/.test(pages.powerup));
-  assert.ok(/data-buy="1"/.test(pages.room) && /nav\('powerup\.html'\)/.test(pages.room));
-  assert.ok(/class="pstate installed">DIPASANG/.test(pages.room));
+  assert.ok(/data-buy="1"/.test(scripts.room) && /power:\['powerup\.html','Power-up'\]/.test(scripts.room));
+  assert.ok(/class="pstate installed">DIPASANG/.test(scripts.room));
 });
 
 console.log(n + " tes lulus");

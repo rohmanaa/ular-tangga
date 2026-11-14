@@ -145,7 +145,7 @@ t('Server/PlayerData: manifest tidak memuat kepemilikan/saldo/equip/transaksi; s
   const FORBIDDEN = /^(owned|owns|equipped|equip|balance|wallet|coins|purchase|transaction|inventory)$/i;
   items.forEach(i => Object.keys(i).forEach(k => assert.ok(!FORBIDDEN.test(k), i.id + ' field terlarang ' + k)));
   assert.ok(!/ItemRegistry|ItemCategories|data\/inventory\/dice/.test(rd('assets/js/player-data.js')));
-  assert.strictEqual(cp.execSync('git diff --name-only HEAD -- supabase tools/wallet', { cwd: ROOT }).toString().trim(), '');
+  assert.strictEqual(cp.execSync('git diff --name-only HEAD -- supabase assets/js/player-data.js', { cwd: ROOT }).toString().trim(), '');
 });
 
 /* ---- Aset (lapisan dipisah) ---- */

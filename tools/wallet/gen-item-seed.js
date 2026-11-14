@@ -44,11 +44,17 @@ const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const write = process.argv.includes('--write'), check = process.argv.includes('--check');
 let stale = false;
 BLOCKS.forEach(b => {
-  const file = path.join(MIGDIR, b.file), sql = fs.readFileSync(file, 'utf8');
+  const file = path.join(MIGDIR, b.file), rawSql = fs.readFileSync(file, 'utf8');
+  const eol = rawSql.indexOf('\r\n') >= 0 ? '\r\n' : '\n';
+  const sql = rawSql.replace(/\r\n/g, '\n');
   const re = new RegExp(esc(b.begin) + '[\\s\\S]*?' + esc(b.end));
   if (!re.test(sql)) { console.error('blok seed tidak ditemukan di ' + b.file); process.exit(2); }
   const block = b.begin + '\n' + b.body + '\n' + b.end;
-  if (write) { fs.writeFileSync(file, sql.replace(re, () => block)); console.log('seed ditulis: ' + b.file); }
+  if (write) {
+    const updated = sql.replace(re, () => block);
+    fs.writeFileSync(file, eol === '\n' ? updated : updated.replace(/\n/g, eol));
+    console.log('seed ditulis: ' + b.file);
+  }
   else if (check) { if (sql.match(re)[0] !== block) { console.error('SEED USANG: ' + b.file + ' (jalankan node tools/wallet/gen-item-seed.js --write)'); stale = true; } }
   else console.log(block);
 });
