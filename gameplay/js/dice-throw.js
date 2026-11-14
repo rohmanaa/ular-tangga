@@ -18,7 +18,7 @@
   var UT = win.UT = win.UT || {};
   if (UT.GameplayDiceThrow) return;
 
-  var S = 0.65;                  /* sisi dadu (unit dunia; 1 petak ~ 1 unit): dadu = objek 3D di dunia game, ikut zoom/kamera seperti bidak */
+  var S = 0.75;                  /* sisi dadu (unit dunia; 1 petak ~ 1 unit): dadu = objek 3D di dunia game, ikut zoom/kamera seperti bidak */
   var scene = null, die = null, shadow = null, mats = null, busy = null, throwId = 0;
   /* Efek DiceKit di dunia: grup efek diskala FXK = S (dadu dunia S vs dadu DiceKit ~1) dan diletakkan di tinggi petak; koordinat efek = dunia/FXK */
   var FXK = S, fx = null, fxRoot = null, fxLight = null, fxDie = null, fxCur = null, fxFail = false, fxLoop = 0, fxLast = 0, fxFade = 1, fxPhase = 'off', fxGround = 0, fxTop = 2, fxEmBase = 0, fxRestT = 0;
